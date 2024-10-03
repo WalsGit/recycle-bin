@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/walsgit/recycle-bin.svg)](https://packagist.org/packages/walsgit/recycle-bin) [![Total Downloads](https://img.shields.io/packagist/dt/walsgit/recycle-bin.svg)](https://packagist.org/packages/walsgit/recycle-bin)
 
-A [Flarum](http://flarum.org) extension to manage deleted (hidden) discussions and messages. new
+A [Flarum](http://flarum.org) extension to manage deleted (hidden) discussions.
 
 ## Installation
 

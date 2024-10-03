@@ -1,6 +1,6 @@
 {
     "name": "walsgit/recycle-bin",
-    "description": "Flarum extension to manage deleted (hidden) discussions and messages",
+    "description": "Flarum extension to manage deleted (hidden) discussions",
     "keywords": [
         "flarum"
     ],
