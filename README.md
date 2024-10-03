@@ -20,6 +20,9 @@ A [Flarum](http://flarum.org) extension to manage deleted (hidden) discussions.
 - Mass restoring & deletion functionality
 - Check permissions
 
+### Notes
+- Extention settings page based on the core UserListPage.tsx (Users settings page).
+
 
 ## Installation
 

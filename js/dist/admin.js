@@ -80,10 +80,10 @@ var DeleteDiscussionModal = /*#__PURE__*/function (_Modal) {
 
 /***/ }),
 
-/***/ "./src/admin/components/HiddenDiscussionListPage.tsx":
-/*!***********************************************************!*\
-  !*** ./src/admin/components/HiddenDiscussionListPage.tsx ***!
-  \***********************************************************/
+/***/ "./src/admin/components/RecycleBinPage.tsx":
+/*!*************************************************!*\
+  !*** ./src/admin/components/RecycleBinPage.tsx ***!
+  \*************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -131,7 +131,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// Import pour typer les attributs des composants
 
 
 
@@ -627,13 +626,11 @@ var RestoreDiscussionModal = /*#__PURE__*/function (_Modal) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flarum_admin_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! flarum/admin/app */ "flarum/admin/app");
 /* harmony import */ var flarum_admin_app__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(flarum_admin_app__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _components_HiddenDiscussionListPage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/HiddenDiscussionListPage */ "./src/admin/components/HiddenDiscussionListPage.tsx");
+/* harmony import */ var _components_RecycleBinPage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/RecycleBinPage */ "./src/admin/components/RecycleBinPage.tsx");
 
-
-//import RecycleBinPage from './components/RecycleBinPage';
 
 flarum_admin_app__WEBPACK_IMPORTED_MODULE_0___default().initializers.add('walsgit/recycle-bin', function () {
-  return flarum_admin_app__WEBPACK_IMPORTED_MODULE_0___default().extensionData["for"]('walsgit-recycle-bin').registerPage(_components_HiddenDiscussionListPage__WEBPACK_IMPORTED_MODULE_1__["default"]);
+  return flarum_admin_app__WEBPACK_IMPORTED_MODULE_0___default().extensionData["for"]('walsgit-recycle-bin').registerPage(_components_RecycleBinPage__WEBPACK_IMPORTED_MODULE_1__["default"]);
 });
 
 /***/ }),
