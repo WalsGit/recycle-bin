@@ -4,6 +4,23 @@
 
 A [Flarum](http://flarum.org) extension to manage deleted (hidden) discussions.
 
+## Still in development (no release yet)
+### ✅ In this first version you can:
+- list all hidden discussions
+- restore a hidden discussion (unhide)
+- forever delete a hidden discussion (remove from db)
+
+### 🐞 Still to fix:
+- After restoring or deleting a discussion, the list doesn't update/refresh
+- Search filter only works with complete words (returns a empty list for partial words)
+- Incorrect total number of pages and pagination doesn't work properly
+- Fix the position of the search filter and the total number of hidden discussion info.
+
+### 🔲 Still to implement:
+- Mass restoring & deletion functionality
+- Check permissions
+
+
 ## Installation
 
 Install with composer:
