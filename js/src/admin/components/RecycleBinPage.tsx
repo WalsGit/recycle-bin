@@ -20,6 +20,8 @@ import humanTime from 'flarum/common/helpers/humanTime';
 
 import RestoreDiscussionModal from './RestoreDiscussionModal';
 import DeleteDiscussionModal from './DeleteDiscussionModal';
+import MassRestoreDiscussionModal from './MassRestoreDiscussionModal';
+import MassDeleteDiscussionModal from './MassDeleteDiscussionModal';
 
 
 
@@ -65,7 +67,7 @@ export default class RecycleBinPage extends ExtensionPage {
   readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
 
   /**
-   * Get total number of user pages.
+   * Get total number of hidden discussion pages.
    */
   private getTotalPageCount(): number {
     if (this.hiddenDiscussionsCount === -1) return 0;
@@ -86,6 +88,22 @@ export default class RecycleBinPage extends ExtensionPage {
   private moreData: boolean = false;
 
   private isLoadingPage: boolean = false;
+  
+  /**
+   * Tracking which discussions have been selected for mass actions.
+   */
+  private selectedDiscussions: Set<string> = new Set();
+
+  private toggleDiscussionSelection(e: Event, discussionId: string) {
+    const checkbox = e.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.selectedDiscussions.add(discussionId);
+    } else {
+      this.selectedDiscussions.delete(discussionId);
+    }
+    m.redraw();
+  }
+
 
   oninit(vnode: Mithril.Vnode<ComponentAttrs, this>) {
     super.oninit(vnode);
@@ -149,7 +167,7 @@ export default class RecycleBinPage extends ExtensionPage {
                 return (
                   <div
                     className={classList(['RecycleBinPage-grid-rowItem', rowIndex % 2 > 0 && 'RecycleBinPage-grid-rowItem--shaded'])}
-                    data-user-id={discussion.id()}
+                    data-discussion-id={discussion.id()}
                     data-column-name={col.itemName}
                     aria-colindex={colIndex + 1}
                     aria-rowindex={rowIndex + 2}
@@ -163,6 +181,7 @@ export default class RecycleBinPage extends ExtensionPage {
 
             {this.isLoadingPage && <LoadingIndicator size="large" />}
           </section>
+          <div className="RecycleBinPage-massActions">{this.massActions().toArray()}</div>
           <nav className="RecycleBinPage-gridPagination">
             <Button
               disabled={this.pageNumber === 0}
@@ -256,7 +275,7 @@ export default class RecycleBinPage extends ExtensionPage {
 
     items.add(
       'totalHiddenDiscussions',
-      <p class="RecycleBinPage-totalUsers">{app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount }</p>,
+      <p class="RecycleBinPage-totalDiscussions">{app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount }</p>,
       90
     );
 
@@ -269,7 +288,7 @@ export default class RecycleBinPage extends ExtensionPage {
    * Each column in the list should be an object with keys `name` and `content`.
    *
    * `name` is a string that will be used as the column name.
-   * `content` is a function with the User model passed as the first and only argument.
+   * `content` is a function with the Discussion model passed as the first and only argument.
    *
    * See `RecycleBinPage.tsx` for examples.
    */
@@ -282,7 +301,16 @@ export default class RecycleBinPage extends ExtensionPage {
         name: '',
         content: (discussion: Discussion) => {
           return (
-            <input type="checkbox" className="RecycleBinPage-Checkbox" />
+            <input
+              type="checkbox"
+              className="RecycleBinPage-Checkbox"
+              onclick={(e: Event) => {
+                const id = discussion.id()
+                if (id !== undefined) {
+                  this.toggleDiscussionSelection(e, id)
+                }
+              }}
+            />
           );
         },
       },
@@ -361,23 +389,6 @@ export default class RecycleBinPage extends ExtensionPage {
       80
     );
 
-    // columns.add(
-    //   'groupBadges',
-    //   {
-    //     name: app.translator.trans('walsgit-recycle-bin.admin.grid.columns.group_badges.title'),
-    //     content: (discussion: Discussion) => {
-    //       const badges = user.badges().toArray();
-
-    //       if (badges.length) {
-    //         return <ul className="DiscussionHero-badges badges">{listItems(badges)}</ul>;
-    //       } else {
-    //         return app.translator.trans('walsgit-recycle-bin.admin.grid.columns.group_badges.no_badges');
-    //       }
-    //     },
-    //   },
-    //   70
-    // );
-
     columns.add(
       'actions',
       {
@@ -408,9 +419,52 @@ export default class RecycleBinPage extends ExtensionPage {
   }
 
   /**
-   * Asynchronously fetch the next set of users to be rendered.
+   * Build an item list of mass actions buttons to show under the hidden discussions list.
+   */
+  massActions(): ItemList<Mithril.Children> {
+    const massActions = new ItemList<Mithril.Children>();
+    const hasSelection = this.selectedDiscussions.size > 0;
+
+    massActions.add(
+      'actionsLabel',
+      <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_actions')}</span>,
+      100
+    );
+
+    massActions.add(
+      'massRestore',
+      <Button
+        className="Button"
+        onclick={() => {
+          app.modal.show(MassRestoreDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
+        }}
+        disabled={!hasSelection}
+    >
+        {icon('fas fa-trash-restore')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')}
+      </Button>,
+      90
+    );
+    
+    massActions.add(
+      'massDelete',
+      <Button
+        className="Button"
+        onclick={() => {
+          app.modal.show(MassDeleteDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
+        }}
+        disabled={!hasSelection}
+      >
+        {icon('fas fa-times')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')}
+      </Button>,
+      80
+    );
+
+    return massActions;
+  }
+  /**
+   * Asynchronously fetch the next set of hidden discussions to be rendered.
    *
-   * Returns an array of Users, plus the raw API payload.
+   * Returns an array of Discussions, plus the raw API payload.
    *
    * Uses the `this.numPerPage` as the response limit, and automatically calculates the offset required from `pageNumber`.
    *
@@ -421,6 +475,8 @@ export default class RecycleBinPage extends ExtensionPage {
 
     this.loadingPageNumber = pageNumber;
     this.setPageNumberInUrl(pageNumber + 1);
+
+    this.selectedDiscussions.clear();
 
     app.store
       .find<Discussion[]>('discussions', {
@@ -456,8 +512,8 @@ export default class RecycleBinPage extends ExtensionPage {
         console.error(err);
         this.pageData = [];
       });
-  }
 
+  }
   nextPage() {
     this.isLoadingPage = true;
     this.loadPage(this.pageNumber + 1);
