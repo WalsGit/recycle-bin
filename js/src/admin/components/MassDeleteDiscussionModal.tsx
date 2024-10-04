@@ -3,56 +3,58 @@ import Modal from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 
 export default class MassDeleteDiscussionModal extends Modal {
-    discussion: any;
+    selectedDiscussions!: Set<string>;
 
     oninit(vnode: any) {
-    super.oninit(vnode);
-    this.discussion = vnode.attrs.discussion;
+        super.oninit(vnode);
+        this.selectedDiscussions = this.attrs.selectedDiscussions;
     }
 
     className() {
-    return 'DeleteDiscussionModal Modal--small';
+        return 'MassDeleteDiscussionModal Modal--small';
     }
 
     title() {
-    return app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.title');
+        return app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.title');
     }
 
     content() {
-    return (
-        <div className="Modal-body">
-            <p>{app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.confirmation')} <strong>{this.discussion.title()}</strong></p>
-            <div className="Form-group">
-                {Button.component(
-                {
-                    className: 'Button Button--primary Button--block',
-                    type: 'submit',
-                    loading: this.loading,
-                },
-                app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.delete_button')
-                )}
+        return (
+            <div className="Modal-body">
+                <p>
+                    {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_start')} <strong>{this.selectedDiscussions.size}</strong> {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_end')}
+                </p>
+                <div className="Form-group">
+                    <Button className="Button Button--primary" onclick={() => this.onsubmit()}>
+                        {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.submit_button')}
+                    </Button>
+                </div>
             </div>
-        </div>
-    );
+        );
     }
 
-    onsubmit(e: Event) {
-    e.preventDefault();
+    onsubmit() {
+        this.loading = true;
 
-    this.loading = true;
-
-    app.request({
-        url: `${app.forum.attribute('apiUrl')}/discussions/${this.discussion.id()}`,
-        method: 'DELETE',
-    })
-        .then(() => {
-        app.modal.close();
-        m.redraw();
-        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success'));
-        })
-        .catch(() => {
-        this.loading = false;
-        m.redraw();
+        const promises = Array.from(this.selectedDiscussions).map(discussionId => {
+            return app.store.find('discussions', discussionId).then(discussion => {
+                return discussion.delete();
+            });
         });
+
+        Promise.all(promises)
+            .then(() => {
+                this.hide();
+                m.redraw();
+                app.alerts.show(
+                    { type: 'success' },
+                    app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.success')
+                );
+                // Optionally, you can emit an event or call a function to refresh the RecycleBinPage
+            })
+            .catch(() => {
+                this.loading = false;
+                m.redraw();
+            });
     }
 }

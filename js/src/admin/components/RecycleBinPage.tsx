@@ -88,6 +88,22 @@ export default class RecycleBinPage extends ExtensionPage {
   private moreData: boolean = false;
 
   private isLoadingPage: boolean = false;
+  
+  /**
+   * Tracking which discussions have been selected for mass actions.
+   */
+  private selectedDiscussions: Set<string> = new Set();
+
+  private toggleDiscussionSelection(e: Event, discussionId: string) {
+    const checkbox = e.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.selectedDiscussions.add(discussionId);
+    } else {
+      this.selectedDiscussions.delete(discussionId);
+    }
+    m.redraw();
+  }
+
 
   oninit(vnode: Mithril.Vnode<ComponentAttrs, this>) {
     super.oninit(vnode);
@@ -285,7 +301,16 @@ export default class RecycleBinPage extends ExtensionPage {
         name: '',
         content: (discussion: Discussion) => {
           return (
-            <input type="checkbox" className="RecycleBinPage-Checkbox" />
+            <input
+              type="checkbox"
+              className="RecycleBinPage-Checkbox"
+              onclick={(e: Event) => {
+                const id = discussion.id()
+                if (id !== undefined) {
+                  this.toggleDiscussionSelection(e, id)
+                }
+              }}
+            />
           );
         },
       },
@@ -398,6 +423,7 @@ export default class RecycleBinPage extends ExtensionPage {
    */
   massActions(): ItemList<Mithril.Children> {
     const massActions = new ItemList<Mithril.Children>();
+    const hasSelection = this.selectedDiscussions.size > 0;
 
     massActions.add(
       'actionsLabel',
@@ -410,9 +436,10 @@ export default class RecycleBinPage extends ExtensionPage {
       <Button
         className="Button"
         onclick={() => {
-          app.modal.show(MassRestoreDiscussionModal);
+          app.modal.show(MassRestoreDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
         }}
-      disabled>
+        disabled={!hasSelection}
+    >
         {icon('fas fa-trash-restore')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')}
       </Button>,
       90
@@ -423,9 +450,10 @@ export default class RecycleBinPage extends ExtensionPage {
       <Button
         className="Button"
         onclick={() => {
-          app.modal.show(MassDeleteDiscussionModal);
+          app.modal.show(MassDeleteDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
         }}
-      disabled>
+        disabled={!hasSelection}
+      >
         {icon('fas fa-times')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')}
       </Button>,
       80
@@ -447,6 +475,8 @@ export default class RecycleBinPage extends ExtensionPage {
 
     this.loadingPageNumber = pageNumber;
     this.setPageNumberInUrl(pageNumber + 1);
+
+    this.selectedDiscussions.clear();
 
     app.store
       .find<Discussion[]>('discussions', {
@@ -482,8 +512,8 @@ export default class RecycleBinPage extends ExtensionPage {
         console.error(err);
         this.pageData = [];
       });
-  }
 
+  }
   nextPage() {
     this.isLoadingPage = true;
     this.loadPage(this.pageNumber + 1);

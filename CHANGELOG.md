@@ -2,17 +2,21 @@
 # Changelog
 
 ## [0.0.5] - 2024-10-04
+### Added
+- Mass restoring & deleting functionality
+
 ### Fixed
 - Position of the search filter and the total number of hidden discussions info
 
 ### Changed
 - Actions buttons styling in hidden discussions list
+- Some code cleanup
 
 ## [0.0.4] - 2024-10-04
 ### Added
 - Extended AdminPayload to add total number of discussions and hidden discussions app.modelStatistcs.discussions.total & app.modellStatistcs.discussions.hidden
 - Changelog.md
-- Checkboxes for each hidden discussion
+- Checkboxes for each listed hidden discussion
 
 ### Changed
 - Readme.md

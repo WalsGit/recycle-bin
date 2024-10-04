@@ -30,6 +30,18 @@ walsgit-recycle-bin:
     delete_tooltip: 'Delete discussion'
     bulk_actions: 'Bulk Actions : '
     bulk_restore_label: 'Restore selected discussions'
+    mass_restore_modal:
+      title: 'Restore the selected discussions'
+      text_start: 'Are you sure you want to restore these '
+      text_end: ' selected discussions?'
+      submit_button: 'Restore these discussions'
+      success: 'Successfully restored the selected discussions'
+    mass_delete_modal:
+      title: 'Forever delete these discussions'
+      text_start: 'Are you sure you want to <u>forever delete</u> these '
+      text_end: ' selected discussions?'
+      submit_button: 'Forever delete these discussions'
+      success: 'Successfully deleted the selected discussions'
     bulk_delete_label: 'Delete selected discussions'
     pagination:
       first_page_button: 'Go to first page'

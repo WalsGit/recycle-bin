@@ -3,56 +3,59 @@ import Modal from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 
 export default class MassRestoreDiscussionModal extends Modal {
-    discussion: any;
+    selectedDiscussions!: Set<string>;
 
     oninit(vnode: any) {
-    super.oninit(vnode);
-    this.discussion = this.attrs.discussion;
+        super.oninit(vnode);
+        this.selectedDiscussions = this.attrs.selectedDiscussions;
     }
 
     className() {
-    return 'RestoreDiscussionModal Modal--small';
+        return 'MassRestoreDiscussionModal Modal--small';
     }
 
     title() {
-    return app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.title');
+        return app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.title');
     }
 
     content() {
-    return (
-        <div className="Modal-body">
-        <p>{app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.confirmation')} <strong>{this.discussion.title()}</strong></p>
-        <div className="Form Form--centered">
-            <div className="Form-group">
-            {Button.component(
-                {
-                type: 'submit',
-                className: 'Button Button--primary Button--block',
-                loading: this.loading,
-                },
-                app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.restore_button')
-            )}
+        return (
+            console.log(this.selectedDiscussions.size),
+            <div className="Modal-body">
+                <p>
+                {app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.text_start')} <strong>{this.selectedDiscussions.size}</strong> {app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.text_end')}
+                </p>
+                <div className="Form-group">
+                <Button className="Button Button--primary" onclick={() => this.onsubmit()}>
+                    {app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.submit_button')}
+                </Button>
+                </div>
             </div>
-        </div>
-        </div>
-    );
+        );
     }
 
-    onsubmit(e: Event) {
-    e.preventDefault();
+    onsubmit() {
+        this.loading = true;
 
-    this.loading = true;
-
-    this.discussion
-        .save({ isHidden: false })
-        .then(() => {
-        this.hide();
-        m.redraw();
-        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success'));
-        })
-        .catch(() => {
-        this.loading = false;
-        m.redraw();
+        const promises = Array.from(this.selectedDiscussions).map(discussionId => {
+            return app.store.find('discussions', discussionId).then(discussion => {
+                return discussion.save({ isHidden: false });
+            });
         });
+
+        Promise.all(promises)
+            .then(() => {
+                this.hide();
+                m.redraw();
+                app.alerts.show(
+                    { type: 'success' },
+                    app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.success')
+                );
+                // Optionally, you can emit an event or call a function to refresh the RecycleBinPage
+            })
+            .catch(() => {
+                this.loading = false;
+                m.redraw();
+            });
     }
 }

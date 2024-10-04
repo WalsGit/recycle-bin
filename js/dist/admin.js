@@ -109,47 +109,51 @@ var MassDeleteDiscussionModal = /*#__PURE__*/function (_Modal) {
       args[_key] = arguments[_key];
     }
     _this = _Modal.call.apply(_Modal, [this].concat(args)) || this;
-    _this.discussion = void 0;
+    _this.selectedDiscussions = void 0;
     return _this;
   }
   (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__["default"])(MassDeleteDiscussionModal, _Modal);
   var _proto = MassDeleteDiscussionModal.prototype;
   _proto.oninit = function oninit(vnode) {
     _Modal.prototype.oninit.call(this, vnode);
-    this.discussion = vnode.attrs.discussion;
+    this.selectedDiscussions = this.attrs.selectedDiscussions;
   };
   _proto.className = function className() {
-    return 'DeleteDiscussionModal Modal--small';
+    return 'MassDeleteDiscussionModal Modal--small';
   };
   _proto.title = function title() {
-    return flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.delete_discussion.title');
+    return flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.title');
   };
   _proto.content = function content() {
+    var _this2 = this;
     return m("div", {
       className: "Modal-body"
-    }, m("p", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.delete_discussion.confirmation'), " ", m("strong", null, this.discussion.title())), m("div", {
+    }, m("p", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_start'), " ", m("strong", null, this.selectedDiscussions.size), " ", flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_end')), m("div", {
       className: "Form-group"
-    }, flarum_common_components_Button__WEBPACK_IMPORTED_MODULE_3___default().component({
-      className: 'Button Button--primary Button--block',
-      type: 'submit',
-      loading: this.loading
-    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.delete_discussion.delete_button'))));
+    }, m((flarum_common_components_Button__WEBPACK_IMPORTED_MODULE_3___default()), {
+      className: "Button Button--primary",
+      onclick: function onclick() {
+        return _this2.onsubmit();
+      }
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.submit_button'))));
   };
-  _proto.onsubmit = function onsubmit(e) {
-    var _this2 = this;
-    e.preventDefault();
+  _proto.onsubmit = function onsubmit() {
+    var _this3 = this;
     this.loading = true;
-    flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().request({
-      url: flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().forum.attribute('apiUrl') + "/discussions/" + this.discussion.id(),
-      method: 'DELETE'
-    }).then(function () {
-      flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().modal.close();
+    var promises = Array.from(this.selectedDiscussions).map(function (discussionId) {
+      return flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().store.find('discussions', discussionId).then(function (discussion) {
+        return discussion["delete"]();
+      });
+    });
+    Promise.all(promises).then(function () {
+      _this3.hide();
       m.redraw();
       flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().alerts.show({
         type: 'success'
-      }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.delete_discussion.success'));
+      }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.success'));
+      // Optionally, you can emit an event or call a function to refresh the RecycleBinPage
     })["catch"](function () {
-      _this2.loading = false;
+      _this3.loading = false;
       m.redraw();
     });
   };
@@ -188,48 +192,53 @@ var MassRestoreDiscussionModal = /*#__PURE__*/function (_Modal) {
       args[_key] = arguments[_key];
     }
     _this = _Modal.call.apply(_Modal, [this].concat(args)) || this;
-    _this.discussion = void 0;
+    _this.selectedDiscussions = void 0;
     return _this;
   }
   (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__["default"])(MassRestoreDiscussionModal, _Modal);
   var _proto = MassRestoreDiscussionModal.prototype;
   _proto.oninit = function oninit(vnode) {
     _Modal.prototype.oninit.call(this, vnode);
-    this.discussion = this.attrs.discussion;
+    this.selectedDiscussions = this.attrs.selectedDiscussions;
   };
   _proto.className = function className() {
-    return 'RestoreDiscussionModal Modal--small';
+    return 'MassRestoreDiscussionModal Modal--small';
   };
   _proto.title = function title() {
-    return flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.restore_discussion.title');
+    return flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.title');
   };
   _proto.content = function content() {
-    return m("div", {
-      className: "Modal-body"
-    }, m("p", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.restore_discussion.confirmation'), " ", m("strong", null, this.discussion.title())), m("div", {
-      className: "Form Form--centered"
-    }, m("div", {
-      className: "Form-group"
-    }, flarum_common_components_Button__WEBPACK_IMPORTED_MODULE_3___default().component({
-      type: 'submit',
-      className: 'Button Button--primary Button--block',
-      loading: this.loading
-    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.restore_discussion.restore_button')))));
-  };
-  _proto.onsubmit = function onsubmit(e) {
     var _this2 = this;
-    e.preventDefault();
+    return console.log(this.selectedDiscussions.size), m("div", {
+      className: "Modal-body"
+    }, m("p", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.text_start'), " ", m("strong", null, this.selectedDiscussions.size), " ", flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.text_end')), m("div", {
+      className: "Form-group"
+    }, m((flarum_common_components_Button__WEBPACK_IMPORTED_MODULE_3___default()), {
+      className: "Button Button--primary",
+      onclick: function onclick() {
+        return _this2.onsubmit();
+      }
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.submit_button'))));
+  };
+  _proto.onsubmit = function onsubmit() {
+    var _this3 = this;
     this.loading = true;
-    this.discussion.save({
-      isHidden: false
-    }).then(function () {
-      _this2.hide();
+    var promises = Array.from(this.selectedDiscussions).map(function (discussionId) {
+      return flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().store.find('discussions', discussionId).then(function (discussion) {
+        return discussion.save({
+          isHidden: false
+        });
+      });
+    });
+    Promise.all(promises).then(function () {
+      _this3.hide();
       m.redraw();
       flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().alerts.show({
         type: 'success'
-      }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.restore_discussion.success'));
+      }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.success'));
+      // Optionally, you can emit an event or call a function to refresh the RecycleBinPage
     })["catch"](function () {
-      _this2.loading = false;
+      _this3.loading = false;
       m.redraw();
     });
   };
@@ -341,6 +350,10 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
      */
     _this.moreData = false;
     _this.isLoadingPage = false;
+    /**
+     * Tracking which discussions have been selected for mass actions.
+     */
+    _this.selectedDiscussions = new Set();
     return _this;
   }
   (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_2__["default"])(RecycleBinPage, _ExtensionPage);
@@ -351,6 +364,15 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
   _proto.getTotalPageCount = function getTotalPageCount() {
     if (this.hiddenDiscussionsCount === -1) return 0;
     return Math.ceil(this.hiddenDiscussionsCount / this.numPerPage);
+  };
+  _proto.toggleDiscussionSelection = function toggleDiscussionSelection(e, discussionId) {
+    var checkbox = e.target;
+    if (checkbox.checked) {
+      this.selectedDiscussions.add(discussionId);
+    } else {
+      this.selectedDiscussions["delete"](discussionId);
+    }
+    m.redraw();
   };
   _proto.oninit = function oninit(vnode) {
     _ExtensionPage.prototype.oninit.call(this, vnode);
@@ -514,13 +536,20 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
    * See `RecycleBinPage.tsx` for examples.
    */;
   _proto.columns = function columns() {
+    var _this4 = this;
     var columns = new (flarum_common_utils_ItemList__WEBPACK_IMPORTED_MODULE_9___default())();
     columns.add('selection', {
       name: '',
       content: function content(discussion) {
         return m("input", {
           type: "checkbox",
-          className: "RecycleBinPage-Checkbox"
+          className: "RecycleBinPage-Checkbox",
+          onclick: function onclick(e) {
+            var id = discussion.id();
+            if (id !== undefined) {
+              _this4.toggleDiscussionSelection(e, id);
+            }
+          }
         });
       }
     }, 100);
@@ -600,21 +629,27 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
    * Build an item list of mass actions buttons to show under the hidden discussions list.
    */;
   _proto.massActions = function massActions() {
+    var _this5 = this;
     var massActions = new (flarum_common_utils_ItemList__WEBPACK_IMPORTED_MODULE_9___default())();
+    var hasSelection = this.selectedDiscussions.size > 0;
     massActions.add('actionsLabel', m("span", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.bulk_actions')), 100);
     massActions.add('massRestore', m((flarum_common_components_Button__WEBPACK_IMPORTED_MODULE_6___default()), {
       className: "Button",
       onclick: function onclick() {
-        flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().modal.show(_MassRestoreDiscussionModal__WEBPACK_IMPORTED_MODULE_16__["default"]);
+        flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().modal.show(_MassRestoreDiscussionModal__WEBPACK_IMPORTED_MODULE_16__["default"], {
+          selectedDiscussions: _this5.selectedDiscussions
+        });
       },
-      disabled: true
+      disabled: !hasSelection
     }, flarum_common_helpers_icon__WEBPACK_IMPORTED_MODULE_7___default()('fas fa-trash-restore'), " ", flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')), 90);
     massActions.add('massDelete', m((flarum_common_components_Button__WEBPACK_IMPORTED_MODULE_6___default()), {
       className: "Button",
       onclick: function onclick() {
-        flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().modal.show(_MassDeleteDiscussionModal__WEBPACK_IMPORTED_MODULE_17__["default"]);
+        flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().modal.show(_MassDeleteDiscussionModal__WEBPACK_IMPORTED_MODULE_17__["default"], {
+          selectedDiscussions: _this5.selectedDiscussions
+        });
       },
-      disabled: true
+      disabled: !hasSelection
     }, flarum_common_helpers_icon__WEBPACK_IMPORTED_MODULE_7___default()('fas fa-times'), " ", flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')), 80);
     return massActions;
   }
@@ -631,13 +666,14 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
   /*#__PURE__*/
   function () {
     var _loadPage = (0,_babel_runtime_helpers_esm_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(pageNumber) {
-      var _this4 = this;
+      var _this6 = this;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             if (pageNumber < 0) pageNumber = 0;
             this.loadingPageNumber = pageNumber;
             this.setPageNumberInUrl(pageNumber + 1);
+            this.selectedDiscussions.clear();
             flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().store.find('discussions', {
               filter: {
                 q: ("is:hidden " + this.query).trim()
@@ -649,28 +685,28 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
             }).then(function (apiData) {
               var _apiData$payload;
               // Next link won't be present if there's no more data
-              _this4.moreData = !!((_apiData$payload = apiData.payload) != null && (_apiData$payload = _apiData$payload.links) != null && _apiData$payload.next);
+              _this6.moreData = !!((_apiData$payload = apiData.payload) != null && (_apiData$payload = _apiData$payload.links) != null && _apiData$payload.next);
               var data = apiData.filter(function (discussion) {
                 return discussion.isHidden();
               });
 
               // @ts-ignore
               delete data.payload;
-              var lastPage = _this4.getTotalPageCount();
+              var lastPage = _this6.getTotalPageCount();
               if (pageNumber > lastPage) {
-                _this4.loadPage(lastPage - 1);
+                _this6.loadPage(lastPage - 1);
               } else {
-                _this4.pageData = data;
-                _this4.pageNumber = pageNumber;
-                _this4.loadingPageNumber = pageNumber;
-                _this4.isLoadingPage = false;
+                _this6.pageData = data;
+                _this6.pageNumber = pageNumber;
+                _this6.loadingPageNumber = pageNumber;
+                _this6.isLoadingPage = false;
               }
               m.redraw();
             })["catch"](function (err) {
               console.error(err);
-              _this4.pageData = [];
+              _this6.pageData = [];
             });
-          case 4:
+          case 5:
           case "end":
             return _context.stop();
         }
