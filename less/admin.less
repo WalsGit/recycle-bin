@@ -4,13 +4,6 @@
 
     &-header {
         margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        column-gap: 8px;
-    }
-
-    &-totalDiscussions {
-        margin: 0;
     }
 
     &-actions {
@@ -82,7 +75,7 @@
             &--shaded {
                 background: var(--body-bg-shaded);
 
-                [data-theme^=dark] & {
+                & when (@config-dark-mode = true) {
                     background: var(--body-bg-light);
                 }
             }
@@ -110,7 +103,7 @@
     }
 }
 
-// Handles styling of default UserList columns
+// Handles styling of default DiscussionList columns
 .DiscussionList {
     &-creationDate, &-hiddenDate {
         cursor: help;
@@ -130,30 +123,4 @@
         justify-content: center;
     }
 
-    &-email {
-        display: flex;
-        flex-grow: 1;
-
-        &[data-email-shown="false"] {
-            .UserList-emailAddress {
-                user-select: none;
-                filter: blur(4px);
-                cursor: pointer;
-            }
-        }
-
-        &Address {
-            flex-grow: 1;
-            margin-right: 4px;
-            transition: filter 0.2s ease-out;
-        }
-
-        &IconBtn {
-            margin-left: 12px;
-
-            &:hover {
-                text-decoration: none;
-            }
-        }
-    }
 }

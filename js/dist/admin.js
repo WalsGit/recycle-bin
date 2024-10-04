@@ -333,7 +333,7 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
       }
     })), 100);
     items.add('totalHiddenDiscussions', m("p", {
-      "class": "RecycleBinPage-totalUsers"
+      "class": "RecycleBinPage-totalDiscussions"
     }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions'), ": ", this.hiddenDiscussionsCount), 90);
     return items;
   }

@@ -256,7 +256,7 @@ export default class RecycleBinPage extends ExtensionPage {
 
     items.add(
       'totalHiddenDiscussions',
-      <p class="RecycleBinPage-totalUsers">{app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount }</p>,
+      <p class="RecycleBinPage-totalDiscussions">{app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount }</p>,
       90
     );
 

@@ -1,10 +1,19 @@
 
 # Changelog
 
-## [0.0.4]
+## [0.0.5] - 2024-10-04
+### Fixed
+- Position of the search filter and the total number of hidden discussions info
+
+### Updated
+- Readme.md
+- Changelog.md
+
+## [0.0.4] - 2024-10-04
 ### Added
 - Extended AdminPayload to add total number of discussions and hidden discussions app.modelStatistcs.discussions.total & app.modellStatistcs.discussions.hidden
 - Changelog.md
+- Checkboxes for each hidden discussion
 
 ### Changed
 - Readme.md
