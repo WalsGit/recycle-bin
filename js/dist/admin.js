@@ -149,9 +149,9 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
       return _this.loadPage(0);
     });
     /**
-     * Number of users to load per page.
+     * Number of discussions to load per page.
      */
-    _this.numPerPage = 10;
+    _this.numPerPage = 5;
     /**
      * Current page number. Zero-indexed.
      */
@@ -161,21 +161,20 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
      */
     _this.loadingPageNumber = 0;
     /**
-     * Total number of forum users.
+     * Total number of forum hidden discussions.
      *
      * Fetched from the active `AdminApplication` (`app`), with
-     * data provided by `AdminPayload.php`, or `flarum/statistics`
-     * if installed.
+     * data provided by extension of `AdminPayload.php` on extend.php.
      */
-    _this.hiddenDiscussionsCount = (flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().data).modelStatistics.users.total;
+    _this.hiddenDiscussionsCount = (flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().data).modelStatistics.discussions.hidden;
     /**
-     * This page's array of users.
+     * This page's array of discussions.
      *
      * `undefined` when page loads as no data has been fetched.
      */
     _this.pageData = undefined;
     /**
-     * Are there more users available?
+     * Are there more hidden discussions available?
      */
     _this.moreData = false;
     _this.isLoadingPage = false;
@@ -183,7 +182,6 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
   }
   (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_2__["default"])(RecycleBinPage, _ExtensionPage);
   var _proto = RecycleBinPage.prototype;
-  // =========== TODO: find a way to get the number of hidden discussions
   /**
    * Get total number of user pages.
    */
@@ -336,9 +334,7 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
     })), 100);
     items.add('totalHiddenDiscussions', m("p", {
       "class": "RecycleBinPage-totalUsers"
-    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions', {
-      count: this.hiddenDiscussionsCount
-    })), 90);
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions'), ": ", this.hiddenDiscussionsCount), 90);
     return items;
   }
 
@@ -354,13 +350,22 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
    */;
   _proto.columns = function columns() {
     var columns = new (flarum_common_utils_ItemList__WEBPACK_IMPORTED_MODULE_9___default())();
+    columns.add('selection', {
+      name: '',
+      content: function content(discussion) {
+        return m("input", {
+          type: "checkbox",
+          className: "RecycleBinPage-Checkbox"
+        });
+      }
+    }, 100);
     columns.add('id', {
       name: flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.discussion_id'),
       content: function content(discussion) {
         var _discussion$id;
         return (_discussion$id = discussion.id()) != null ? _discussion$id : null;
       }
-    }, 100);
+    }, 99);
     columns.add('discussionTitle', {
       name: flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.discussion_title'),
       content: function content(discussion) {
@@ -466,7 +471,7 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
             this.setPageNumberInUrl(pageNumber + 1);
             flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().store.find('discussions', {
               filter: {
-                q: this.query
+                q: ("is:hidden " + this.query).trim()
               },
               page: {
                 limit: this.numPerPage,

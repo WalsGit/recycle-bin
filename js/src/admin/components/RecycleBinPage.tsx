@@ -42,9 +42,9 @@ export default class RecycleBinPage extends ExtensionPage {
   private throttledSearch = debounce(250, () => this.loadPage(0));
 
   /**
-   * Number of users to load per page.
+   * Number of discussions to load per page.
    */
-  private numPerPage: number = 10;
+  private numPerPage: number = 5;
 
   /**
    * Current page number. Zero-indexed.
@@ -57,13 +57,12 @@ export default class RecycleBinPage extends ExtensionPage {
   private loadingPageNumber: number = 0;
 
   /**
-   * Total number of forum users.
+   * Total number of forum hidden discussions.
    *
    * Fetched from the active `AdminApplication` (`app`), with
-   * data provided by `AdminPayload.php`, or `flarum/statistics`
-   * if installed.
+   * data provided by extension of `AdminPayload.php` on extend.php.
    */
-  readonly hiddenDiscussionsCount: number = app.data.modelStatistics.users.total; // =========== TODO: find a way to get the number of hidden discussions
+  readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
 
   /**
    * Get total number of user pages.
@@ -75,14 +74,14 @@ export default class RecycleBinPage extends ExtensionPage {
   }
 
   /**
-   * This page's array of users.
+   * This page's array of discussions.
    *
    * `undefined` when page loads as no data has been fetched.
    */
   private pageData: Discussion[] | undefined = undefined;
 
   /**
-   * Are there more users available?
+   * Are there more hidden discussions available?
    */
   private moreData: boolean = false;
 
@@ -257,7 +256,7 @@ export default class RecycleBinPage extends ExtensionPage {
 
     items.add(
       'totalHiddenDiscussions',
-      <p class="RecycleBinPage-totalUsers">{app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions', { count: this.hiddenDiscussionsCount })}</p>,
+      <p class="RecycleBinPage-totalUsers">{app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount }</p>,
       90
     );
 
@@ -278,12 +277,25 @@ export default class RecycleBinPage extends ExtensionPage {
     const columns = new ItemList<ColumnData>();
 
     columns.add(
+      'selection',
+      {
+        name: '',
+        content: (discussion: Discussion) => {
+          return (
+            <input type="checkbox" className="RecycleBinPage-Checkbox" />
+          );
+        },
+      },
+      100
+    );
+    
+    columns.add(
       'id',
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.discussion_id'),
         content: (discussion: Discussion) => discussion.id() ?? null,
       },
-      100
+      99
     );
 
     columns.add(
@@ -412,7 +424,7 @@ export default class RecycleBinPage extends ExtensionPage {
 
     app.store
       .find<Discussion[]>('discussions', {
-        filter: { q: this.query },
+        filter: { q: `is:hidden ${this.query}`.trim() },
         page: {
           limit: this.numPerPage,
           offset: pageNumber * this.numPerPage,

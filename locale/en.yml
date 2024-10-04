@@ -24,7 +24,7 @@ walsgit-recycle-bin:
       success: 'Successfully restored the discussion'
     delete_discussion:
       title: 'Delete forever'
-      confirmation: 'Are you sure you want to forever delete this discussion:'
+      confirmation: 'Are you sure you want to <u>forever delete</u> this discussion (irreversible):'
       delete_button: 'Forever delete this discussion'
       success: 'Successfully deleted the discussion'
     delete_tooltip: 'Delete discussion'
