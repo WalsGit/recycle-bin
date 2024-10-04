@@ -5,9 +5,8 @@
 ### Fixed
 - Position of the search filter and the total number of hidden discussions info
 
-### Updated
-- Readme.md
-- Changelog.md
+### Changed
+- Actions buttons styling in hidden discussions list
 
 ## [0.0.4] - 2024-10-04
 ### Added
