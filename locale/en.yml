@@ -28,7 +28,7 @@ walsgit-recycle-bin:
       delete_button: 'Forever delete this discussion'
       success: 'Successfully deleted the discussion'
     delete_tooltip: 'Delete discussion'
-    bulk_actions: 'Bulk Actions'
+    bulk_actions: 'Bulk Actions : '
     bulk_restore_label: 'Restore selected discussions'
     bulk_delete_label: 'Delete selected discussions'
     pagination:

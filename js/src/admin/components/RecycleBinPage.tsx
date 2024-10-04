@@ -20,6 +20,8 @@ import humanTime from 'flarum/common/helpers/humanTime';
 
 import RestoreDiscussionModal from './RestoreDiscussionModal';
 import DeleteDiscussionModal from './DeleteDiscussionModal';
+import MassRestoreDiscussionModal from './MassRestoreDiscussionModal';
+import MassDeleteDiscussionModal from './MassDeleteDiscussionModal';
 
 
 
@@ -163,6 +165,7 @@ export default class RecycleBinPage extends ExtensionPage {
 
             {this.isLoadingPage && <LoadingIndicator size="large" />}
           </section>
+          <div className="RecycleBinPage-massActions">{this.massActions().toArray()}</div>
           <nav className="RecycleBinPage-gridPagination">
             <Button
               disabled={this.pageNumber === 0}
@@ -390,6 +393,46 @@ export default class RecycleBinPage extends ExtensionPage {
     return columns;
   }
 
+  /**
+   * Build an item list of mass actions buttons to show under the hidden discussions list.
+   */
+  massActions(): ItemList<Mithril.Children> {
+    const massActions = new ItemList<Mithril.Children>();
+
+    massActions.add(
+      'actionsLabel',
+      <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_actions')}</span>,
+      100
+    );
+
+    massActions.add(
+      'massRestore',
+      <Button
+        className="Button"
+        onclick={() => {
+          app.modal.show(MassRestoreDiscussionModal);
+        }}
+      disabled>
+        {icon('fas fa-trash-restore')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')}
+      </Button>,
+      90
+    );
+    
+    massActions.add(
+      'massDelete',
+      <Button
+        className="Button"
+        onclick={() => {
+          app.modal.show(MassDeleteDiscussionModal);
+        }}
+      disabled>
+        {icon('fas fa-times')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')}
+      </Button>,
+      80
+    );
+
+    return massActions;
+  }
   /**
    * Asynchronously fetch the next set of hidden discussions to be rendered.
    *
