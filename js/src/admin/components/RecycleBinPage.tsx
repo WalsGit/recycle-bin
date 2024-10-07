@@ -15,15 +15,13 @@ import ItemList from 'flarum/common/utils/ItemList';
 import classList from 'flarum/common/utils/classList';
 import extractText from 'flarum/common/utils/extractText';
 import { debounce } from 'flarum/common/utils/throttleDebounce';
-import { ComponentAttrs } from 'flarum/common/Component'; 
+import { ComponentAttrs } from 'flarum/common/Component';
 import humanTime from 'flarum/common/helpers/humanTime';
 
 import RestoreDiscussionModal from './RestoreDiscussionModal';
 import DeleteDiscussionModal from './DeleteDiscussionModal';
 import MassRestoreDiscussionModal from './MassRestoreDiscussionModal';
 import MassDeleteDiscussionModal from './MassDeleteDiscussionModal';
-
-
 
 type ColumnData = {
   /**
@@ -46,7 +44,7 @@ export default class RecycleBinPage extends ExtensionPage {
   /**
    * Number of discussions to load per page.
    */
-  private numPerPage: number = 5;
+  private numPerPage: number = 25;
 
   /**
    * Current page number. Zero-indexed.
@@ -88,7 +86,7 @@ export default class RecycleBinPage extends ExtensionPage {
   private moreData: boolean = false;
 
   private isLoadingPage: boolean = false;
-  
+
   /**
    * Tracking which discussions have been selected for mass actions.
    */
@@ -103,7 +101,6 @@ export default class RecycleBinPage extends ExtensionPage {
     }
     m.redraw();
   }
-
 
   oninit(vnode: Mithril.Vnode<ComponentAttrs, this>) {
     super.oninit(vnode);
@@ -142,7 +139,7 @@ export default class RecycleBinPage extends ExtensionPage {
     const columns = this.columns().toArray();
 
     return (
-      <div className='ExtensionPage-settings'>
+      <div className="ExtensionPage-settings">
         <div className="container">
           <div className="RecycleBinPage-header">{this.headerItems().toArray()}</div>
           <section
@@ -275,7 +272,9 @@ export default class RecycleBinPage extends ExtensionPage {
 
     items.add(
       'totalHiddenDiscussions',
-      <p class="RecycleBinPage-totalDiscussions">{app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount }</p>,
+      <p class="RecycleBinPage-totalDiscussions">
+        {app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount}
+      </p>,
       90
     );
 
@@ -305,9 +304,9 @@ export default class RecycleBinPage extends ExtensionPage {
               type="checkbox"
               className="RecycleBinPage-Checkbox"
               onclick={(e: Event) => {
-                const id = discussion.id()
+                const id = discussion.id();
                 if (id !== undefined) {
-                  this.toggleDiscussionSelection(e, id)
+                  this.toggleDiscussionSelection(e, id);
                 }
               }}
             />
@@ -316,7 +315,7 @@ export default class RecycleBinPage extends ExtensionPage {
       },
       100
     );
-    
+
     columns.add(
       'id',
       {
@@ -334,11 +333,7 @@ export default class RecycleBinPage extends ExtensionPage {
           const discussionUrl = `${app.forum.attribute('baseUrl')}/d/${discussion.slug()}`;
 
           return (
-            <a
-              target="_blank"
-              href={discussionUrl}
-              title={app.translator.trans('walsgit-recycle-bin.admin.discussion_link_tooltip')}
-            >
+            <a target="_blank" href={discussionUrl} title={app.translator.trans('walsgit-recycle-bin.admin.discussion_link_tooltip')}>
               {discussion.title()}
             </a>
           );
@@ -352,10 +347,8 @@ export default class RecycleBinPage extends ExtensionPage {
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.discussion_author'),
         content: (discussion: Discussion) => {
-          const user = (discussion.user() as User);
-          return user && typeof user.displayName === 'function'
-            ? user.displayName()
-            : app.translator.trans('walsgit-recycle-bin.admin.unknown_user');
+          const user = discussion.user() as User;
+          return user && typeof user.displayName === 'function' ? user.displayName() : app.translator.trans('walsgit-recycle-bin.admin.unknown_user');
         },
       },
       85
@@ -369,13 +362,12 @@ export default class RecycleBinPage extends ExtensionPage {
           <span className="DiscussionList-creationDate" title={discussion.createdAt()}>
             {/*dayjs(discussion.createdAt()).format('LLL')*/}
             {discussion.createdAt() ? humanTime(discussion.createdAt() as Date) : app.translator.trans('walsgit-recycle-bin.admin.unknown_date')}
-
           </span>
         ),
       },
       80
     );
-    
+
     columns.add(
       'hiddenAt',
       {
@@ -403,13 +395,13 @@ export default class RecycleBinPage extends ExtensionPage {
               {icon('fas fa-trash-restore')}
             </Button>
             <Button
-            className="Button DiscussionList-editModalBtn"
-            title={app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() })}
-            onclick={() => app.modal.show(DeleteDiscussionModal, { discussion })}
-          >
-            {icon('fas fa-times')}
-          </Button>
-        </>
+              className="Button DiscussionList-editModalBtn"
+              title={app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() })}
+              onclick={() => app.modal.show(DeleteDiscussionModal, { discussion })}
+            >
+              {icon('fas fa-times')}
+            </Button>
+          </>
         ),
       },
       -90
@@ -425,11 +417,7 @@ export default class RecycleBinPage extends ExtensionPage {
     const massActions = new ItemList<Mithril.Children>();
     const hasSelection = this.selectedDiscussions.size > 0;
 
-    massActions.add(
-      'actionsLabel',
-      <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_actions')}</span>,
-      100
-    );
+    massActions.add('actionsLabel', <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_actions')}</span>, 100);
 
     massActions.add(
       'massRestore',
@@ -439,12 +427,12 @@ export default class RecycleBinPage extends ExtensionPage {
           app.modal.show(MassRestoreDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
         }}
         disabled={!hasSelection}
-    >
+      >
         {icon('fas fa-trash-restore')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')}
       </Button>,
       90
     );
-    
+
     massActions.add(
       'massDelete',
       <Button
@@ -512,7 +500,6 @@ export default class RecycleBinPage extends ExtensionPage {
         console.error(err);
         this.pageData = [];
       });
-
   }
   nextPage() {
     this.isLoadingPage = true;

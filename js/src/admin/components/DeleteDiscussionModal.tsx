@@ -37,22 +37,26 @@ export default class DeleteDiscussionModal extends Modal {
     }
 
     onsubmit(e: Event) {
-    e.preventDefault();
+        e.preventDefault();
 
-    this.loading = true;
+        this.loading = true;
 
-    app.request({
-        url: `${app.forum.attribute('apiUrl')}/discussions/${this.discussion.id()}`,
-        method: 'DELETE',
-    })
+        app.request({
+            url: `${app.forum.attribute('apiUrl')}/discussions/${this.discussion.id()}`,
+            method: 'DELETE',
+        })
         .then(() => {
-        app.modal.close();
-        m.redraw();
-        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success'));
+            app.modal.close();
+            m.redraw();
+            app.alerts.show(
+                { type: 'success' },
+                app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success')
+            );
+            window.location.reload();
         })
         .catch(() => {
-        this.loading = false;
-        m.redraw();
+            this.loading = false;
+            m.redraw();
         });
     }
 }
