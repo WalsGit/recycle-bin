@@ -50,7 +50,7 @@ export default class MassDeleteDiscussionModal extends Modal {
                     { type: 'success' },
                     app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.success')
                 );
-                // Optionally, you can emit an event or call a function to refresh the RecycleBinPage
+                window.location.reload();
             })
             .catch(() => {
                 this.loading = false;

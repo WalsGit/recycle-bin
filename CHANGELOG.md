@@ -1,6 +1,13 @@
 
 # Changelog
 
+## [0.1.0] - 2024-10-05
+### Fixed
+- Settings page refreshes after restoring or deleting discussions
+
+### Changed
+- List shows 25 hidden discussions per page
+
 ## [0.0.5] - 2024-10-04
 ### Added
 - Mass restoring & deleting functionality

@@ -39,20 +39,24 @@ export default class RestoreDiscussionModal extends Modal {
     }
 
     onsubmit(e: Event) {
-    e.preventDefault();
+        e.preventDefault();
 
-    this.loading = true;
+        this.loading = true;
 
-    this.discussion
-        .save({ isHidden: false })
-        .then(() => {
-        this.hide();
-        m.redraw();
-        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success'));
-        })
-        .catch(() => {
-        this.loading = false;
-        m.redraw();
-        });
+        this.discussion
+            .save({ isHidden: false })
+            .then(() => {
+                this.hide();
+                m.redraw();
+                app.alerts.show(
+                    { type: 'success' },
+                    app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success')
+                );
+                window.location.reload();
+            })
+            .catch(() => {
+                this.loading = false;
+                m.redraw();
+            });
     }
 }
