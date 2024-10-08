@@ -17,7 +17,7 @@ import extractText from 'flarum/common/utils/extractText';
 import { debounce } from 'flarum/common/utils/throttleDebounce';
 import { ComponentAttrs } from 'flarum/common/Component';
 import humanTime from 'flarum/common/helpers/humanTime';
-import Stream from 'flarum/common/utils/Stream'; // ==== NEW CODY
+import Stream from 'flarum/common/utils/Stream'; 
 
 import RestoreDiscussionModal from './RestoreDiscussionModal';
 import DeleteDiscussionModal from './DeleteDiscussionModal';
@@ -41,8 +41,10 @@ type ColumnData = {
 export default class RecycleBinPage extends ExtensionPage {
   private query: string = '';
   private throttledSearch = debounce(250, () => this.loadPage(0));
-  private discussionRestored: Stream<boolean> = Stream(false); // ==== NEW CODY
-  private discussionDeleted: Stream<boolean> = Stream(false); // ==== NEW CODY
+  private discussionRestored: Stream<boolean> = Stream(false); 
+  private discussionDeleted: Stream<boolean> = Stream(false);
+  private hiddenDiscussionsCount: Stream<number> = Stream(app.data.modelStatistics.discussions.hidden);
+
 
   /**
    * Number of discussions to load per page.
@@ -65,7 +67,7 @@ export default class RecycleBinPage extends ExtensionPage {
    * Fetched from the active `AdminApplication` (`app`), with
    * data provided by extension of `AdminPayload.php` on extend.php.
    */
-  readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
+  //readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
 
   /**
    * Get total number of hidden discussion pages.
@@ -120,16 +122,18 @@ export default class RecycleBinPage extends ExtensionPage {
 
     this.loadingPageNumber = this.pageNumber;
 
-    // ==== NEW CODY
+    
     this.discussionRestored.map((restored: any) => {
       if (restored) {
         this.loadPage(this.pageNumber);
+        this.hiddenDiscussionsCount(this.hiddenDiscussionsCount() - 1);
         this.discussionRestored(false); // Reset the Stream
       }
     });
     this.discussionDeleted.map((deleted: any) => {
       if (deleted) {
         this.loadPage(this.pageNumber);
+        this.hiddenDiscussionsCount(this.hiddenDiscussionsCount() - 1);
         this.discussionDeleted(false); // Reset the Stream
       }
     });
@@ -290,7 +294,7 @@ export default class RecycleBinPage extends ExtensionPage {
     items.add(
       'totalHiddenDiscussions',
       <p class="RecycleBinPage-totalDiscussions">
-        {app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount}
+        {app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount()}
       </p>,
       90
     );
@@ -407,14 +411,14 @@ export default class RecycleBinPage extends ExtensionPage {
             <Button
               className="Button DiscussionList-editModalBtn"
               title={app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussion: discussion.title() })}
-              onclick={() => app.modal.show(RestoreDiscussionModal, { discussion: discussion, discussionRestored: this.discussionRestored })} // ==== NEW CODY
+              onclick={() => app.modal.show(RestoreDiscussionModal, { discussion: discussion, discussionRestored: this.discussionRestored })} 
             >
               {icon('fas fa-trash-restore')}
             </Button>
             <Button
               className="Button DiscussionList-editModalBtn"
               title={app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() })}
-              onclick={() => app.modal.show(DeleteDiscussionModal, { discussion: discussion, discussionDeleted: this.discussionDeleted })} // ==== NEW CODY
+              onclick={() => app.modal.show(DeleteDiscussionModal, { discussion: discussion, discussionDeleted: this.discussionDeleted })} 
             >
               {icon('fas fa-times')}
             </Button>

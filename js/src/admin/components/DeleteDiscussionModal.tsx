@@ -5,12 +5,12 @@ import Stream from 'flarum/common/utils/Stream';
 
 export default class DeleteDiscussionModal extends Modal {
     discussion: any;
-    discussionDeleted: Stream<boolean>; // ==== NEW CODY
+    discussionDeleted: Stream<boolean>; 
 
     oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = vnode.attrs.discussion;
-    this.discussionDeleted = this.attrs.discussionDeleted; // ==== NEW CODY
+    this.discussionDeleted = this.attrs.discussionDeleted; 
     }
 
     className() {
@@ -50,7 +50,7 @@ export default class DeleteDiscussionModal extends Modal {
         })
         .then(() => {
             app.modal.close();
-            this.discussionDeleted(true); // ==== NEW CODY
+            this.discussionDeleted(true); 
             m.redraw();
             app.alerts.show(
                 { type: 'success' },

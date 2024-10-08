@@ -36,11 +36,10 @@ var DeleteDiscussionModal = /*#__PURE__*/function (_Modal) {
   }
   (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__["default"])(DeleteDiscussionModal, _Modal);
   var _proto = DeleteDiscussionModal.prototype;
-  // ==== NEW CODY
   _proto.oninit = function oninit(vnode) {
     _Modal.prototype.oninit.call(this, vnode);
     this.discussion = vnode.attrs.discussion;
-    this.discussionDeleted = this.attrs.discussionDeleted; // ==== NEW CODY
+    this.discussionDeleted = this.attrs.discussionDeleted;
   };
   _proto.className = function className() {
     return 'DeleteDiscussionModal Modal--small';
@@ -68,7 +67,7 @@ var DeleteDiscussionModal = /*#__PURE__*/function (_Modal) {
       method: 'DELETE'
     }).then(function () {
       flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().modal.close();
-      _this2.discussionDeleted(true); // ==== NEW CODY
+      _this2.discussionDeleted(true);
       m.redraw();
       flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().alerts.show({
         type: 'success'
@@ -309,7 +308,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // ==== NEW CODY
 
 
 
@@ -330,9 +328,8 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
       return _this.loadPage(0);
     });
     _this.discussionRestored = flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_14___default()(false);
-    // ==== NEW CODY
     _this.discussionDeleted = flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_14___default()(false);
-    // ==== NEW CODY
+    _this.hiddenDiscussionsCount = flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_14___default()((flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().data).modelStatistics.discussions.hidden);
     /**
      * Number of discussions to load per page.
      */
@@ -345,13 +342,6 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
      * Page number being loaded. Zero-indexed.
      */
     _this.loadingPageNumber = 0;
-    /**
-     * Total number of forum hidden discussions.
-     *
-     * Fetched from the active `AdminApplication` (`app`), with
-     * data provided by extension of `AdminPayload.php` on extend.php.
-     */
-    _this.hiddenDiscussionsCount = (flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().data).modelStatistics.discussions.hidden;
     /**
      * This page's array of discussions.
      *
@@ -371,6 +361,13 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
   }
   (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_2__["default"])(RecycleBinPage, _ExtensionPage);
   var _proto = RecycleBinPage.prototype;
+  /**
+   * Total number of forum hidden discussions.
+   *
+   * Fetched from the active `AdminApplication` (`app`), with
+   * data provided by extension of `AdminPayload.php` on extend.php.
+   */
+  //readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
   /**
    * Get total number of hidden discussion pages.
    */
@@ -400,17 +397,17 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
       this.pageNumber = page - 1;
     }
     this.loadingPageNumber = this.pageNumber;
-
-    // ==== NEW CODY
     this.discussionRestored.map(function (restored) {
       if (restored) {
         _this2.loadPage(_this2.pageNumber);
+        _this2.hiddenDiscussionsCount(_this2.hiddenDiscussionsCount() - 1);
         _this2.discussionRestored(false); // Reset the Stream
       }
     });
     this.discussionDeleted.map(function (deleted) {
       if (deleted) {
         _this2.loadPage(_this2.pageNumber);
+        _this2.hiddenDiscussionsCount(_this2.hiddenDiscussionsCount() - 1);
         _this2.discussionDeleted(false); // Reset the Stream
       }
     });
@@ -549,7 +546,7 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
     })), 100);
     items.add('totalHiddenDiscussions', m("p", {
       "class": "RecycleBinPage-totalDiscussions"
-    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions'), ": ", this.hiddenDiscussionsCount), 90);
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions'), ": ", this.hiddenDiscussionsCount()), 90);
     return items;
   }
 
@@ -637,7 +634,7 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
               discussion: discussion,
               discussionRestored: _this5.discussionRestored
             });
-          } // ==== NEW CODY
+          }
         }, flarum_common_helpers_icon__WEBPACK_IMPORTED_MODULE_7___default()('fas fa-trash-restore')), m((flarum_common_components_Button__WEBPACK_IMPORTED_MODULE_6___default()), {
           className: "Button DiscussionList-editModalBtn",
           title: flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.delete_tooltip', {
@@ -648,7 +645,7 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
               discussion: discussion,
               discussionDeleted: _this5.discussionDeleted
             });
-          } // ==== NEW CODY
+          }
         }, flarum_common_helpers_icon__WEBPACK_IMPORTED_MODULE_7___default()('fas fa-times')));
       }
     }, -90);
@@ -811,11 +808,10 @@ var RestoreDiscussionModal = /*#__PURE__*/function (_Modal) {
   }
   (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__["default"])(RestoreDiscussionModal, _Modal);
   var _proto = RestoreDiscussionModal.prototype;
-  // ==== NEW CODY
   _proto.oninit = function oninit(vnode) {
     _Modal.prototype.oninit.call(this, vnode);
     this.discussion = this.attrs.discussion;
-    this.discussionRestored = this.attrs.discussionRestored; // ==== NEW CODY
+    this.discussionRestored = this.attrs.discussionRestored;
   };
   _proto.className = function className() {
     return 'RestoreDiscussionModal Modal--small';
@@ -844,7 +840,7 @@ var RestoreDiscussionModal = /*#__PURE__*/function (_Modal) {
       isHidden: false
     }).then(function () {
       _this2.hide();
-      _this2.discussionRestored(true); // ==== NEW CODY
+      _this2.discussionRestored(true);
       m.redraw();
       flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().alerts.show({
         type: 'success'

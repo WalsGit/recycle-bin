@@ -5,12 +5,12 @@ import Stream from 'flarum/common/utils/Stream';
 
 export default class RestoreDiscussionModal extends Modal {
     discussion: any;
-    discussionRestored: Stream<boolean>; // ==== NEW CODY
+    discussionRestored: Stream<boolean>; 
 
     oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = this.attrs.discussion;
-    this.discussionRestored = this.attrs.discussionRestored; // ==== NEW CODY
+    this.discussionRestored = this.attrs.discussionRestored; 
     }
 
     className() {
@@ -50,7 +50,7 @@ export default class RestoreDiscussionModal extends Modal {
             .save({ isHidden: false })
             .then(() => {
                 this.hide();
-                this.discussionRestored(true); // ==== NEW CODY
+                this.discussionRestored(true); 
                 m.redraw();
                 app.alerts.show(
                     { type: 'success' },

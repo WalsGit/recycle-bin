@@ -1,6 +1,14 @@
 
 # Changelog
 
+## [0.1.1] - 2024-10-08
+### Fixed
+- Total number of hidden discussions updates after restoring or deleting a discussion (via inline buttons) without having to refresh the page (still doesn't work on mass actions)
+- Some code cleanup
+
+### Changed
+- Readme.md
+
 ## [0.1.0] - 2024-10-08
 ### Fixed
 - Used Stream to update the list after restoring or deleting a discussion
