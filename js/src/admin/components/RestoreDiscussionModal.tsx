@@ -1,13 +1,16 @@
 import app from 'flarum/admin/app';
 import Modal from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
+import Stream from 'flarum/common/utils/Stream';
 
 export default class RestoreDiscussionModal extends Modal {
     discussion: any;
+    discussionRestored: Stream<boolean>; // ==== NEW CODY
 
     oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = this.attrs.discussion;
+    this.discussionRestored = this.attrs.discussionRestored; // ==== NEW CODY
     }
 
     className() {
@@ -47,12 +50,13 @@ export default class RestoreDiscussionModal extends Modal {
             .save({ isHidden: false })
             .then(() => {
                 this.hide();
+                this.discussionRestored(true); // ==== NEW CODY
                 m.redraw();
                 app.alerts.show(
                     { type: 'success' },
                     app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success')
                 );
-                window.location.reload();
+                //window.location.reload();
             })
             .catch(() => {
                 this.loading = false;
