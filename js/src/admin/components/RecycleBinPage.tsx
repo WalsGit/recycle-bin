@@ -17,6 +17,7 @@ import extractText from 'flarum/common/utils/extractText';
 import { debounce } from 'flarum/common/utils/throttleDebounce';
 import { ComponentAttrs } from 'flarum/common/Component';
 import humanTime from 'flarum/common/helpers/humanTime';
+import Stream from 'flarum/common/utils/Stream'; // ==== NEW CODY
 
 import RestoreDiscussionModal from './RestoreDiscussionModal';
 import DeleteDiscussionModal from './DeleteDiscussionModal';
@@ -40,6 +41,8 @@ type ColumnData = {
 export default class RecycleBinPage extends ExtensionPage {
   private query: string = '';
   private throttledSearch = debounce(250, () => this.loadPage(0));
+  private discussionRestored: Stream<boolean> = Stream(false); // ==== NEW CODY
+  private discussionDeleted: Stream<boolean> = Stream(false); // ==== NEW CODY
 
   /**
    * Number of discussions to load per page.
@@ -116,6 +119,20 @@ export default class RecycleBinPage extends ExtensionPage {
     }
 
     this.loadingPageNumber = this.pageNumber;
+
+    // ==== NEW CODY
+    this.discussionRestored.map((restored: any) => {
+      if (restored) {
+        this.loadPage(this.pageNumber);
+        this.discussionRestored(false); // Reset the Stream
+      }
+    });
+    this.discussionDeleted.map((deleted: any) => {
+      if (deleted) {
+        this.loadPage(this.pageNumber);
+        this.discussionDeleted(false); // Reset the Stream
+      }
+    });
   }
 
   /**
@@ -390,14 +407,14 @@ export default class RecycleBinPage extends ExtensionPage {
             <Button
               className="Button DiscussionList-editModalBtn"
               title={app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussion: discussion.title() })}
-              onclick={() => app.modal.show(RestoreDiscussionModal, { discussion })}
+              onclick={() => app.modal.show(RestoreDiscussionModal, { discussion: discussion, discussionRestored: this.discussionRestored })} // ==== NEW CODY
             >
               {icon('fas fa-trash-restore')}
             </Button>
             <Button
               className="Button DiscussionList-editModalBtn"
               title={app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() })}
-              onclick={() => app.modal.show(DeleteDiscussionModal, { discussion })}
+              onclick={() => app.modal.show(DeleteDiscussionModal, { discussion: discussion, discussionDeleted: this.discussionDeleted })} // ==== NEW CODY
             >
               {icon('fas fa-times')}
             </Button>

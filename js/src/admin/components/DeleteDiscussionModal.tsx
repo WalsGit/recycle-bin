@@ -1,13 +1,16 @@
 import app from 'flarum/admin/app';
 import Modal from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
+import Stream from 'flarum/common/utils/Stream';
 
 export default class DeleteDiscussionModal extends Modal {
     discussion: any;
+    discussionDeleted: Stream<boolean>; // ==== NEW CODY
 
     oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = vnode.attrs.discussion;
+    this.discussionDeleted = this.attrs.discussionDeleted; // ==== NEW CODY
     }
 
     className() {
@@ -47,12 +50,13 @@ export default class DeleteDiscussionModal extends Modal {
         })
         .then(() => {
             app.modal.close();
+            this.discussionDeleted(true); // ==== NEW CODY
             m.redraw();
             app.alerts.show(
                 { type: 'success' },
                 app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success')
             );
-            window.location.reload();
+            //window.location.reload();
         })
         .catch(() => {
             this.loading = false;
