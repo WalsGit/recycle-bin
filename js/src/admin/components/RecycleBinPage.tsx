@@ -67,15 +67,16 @@ export default class RecycleBinPage extends ExtensionPage {
    * Fetched from the active `AdminApplication` (`app`), with
    * data provided by extension of `AdminPayload.php` on extend.php.
    */
-  //readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
+  // readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
 
   /**
    * Get total number of hidden discussion pages.
    */
   private getTotalPageCount(): number {
-    if (this.hiddenDiscussionsCount === -1) return 0;
+    const count = this.hiddenDiscussionsCount();
+    if (count === -1 || isNaN(count)) return 0;
 
-    return Math.ceil(this.hiddenDiscussionsCount / this.numPerPage);
+    return Math.ceil(count / this.numPerPage);
   }
 
   /**

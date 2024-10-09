@@ -367,13 +367,14 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
    * Fetched from the active `AdminApplication` (`app`), with
    * data provided by extension of `AdminPayload.php` on extend.php.
    */
-  //readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
+  // readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
   /**
    * Get total number of hidden discussion pages.
    */
   _proto.getTotalPageCount = function getTotalPageCount() {
-    if (this.hiddenDiscussionsCount === -1) return 0;
-    return Math.ceil(this.hiddenDiscussionsCount / this.numPerPage);
+    var count = this.hiddenDiscussionsCount();
+    if (count === -1 || isNaN(count)) return 0;
+    return Math.ceil(count / this.numPerPage);
   };
   _proto.toggleDiscussionSelection = function toggleDiscussionSelection(e, discussionId) {
     var checkbox = e.target;
