@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [0.1.2] - 2024-10-9
+### Fixed
+- Total number of pages returning NaN
+
 ## [0.1.1] - 2024-10-08
 ### Fixed
 - Total number of hidden discussions updates after restoring or deleting a discussion (via inline buttons) without having to refresh the page (still doesn't work on mass actions)
