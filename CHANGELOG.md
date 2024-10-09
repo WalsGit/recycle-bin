@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [0.1.4] - 2024-10-9
+### Changed
+- Readme.md (flarum discussion link)
+
 ## [0.1.3] - 2024-10-9
 ### Added
 - Info text under the search box
