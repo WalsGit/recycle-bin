@@ -56,7 +56,6 @@ export default class DeleteDiscussionModal extends Modal {
                 { type: 'success' },
                 app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success')
             );
-            //window.location.reload();
         })
         .catch(() => {
             this.loading = false;

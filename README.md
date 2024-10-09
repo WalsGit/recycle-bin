@@ -4,27 +4,21 @@
 
 A [Flarum](http://flarum.org) extension to manage deleted (hidden) discussions.
 
-## Still in development (no release yet) version-0.1.1
-### ✅ In this first version you can:
+[![Screenshot](https://i.postimg.cc/y69G3pfp/2024-10-09-16-09-34-flarum-test-baeb96af962a.png)](https://postimg.cc/qgJw9wH2)
+
+### With Recycle Bin you can:
 - list all hidden discussions
 - restore a hidden discussion (unhide)
 - forever delete a hidden discussion (remove from db)
-- Mass restore & delete (forever) discussions
+- Mass restore & delete discussions
 
-### 🐞 Still to fix:
-- ~~After restoring or deleting a discussion, the list doesn't update/refresh~~
-- Use Stream to update the list after mass restoring or deleting discussions (only works with signle restoring or deleting buttons)
-- ~~Use Stream to update the total number of hidden discussions~~
-- Search filter only works with complete words (returns a empty list for partial words) and isn't limited to discussion titles
-- ~~Incorrect total number of pages and pagination doesn't work properly~~
-- ~~Fix the position of the search filter and the total number of hidden discussions info~~.
-
-### 🔲 Still to implement:
-- ~~Mass restoring & deletion functionality~~
-- Check permissions
+### 🐞 Known issues :
+- Search filter only works with complete words (returns a empty list for partial words) and isn't limited to discussion titles but also returns discussions where the searched word is found in its messages (replies) too.
+- Mass restore or delete need a full page refresh to update de list and total number of hidden discussions (the page refresh is implemented but it's not ideal, you'll have to wait for it after cofirming your mass action)
 
 ### Notes
-- Extention settings page based on the core UserListPage.tsx (Users settings page).
+- Developed and tested on Flarum 1.8.5
+- Extention settings page is based on the core UserListPage.tsx (Users settings page).
 - Developped this with the help of AI (mainly ChatGPT, Cody & Gemini)
 
 

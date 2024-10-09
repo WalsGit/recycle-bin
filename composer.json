@@ -2,7 +2,11 @@
     "name": "walsgit/recycle-bin",
     "description": "Flarum extension to manage deleted (hidden) discussions",
     "keywords": [
-        "flarum"
+        "flarum",
+        "discussions",
+        "recycle bin",
+        "deleted",
+        "hidden"
     ],
     "type": "flarum-extension",
     "license": "MIT",
@@ -12,7 +16,7 @@
     "authors": [
         {
             "name": "Wa!id",
-            "role": "Developer"
+            "homepage": "https://discuss.flarum.org/u/Walid"
         }
     ],
     "autoload": {

@@ -56,7 +56,6 @@ export default class RestoreDiscussionModal extends Modal {
                     { type: 'success' },
                     app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success')
                 );
-                //window.location.reload();
             })
             .catch(() => {
                 this.loading = false;

@@ -1,0 +1,54 @@
+walsgit-recycle-bin:
+  admin:
+    title: 'Corbeille'
+    search_placeholder: 'Rechercher une discussion'
+    search_help_text: 'Recherche des mots dans les titres ainsi que dans le corps des messages des discussions'
+    total_hidden_discussions: 'Nombre total de discussions cachées'
+    empty_list: 'Aucune discussion dans la corbeille.'
+    hidden_discussions: 'Discussions cachées'
+    discussion_id: 'ID'
+    discussion_title: 'Titre de la discussion'
+    discussion_link_tooltip: 'Voir la discussion'
+    discussion_author: 'Auteur'
+    unknownn_user: 'Utilisateur inconnu'
+    created_at: 'Créée le'
+    hidden_at: 'Cachée le'
+    unknown_date: 'Date inconnue'
+    actions: 'Actions'
+    restore_tooltip: 'Rétablir la discussion'
+    restore_discussion:
+      title: 'Rétablir la discussion'
+      confirmation: 'Êtes-vous sûr de vouloir rétablir cette discussion:'
+      restore_button: 'Rétablir cette discussion'
+      success: 'La discussion a bien été rétablie'
+    delete_discussion:
+      title: 'Supprimer définitivement'
+      confirmation: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> cette discussion (irréversible):'
+      delete_button: 'Supprimer définitivement cette discussion'
+      success: 'La discussion a bien été définitivement supprimée'
+    delete_tooltip: 'Supprimer définitivement la discussion'
+    bulk_actions: 'Actions pour les discussions sélectionnées : '
+    bulk_restore_label: 'ResRétablir les discussions sélectionnées'
+    mass_restore_modal:
+      title: 'Rétablir les discussions sélectionnées'
+      text_start: 'Êtes-vous sûr de vouloir rétablir ces '
+      text_end: ' discussions ?'
+      submit_button: 'Rétablir ces discussions'
+      success: 'Les discussions sélectionnées ont bien été rétablies'
+    mass_delete_modal:
+      title: 'Supprimer définitivement ces discussions'
+      text_start: 'Êtes-vous sûr de vouloir <u>suprrimer définitivement</u> ces '
+      text_end: ' discussions ?'
+      submit_button: 'Supprimer définitivement ces discussions'
+      success: 'Les discussions sélectionnées ont bien été définitivement supprimées'
+    bulk_delete_label: 'Supprimer les discussions sélectionnées'
+    pagination:
+      first_page_button: 'Aller à la première page'
+      back_button: 'Retourner à la page précédente'
+      page_counter: 'Page {current} sur {total}'
+      go_to_page_textbox_a11y_label: 'Allez directement à la page numéro'
+      next_button: 'Aller à la page suivante'
+      last_page_button: 'Aller à la dernière page'
+    mass_help_text: "Merci d'attendre le rafraichissement de la page après la confirmation du rétablissement ou de la suppression de plusieurs discussions à la fois"
+
+  forum:
