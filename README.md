@@ -17,6 +17,7 @@ A [Flarum](http://flarum.org) extension to manage deleted (hidden) discussions.
 - Mass restore or delete need a full page refresh to update de list and total number of hidden discussions (the page refresh is implemented but it's not ideal, you'll have to wait for it after cofirming your mass action)
 
 ### Notes
+- This is my very first Flarum extension
 - Developed and tested on Flarum 1.8.5
 - Extention settings page is based on the core UserListPage.tsx (Users settings page).
 - Developped this with the help of AI (mainly ChatGPT, Cody & Gemini)
@@ -42,4 +43,4 @@ php flarum cache:clear
 
 - [Packagist](https://packagist.org/packages/walsgit/recycle-bin)
 - [GitHub](https://github.com/walsgit/recycle-bin)
-- [Discuss](https://discuss.flarum.org/d/PUT_DISCUSS_SLUG_HERE)
+- [Discuss](https://discuss.flarum.org/d/36073-recycle-bin)
