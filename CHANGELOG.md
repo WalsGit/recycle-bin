@@ -1,7 +1,7 @@
 
 # Changelog
 
-## [0.1.4] - 2024-10-9
+## [0.1.5] - 2024-10-9
 ### Changed
 - Readme.md (flarum discussion link)
 
