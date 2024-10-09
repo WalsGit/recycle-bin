@@ -1,14 +1,13 @@
 walsgit-recycle-bin:
-  # For more details on the format
-  # Checkout https://docs.flarum.org/extend/i18n/#appendix-a-standard-key-format
   admin:
     title: 'Recycle Bin'
     search_placeholder: 'Search for a discussion'
+    search_help_text: 'Searches for words in titles as well as in the messages of the discussions'
     total_hidden_discussions: 'Total hidden discussions'
     empty_list: 'No discussions in the recycle bin.'
-    hidden_discussions: 'Hidden Discussions'
+    hidden_discussions: 'Hidden discussions'
     discussion_id: 'ID'
-    discussion_title: 'Discussion Title'
+    discussion_title: 'Discussion title'
     discussion_link_tooltip: 'View discussion'
     discussion_author: 'Author'
     unknownn_user: 'Unknown user'
@@ -50,5 +49,6 @@ walsgit-recycle-bin:
       go_to_page_textbox_a11y_label: 'Go directly to page number'
       next_button: 'Go to next page'
       last_page_button: 'Go to last page'
+    mass_help_text: 'Please wait for page refresh after confirming mass restore or delete'
 
   forum:

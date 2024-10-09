@@ -62,14 +62,6 @@ export default class RecycleBinPage extends ExtensionPage {
   private loadingPageNumber: number = 0;
 
   /**
-   * Total number of forum hidden discussions.
-   *
-   * Fetched from the active `AdminApplication` (`app`), with
-   * data provided by extension of `AdminPayload.php` on extend.php.
-   */
-  // readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
-
-  /**
    * Get total number of hidden discussion pages.
    */
   private getTotalPageCount(): number {
@@ -293,6 +285,14 @@ export default class RecycleBinPage extends ExtensionPage {
     );
 
     items.add(
+      'searchHelpText',
+      <div class="helpText">
+        {icon('fas fa-info-circle')} {app.translator.trans('walsgit-recycle-bin.admin.search_help_text')}
+      </div>,
+      95
+    );
+
+    items.add(
       'totalHiddenDiscussions',
       <p class="RecycleBinPage-totalDiscussions">
         {app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.hiddenDiscussionsCount()}
@@ -310,8 +310,6 @@ export default class RecycleBinPage extends ExtensionPage {
    *
    * `name` is a string that will be used as the column name.
    * `content` is a function with the Discussion model passed as the first and only argument.
-   *
-   * See `RecycleBinPage.tsx` for examples.
    */
   columns(): ItemList<ColumnData> {
     const columns = new ItemList<ColumnData>();
@@ -467,6 +465,14 @@ export default class RecycleBinPage extends ExtensionPage {
         {icon('fas fa-times')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')}
       </Button>,
       80
+    );
+
+    massActions.add(
+      'massHelpText',
+      <div class="helpText">
+        {icon('fas fa-info-circle')} {app.translator.trans('walsgit-recycle-bin.admin.mass_help_text')}
+      </div>,
+      70
     );
 
     return massActions;

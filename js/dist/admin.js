@@ -72,7 +72,6 @@ var DeleteDiscussionModal = /*#__PURE__*/function (_Modal) {
       flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().alerts.show({
         type: 'success'
       }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.delete_discussion.success'));
-      //window.location.reload();
     })["catch"](function () {
       _this2.loading = false;
       m.redraw();
@@ -362,13 +361,6 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
   (0,_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_2__["default"])(RecycleBinPage, _ExtensionPage);
   var _proto = RecycleBinPage.prototype;
   /**
-   * Total number of forum hidden discussions.
-   *
-   * Fetched from the active `AdminApplication` (`app`), with
-   * data provided by extension of `AdminPayload.php` on extend.php.
-   */
-  // readonly hiddenDiscussionsCount: number = app.data.modelStatistics.discussions.hidden;
-  /**
    * Get total number of hidden discussion pages.
    */
   _proto.getTotalPageCount = function getTotalPageCount() {
@@ -545,6 +537,9 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
         _this4.throttledSearch();
       }
     })), 100);
+    items.add('searchHelpText', m("div", {
+      "class": "helpText"
+    }, flarum_common_helpers_icon__WEBPACK_IMPORTED_MODULE_7___default()('fas fa-info-circle'), " ", flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.search_help_text')), 95);
     items.add('totalHiddenDiscussions', m("p", {
       "class": "RecycleBinPage-totalDiscussions"
     }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions'), ": ", this.hiddenDiscussionsCount()), 90);
@@ -558,8 +553,6 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
    *
    * `name` is a string that will be used as the column name.
    * `content` is a function with the Discussion model passed as the first and only argument.
-   *
-   * See `RecycleBinPage.tsx` for examples.
    */;
   _proto.columns = function columns() {
     var _this5 = this;
@@ -679,6 +672,9 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
       },
       disabled: !hasSelection
     }, flarum_common_helpers_icon__WEBPACK_IMPORTED_MODULE_7___default()('fas fa-times'), " ", flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')), 80);
+    massActions.add('massHelpText', m("div", {
+      "class": "helpText"
+    }, flarum_common_helpers_icon__WEBPACK_IMPORTED_MODULE_7___default()('fas fa-info-circle'), " ", flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('walsgit-recycle-bin.admin.mass_help_text')), 70);
     return massActions;
   }
   /**
@@ -846,7 +842,6 @@ var RestoreDiscussionModal = /*#__PURE__*/function (_Modal) {
       flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().alerts.show({
         type: 'success'
       }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('walsgit-recycle-bin.admin.restore_discussion.success'));
-      //window.location.reload();
     })["catch"](function () {
       _this2.loading = false;
       m.redraw();

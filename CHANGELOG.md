@@ -1,6 +1,19 @@
 
 # Changelog
 
+## [0.1.3] - 2024-10-9
+### Added
+- Info text under the search box
+- info text under mass actions buttons
+- french translation
+- some code cleanup
+
+### Fixed
+- Styling for total number of hidden discussions
+
+### Changed
+- Readme.md
+
 ## [0.1.2] - 2024-10-9
 ### Fixed
 - Total number of pages returning NaN
