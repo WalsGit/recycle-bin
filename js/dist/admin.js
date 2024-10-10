@@ -328,7 +328,7 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
     });
     _this.discussionRestored = flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_14___default()(false);
     _this.discussionDeleted = flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_14___default()(false);
-    _this.hiddenDiscussionsCount = flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_14___default()((flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().data).modelStatistics.discussions.hidden);
+    _this.hiddenDiscussionsCount = flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_14___default()(0);
     /**
      * Number of discussions to load per page.
      */
@@ -380,6 +380,14 @@ var RecycleBinPage = /*#__PURE__*/function (_ExtensionPage) {
   _proto.oninit = function oninit(vnode) {
     var _this2 = this;
     _ExtensionPage.prototype.oninit.call(this, vnode);
+    m.request({
+      method: 'GET',
+      url: '/api/recycle-bin/discussion-statistics'
+    }).then(function (result) {
+      _this2.hiddenDiscussionsCount(result.hidden_discussions_count); // Met à jour le stream
+    })["catch"](function (error) {
+      console.error(error);
+    });
 
     // Get page query value from URL
     var page = parseInt(m.route.param('page'));
