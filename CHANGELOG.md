@@ -1,6 +1,13 @@
 
 # Changelog
 
+## [0.1.6] - 2024-10-10
+### Fixed
+- Counting hidden discussions total on settings page load (issue underlined by [@luceos](https://discuss.flarum.org/d/36073-recycle-bin))
+
+### Changed
+- Readme.md (changed Flarum URL to https)
+
 ## [0.1.5] - 2024-10-9
 ### Changed
 - Readme.md (flarum discussion link)

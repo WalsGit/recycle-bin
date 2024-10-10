@@ -12,8 +12,7 @@
 namespace Walsgit\RecycleBin;
 
 use Flarum\Extend;
-use Flarum\Frontend\Document;
-use Flarum\Discussion\Discussion;
+use Walsgit\RecycleBin\Api\Controller\DiscussionStatisticsController;
 
 return [
     (new Extend\Frontend('forum'))
@@ -23,18 +22,6 @@ return [
         ->js(__DIR__.'/js/dist/admin.js')
         ->css(__DIR__.'/less/admin.less'),
     new Extend\Locales(__DIR__.'/locale'),
-    (new Extend\Frontend('admin'))
-        ->content(function (Document $document) {
-            // Compter le nombre total de discussions
-            $totalDiscussions = Discussion::count();
-
-            // Compter le nombre de discussions cachées
-            $hiddenDiscussions = Discussion::whereNotNull('hidden_at')->count();
-
-            // Ajouter les statistiques au payload de l'admin
-            $document->payload['modelStatistics']['discussions'] = [
-                'total' => $totalDiscussions,
-                'hidden' => $hiddenDiscussions,
-            ];
-        }),
+    (new Extend\Routes('api'))
+        ->get('/recycle-bin/discussion-statistics', 'recycle-bin.discussion-statistics', DiscussionStatisticsController::class),
 ];

@@ -43,7 +43,7 @@ export default class RecycleBinPage extends ExtensionPage {
   private throttledSearch = debounce(250, () => this.loadPage(0));
   private discussionRestored: Stream<boolean> = Stream(false); 
   private discussionDeleted: Stream<boolean> = Stream(false);
-  private hiddenDiscussionsCount: Stream<number> = Stream(app.data.modelStatistics.discussions.hidden);
+  private hiddenDiscussionsCount: Stream<number> = Stream(0);
 
 
   /**
@@ -102,6 +102,17 @@ export default class RecycleBinPage extends ExtensionPage {
 
   oninit(vnode: Mithril.Vnode<ComponentAttrs, this>) {
     super.oninit(vnode);
+
+    m.request({
+      method: 'GET',
+      url: '/api/recycle-bin/discussion-statistics',
+      })
+      .then((result: { hidden_discussions_count: number; }) => {
+          this.hiddenDiscussionsCount(result.hidden_discussions_count); // Met à jour le stream
+      })
+      .catch((error: any) => {
+          console.error(error);
+      });
 
     // Get page query value from URL
     const page = parseInt(m.route.param('page'));
