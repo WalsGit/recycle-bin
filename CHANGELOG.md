@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [0.1.7] - 2024-10-11
+### Fixed
+- Removed unnecessary files & code (forum side)
+
 ## [0.1.6] - 2024-10-10
 ### Fixed
 - Counting hidden discussions total on settings page load (issue underlined by [@luceos](https://discuss.flarum.org/d/36073-recycle-bin))
