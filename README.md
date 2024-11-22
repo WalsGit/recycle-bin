@@ -1,6 +1,6 @@
 # Recycle Bin
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/walsgit/recycle-bin.svg)](https://packagist.org/packages/walsgit/recycle-bin) [![Total Downloads](https://img.shields.io/packagist/dt/walsgit/recycle-bin.svg)](https://packagist.org/packages/walsgit/recycle-bin)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/walsgit/recycle-bin.svg)](https://packagist.org/packages/walsgit/recycle-bin) [![Total Downloads](https://img.shields.io/packagist/dt/walsgit/recycle-bin.svg)](https://packagist.org/packages/walsgit/recycle-bin) [![Donate here](https://img.shields.io/badge/donate-here-%23008e97)](https://walsgit.github.io/Donations/)
 
 A [Flarum](https://flarum.org) extension to manage deleted (hidden) discussions.
 
@@ -44,3 +44,4 @@ php flarum cache:clear
 - [Packagist](https://packagist.org/packages/walsgit/recycle-bin)
 - [GitHub](https://github.com/walsgit/recycle-bin)
 - [Discuss](https://discuss.flarum.org/d/36073-recycle-bin)
+- [Donate](https://walsgit.github.io/Donations/)

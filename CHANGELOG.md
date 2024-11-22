@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [0.1.8] - 2024-11-22
+### Added
+- A donation link
+
 ## [0.1.7] - 2024-10-11
 ### Fixed
 - Removed unnecessary files & code (forum side)

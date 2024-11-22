@@ -19,6 +19,12 @@
             "homepage": "https://discuss.flarum.org/u/Walid"
         }
     ],
+    "funding": [
+        {
+            "type": "website",
+            "url": "https://walsgit.github.io/Donations/"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Walsgit\\RecycleBin\\": "src/"
