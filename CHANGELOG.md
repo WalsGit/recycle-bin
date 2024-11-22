@@ -3,7 +3,7 @@
 
 ## [0.1.9] - 2024-11-22
 ### Fixed
-- Security update on a dependancy [Dependabot](https://github.com/WalsGit/recycle-bin/security/dependabot/1)
+- Security update on a dependency [Dependabot](https://github.com/WalsGit/recycle-bin/security/dependabot/1)
 
 ## [0.1.8] - 2024-11-22
 ### Added
