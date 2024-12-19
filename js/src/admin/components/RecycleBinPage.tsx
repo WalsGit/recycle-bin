@@ -100,15 +100,16 @@ export default class RecycleBinPage extends ExtensionPage {
     m.redraw();
   }
 
-  oninit(vnode: Mithril.Vnode<ComponentAttrs, this>) {
+  oninit(vnode: Mithril.Vnode<ExtensionPageAttrs, this>) {
     super.oninit(vnode);
 
     m.request({
       method: 'GET',
       url: '/api/recycle-bin/discussion-statistics',
       })
-      .then((result: { hidden_discussions_count: number; }) => {
-          this.hiddenDiscussionsCount(result.hidden_discussions_count); // Met à jour le stream
+      .then((result: unknown) => {
+          const typedResult = result as { hidden_discussions_count: number };
+          this.hiddenDiscussionsCount(typedResult.hidden_discussions_count); // Met à jour le stream
       })
       .catch((error: any) => {
           console.error(error);
@@ -146,7 +147,7 @@ export default class RecycleBinPage extends ExtensionPage {
   /**
    * Component to render.
    */
-  content(vnode: Mithril.VnodeDOM<ExtensionPageAttrs, this>): Mithril.Vnode<{}, {}> {
+  content(vnode: Mithril.VnodeDOM<ExtensionPageAttrs, this>): Mithril.Children {
     if (typeof this.pageData === 'undefined') {
       this.loadPage(this.pageNumber);
 
@@ -154,7 +155,7 @@ export default class RecycleBinPage extends ExtensionPage {
         <div className="extensionPage-settings">
           <div className="container">
             <section className="RecycleBinPage-grid RecycleBinPage-grid--loading">
-              <LoadingIndicator containerClassName="LoadingIndicator--block" size="large" />
+              {m(LoadingIndicator, {containerClassName: "LoadingIndicator--block", size: "large"})}
             </section>
           </div>
         </div>
@@ -201,34 +202,34 @@ export default class RecycleBinPage extends ExtensionPage {
               })
             )}
 
-            {this.isLoadingPage && <LoadingIndicator size="large" />}
+            {this.isLoadingPage && m(LoadingIndicator, {size: "large"})}
           </section>
           <div className="RecycleBinPage-massActions">{this.massActions().toArray()}</div>
           <nav className="RecycleBinPage-gridPagination">
-            <Button
-              disabled={this.pageNumber === 0}
-              title={app.translator.trans('walsgit-recycle-bin.admin.pagination.first_page_button')}
-              onclick={this.goToPage.bind(this, 1)}
-              icon="fas fa-step-backward"
-              className="Button Button--icon RecycleBinPage-firstPageBtn"
-            />
-            <Button
-              disabled={this.pageNumber === 0}
-              title={app.translator.trans('walsgit-recycle-bin.admin.pagination.back_button')}
-              onclick={this.previousPage.bind(this)}
-              icon="fas fa-chevron-left"
-              className="Button Button--icon RecycleBinPage-backBtn"
-            />
+            {m(Button, {
+              disabled: this.pageNumber === 0,
+              title: app.translator.trans('walsgit-recycle-bin.admin.pagination.first_page_button'),
+              onclick: this.goToPage.bind(this, 1),
+              icon: "fas fa-step-backward",
+              className: "Button Button--icon RecycleBinPage-firstPageBtn"
+            })}
+            {m(Button, {
+              disabled: this.pageNumber === 0,
+              title: app.translator.trans('walsgit-recycle-bin.admin.pagination.back_button'),
+              onclick: this.previousPage.bind(this),
+              icon: "fas fa-chevron-left",
+              className: "Button Button--icon RecycleBinPage-backBtn"
+            })}
             <span className="RecycleBinPage-pageNumber">
               {app.translator.trans('walsgit-recycle-bin.admin.pagination.page_counter', {
                 current: (
                   <input
                     type="text"
-                    inputmode="numeric"
+                    inputMode="numeric"
                     pattern="[0-9]*"
                     value={this.loadingPageNumber + 1}
                     aria-label={extractText(app.translator.trans('walsgit-recycle-bin.admin.pagination.go_to_page_textbox_a11y_label'))}
-                    autocomplete="off"
+                    autoComplete="off"
                     className="FormControl RecycleBinPage-pageNumberInput"
                     onchange={(e: InputEvent) => {
                       const target = e.target as HTMLInputElement;
@@ -255,26 +256,25 @@ export default class RecycleBinPage extends ExtensionPage {
                 total: this.getTotalPageCount(),
               })}
             </span>
-            <Button
-              disabled={!this.moreData}
-              title={app.translator.trans('walsgit-recycle-bin.admin.pagination.next_button')}
-              onclick={this.nextPage.bind(this)}
-              icon="fas fa-chevron-right"
-              className="Button Button--icon RecycleBinPage-nextBtn"
-            />
-            <Button
-              disabled={!this.moreData}
-              title={app.translator.trans('walsgit-recycle-bin.admin.pagination.last_page_button')}
-              onclick={this.goToPage.bind(this, this.getTotalPageCount())}
-              icon="fas fa-step-forward"
-              className="Button Button--icon RecycleBinPage-lastPageBtn"
-            />
+            {m(Button, {
+              disabled: !this.moreData,
+              title: app.translator.trans('walsgit-recycle-bin.admin.pagination.next_button'),
+              onclick: this.nextPage.bind(this),
+              icon: "fas fa-chevron-right",
+              className: "Button Button--icon RecycleBinPage-nextBtn"
+            })}
+            {m(Button, {
+              disabled: !this.moreData,
+              title: app.translator.trans('walsgit-recycle-bin.admin.pagination.last_page_button'),
+              onclick: this.goToPage.bind(this, this.getTotalPageCount()),
+              icon: "fas fa-step-forward",
+              className: "Button Button--icon RecycleBinPage-lastPageBtn"
+            })}
           </nav>
         </div>
       </div>
     );
   }
-
   headerItems(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
 
@@ -418,24 +418,19 @@ export default class RecycleBinPage extends ExtensionPage {
         name: app.translator.trans('walsgit-recycle-bin.admin.actions'),
         content: (discussion: Discussion) => (
           <>
-            <Button
-              className="Button DiscussionList-editModalBtn"
-              title={app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussion: discussion.title() })}
-              onclick={() => app.modal.show(RestoreDiscussionModal, { discussion: discussion, discussionRestored: this.discussionRestored })} 
-            >
-              {icon('fas fa-trash-restore')}
-            </Button>
-            <Button
-              className="Button DiscussionList-editModalBtn"
-              title={app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() })}
-              onclick={() => app.modal.show(DeleteDiscussionModal, { discussion: discussion, discussionDeleted: this.discussionDeleted })} 
-            >
-              {icon('fas fa-times')}
-            </Button>
+            {m(Button, {
+              className: "Button DiscussionList-editModalBtn",
+              title: app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussion: discussion.title() }),
+              onclick: () => app.modal.show(RestoreDiscussionModal, { discussion: discussion, discussionRestored: this.discussionRestored })
+            }, icon('fas fa-trash-restore'))}
+            {m(Button, {
+              className: "Button DiscussionList-editModalBtn",
+              title: app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() }),
+              onclick: () => app.modal.show(DeleteDiscussionModal, { discussion: discussion, discussionDeleted: this.discussionDeleted })
+            }, icon('fas fa-times'))}
           </>
         ),
-      },
-      -90
+      },      -90
     );
 
     return columns;
@@ -452,7 +447,7 @@ export default class RecycleBinPage extends ExtensionPage {
 
     massActions.add(
       'massRestore',
-      <Button
+      <button
         className="Button"
         onclick={() => {
           app.modal.show(MassRestoreDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
@@ -460,13 +455,13 @@ export default class RecycleBinPage extends ExtensionPage {
         disabled={!hasSelection}
       >
         {icon('fas fa-trash-restore')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')}
-      </Button>,
+      </button>,
       90
     );
 
     massActions.add(
       'massDelete',
-      <Button
+      <button
         className="Button"
         onclick={() => {
           app.modal.show(MassDeleteDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
@@ -474,13 +469,13 @@ export default class RecycleBinPage extends ExtensionPage {
         disabled={!hasSelection}
       >
         {icon('fas fa-times')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')}
-      </Button>,
+      </button>,
       80
     );
 
     massActions.add(
       'massHelpText',
-      <div class="helpText">
+      <div className="helpText">
         {icon('fas fa-info-circle')} {app.translator.trans('walsgit-recycle-bin.admin.mass_help_text')}
       </div>,
       70
@@ -488,6 +483,7 @@ export default class RecycleBinPage extends ExtensionPage {
 
     return massActions;
   }
+
   /**
    * Asynchronously fetch the next set of hidden discussions to be rendered.
    *
