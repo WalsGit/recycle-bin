@@ -3,28 +3,29 @@ import Modal from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
-export default class RestoreDiscussionModal extends Modal {
-    discussion: any;
-    discussionRestored: Stream<boolean> | undefined; 
+export default class RestorePostModal extends Modal {
+    post: any;
+    postRestored: Stream<boolean> | undefined; 
 
     oninit(vnode: any) {
     super.oninit(vnode);
-    this.discussion = this.attrs.discussion;
-    this.discussionRestored = this.attrs.discussionRestored; 
+    this.post = this.attrs.post;
+    this.postRestored = this.attrs.postRestored; 
     }
 
     className() {
-    return 'RestoreDiscussionModal Modal--small';
+    return 'RestorePostModal Modal--small';
     }
 
     title() {
-    return app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.title');
+    return app.translator.trans('walsgit-recycle-bin.admin.restore_post.title');
     }
 
     content() {
     return (
         <div className="Modal-body">
-        <p>{app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.confirmation')} <strong>{this.discussion.title()}</strong></p>
+        <p>{app.translator.trans('walsgit-recycle-bin.admin.restore_post.confirmation')} <strong>{this.post.discussion().title()}</strong> :</p>
+        <pre><code>{this.post.content()}</code></pre>
         <div className="Form Form--centered">
             <div className="Form-group">
             {Button.component(
@@ -33,7 +34,7 @@ export default class RestoreDiscussionModal extends Modal {
                 className: 'Button Button--primary Button--block',
                 loading: this.loading,
                 },
-                app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.restore_button')
+                app.translator.trans('walsgit-recycle-bin.admin.restore_post.restore_button')
             )}
             </div>
         </div>
@@ -46,17 +47,17 @@ export default class RestoreDiscussionModal extends Modal {
 
         this.loading = true;
 
-        this.discussion
+        this.post
             .save({ isHidden: false })
             .then(() => {
                 this.hide();
-                if (this.discussionRestored) {
-                    this.discussionRestored(true);
+                if (this.postRestored) {
+                    this.postRestored(true);
                 }
                 m.redraw();
                 app.alerts.show(
                     { type: 'success' },
-                    app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success')
+                    app.translator.trans('walsgit-recycle-bin.admin.restore_post.success')
                 );
             })
             .catch(() => {

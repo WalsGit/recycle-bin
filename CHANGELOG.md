@@ -1,6 +1,18 @@
 
 # Changelog
 
+## [0.2.0] - 2025-01-08
+### Added
+- Support for hidden posts (posts bin)
+
+### Changed
+- Settings page is now split into two bins : discussions & posts bins
+- Updated README.md
+- Some code refactoring
+
+### Fixed
+- Some translations typos
+
 ## [0.1.9] - 2024-11-22
 ### Fixed
 - Security update on a dependency [Dependabot](https://github.com/WalsGit/recycle-bin/security/dependabot/1)

@@ -2,12 +2,12 @@ import app from 'flarum/admin/app';
 import Modal from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 
-export default class MassDeleteDiscussionModal extends Modal {
-    selectedDiscussions!: Set<string>;
+export default class MassDeletePostModal extends Modal {
+    selectedPosts!: Set<string>;
 
     oninit(vnode: any) {
         super.oninit(vnode);
-        this.selectedDiscussions = this.attrs.selectedDiscussions;
+        this.selectedPosts = this.attrs.selectedPosts;
     }
 
     className() {
@@ -22,13 +22,13 @@ export default class MassDeleteDiscussionModal extends Modal {
         return (
             <div className="Modal-body">
                 <p>
-                    {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_start')} <strong>{this.selectedDiscussions.size}</strong> {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_end')}
+                    {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_start')} <strong>{this.selectedPosts.size}</strong> {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_end')}
                 </p>
                 <div className="Form-group">
                     {m(Button, {
-                            className: "Button Button--primary Button--block",
-                            onclick: () => this.onsubmit()
-                        }, app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.submit_button'))}
+                        className: "Button Button--primary Button--block",
+                        onclick: () => this.onsubmit()
+                    }, app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.submit_button'))}
                 </div>
             </div>
         );
@@ -37,9 +37,9 @@ export default class MassDeleteDiscussionModal extends Modal {
     onsubmit() {
         this.loading = true;
 
-        const promises = Array.from(this.selectedDiscussions).map(discussionId => {
-            return app.store.find('discussions', discussionId).then(discussion => {
-                return discussion.delete();
+        const promises = Array.from(this.selectedPosts).map(postId => {
+            return app.store.find('posts', postId).then(post => {
+                return post.delete();
             });
         });
 
