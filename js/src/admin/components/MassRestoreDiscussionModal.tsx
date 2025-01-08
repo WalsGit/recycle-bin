@@ -26,14 +26,14 @@ export default class MassRestoreDiscussionModal extends Modal {
 					{app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.text_end')}
 				</p>
 				<div className="Form-group">
-					<Button className="Button Button--primary" onclick={() => this.onsubmit()}>
-						{app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.submit_button')}
-					</Button>
+					{m(Button, {
+						className: "Button Button--primary Button--block",
+						onclick: () => this.onsubmit()
+					}, app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.submit_button'))}
 				</div>
 			</div>
 		);
 	}
-
 	onsubmit() {
 		this.loading = true;
 

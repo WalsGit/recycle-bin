@@ -1,3 +1,33 @@
+.RecycleBin {
+    padding-top: 0px !important;
+    margin-top: 0 !important;
+
+    .RecycleBin-menu {
+        background: @control-bg;
+        margin-bottom: 0px;
+    
+        .Button {
+            padding: 12px 13px;
+            border-radius: 0;
+
+            &.item-selected {
+            background: darken(@control-bg, 10%);
+            }
+        }
+    }
+
+    .RecycleBin-container {
+        margin: 0;
+
+        .ExtensionPage-settings {
+            margin-top: 0px !important;
+            padding: 0 !important;
+        }
+    }
+}
+
+
+
 .RecycleBinPage {
     // Pad bottom of page to make nav area look less squashed
     padding-bottom: 24px;
@@ -138,4 +168,15 @@
         margin-right: 3px;
     }
 
+}
+
+.RestorePostModal, .DeletePostModal {
+    pre code {
+        background-color: var(--code-bg);
+        display: block;
+        width: 100%;
+        text-wrap: auto;
+        padding: 5px;
+        border-radius: var(--border-radius);
+    }
 }

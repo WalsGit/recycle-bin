@@ -1,8 +1,8 @@
 import app from 'flarum/admin/app';
-import RecycleBinPage from './components/RecycleBinPage';
+import SettingsPage from './components/SettingsPage';
 
 app.initializers.add('walsgit/recycle-bin', () => {
-  return app.extensionData
-    .for('walsgit-recycle-bin')
-    .registerPage(RecycleBinPage);
+        app.extensionData
+            .for('walsgit-recycle-bin')
+            .registerPage(SettingsPage as any);
 });
