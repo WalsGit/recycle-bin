@@ -4,64 +4,63 @@ import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
 export default class RestoreDiscussionModal extends Modal {
-    discussion: any;
-    discussionRestored: Stream<boolean> | undefined; 
+  discussion: any;
+  discussionRestored: Stream<boolean> | undefined;
 
-    oninit(vnode: any) {
+  oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = this.attrs.discussion;
-    this.discussionRestored = this.attrs.discussionRestored; 
-    }
+    this.discussionRestored = this.attrs.discussionRestored;
+  }
 
-    className() {
+  className() {
     return 'RestoreDiscussionModal Modal--small';
-    }
+  }
 
-    title() {
+  title() {
     return app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.title');
-    }
+  }
 
-    content() {
+  content() {
     return (
-        <div className="Modal-body">
-        <p>{app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.confirmation')} <strong>{this.discussion.title()}</strong></p>
+      <div className="Modal-body">
+        <p>
+          {app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.confirmation')} <strong>{this.discussion.title()}</strong>
+        </p>
         <div className="Form Form--centered">
-            <div className="Form-group">
+          <div className="Form-group">
             {Button.component(
-                {
+              {
                 type: 'submit',
                 className: 'Button Button--primary Button--block',
                 loading: this.loading,
-                },
-                app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.restore_button')
+              },
+              app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.restore_button')
             )}
-            </div>
+          </div>
         </div>
-        </div>
+      </div>
     );
-    }
+  }
 
-    onsubmit(e: Event) {
-        e.preventDefault();
+  onsubmit(e: Event) {
+    e.preventDefault();
 
-        this.loading = true;
+    this.loading = true;
 
-        this.discussion
-            .save({ isHidden: false })
-            .then(() => {
-                this.hide();
-                if (this.discussionRestored) {
-                    this.discussionRestored(true);
-                }
-                m.redraw();
-                app.alerts.show(
-                    { type: 'success' },
-                    app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success')
-                );
-            })
-            .catch(() => {
-                this.loading = false;
-                m.redraw();
-            });
-    }
+    this.discussion
+      .save({ isHidden: false })
+      .then(() => {
+        this.hide();
+        if (this.discussionRestored) {
+          this.discussionRestored(true);
+        }
+        m.redraw();
+        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success'));
+      })
+      .catch(() => {
+        this.loading = false;
+        m.redraw();
+      });
+  }
 }
