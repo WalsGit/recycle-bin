@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [2.0.0] - 2025-12-02
+### Changed
+- Upgraded to be compatible with Flarum V2 (as of v2.0.0-beta.4)
+
 ## [0.2.0] - 2025-01-08
 ### Added
 - Support for hidden posts (posts bin)
