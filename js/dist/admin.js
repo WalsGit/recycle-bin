@@ -132,7 +132,6 @@ class DeletePostModal extends (flarum_common_components_FormModal__WEBPACK_IMPOR
     this.loading = true;
     flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().request({
       url: "".concat(flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().forum.attribute('apiUrl'), "/posts/").concat(this.post.id()),
-      // TODO check url
       method: 'DELETE'
     }).then(() => {
       flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().modal.close();
@@ -270,7 +269,7 @@ class RecycleBinPage extends (flarum_common_components_Page__WEBPACK_IMPORTED_MO
       url: '/api/recycle-bin/discussion-statistics'
     }).then(result => {
       const typedResult = result;
-      this.hiddenDiscussionsCount(typedResult.hidden_discussions_count); // Met à jour le stream
+      this.hiddenDiscussionsCount(typedResult.hidden_discussions_count); // updates the stream
     }).catch(error => {
       console.error(error);
     });
@@ -1279,7 +1278,6 @@ class PostsBinPage extends (flarum_common_components_Page__WEBPACK_IMPORTED_MODU
         title: flarum_admin_app__WEBPACK_IMPORTED_MODULE_2___default().translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', {
           discussion: post.id()
         }),
-        // TODO disc title
         onclick: () => flarum_admin_app__WEBPACK_IMPORTED_MODULE_2___default().modal.show(_RestorePostModal__WEBPACK_IMPORTED_MODULE_12__["default"], {
           post: post,
           postRestored: this.postRestored
@@ -1291,7 +1289,6 @@ class PostsBinPage extends (flarum_common_components_Page__WEBPACK_IMPORTED_MODU
         title: flarum_admin_app__WEBPACK_IMPORTED_MODULE_2___default().translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', {
           discussion: post.id()
         }),
-        // TODO disc title
         onclick: () => flarum_admin_app__WEBPACK_IMPORTED_MODULE_2___default().modal.show(_DeletePostModal__WEBPACK_IMPORTED_MODULE_13__["default"], {
           post: post,
           postDeleted: this.postDeleted

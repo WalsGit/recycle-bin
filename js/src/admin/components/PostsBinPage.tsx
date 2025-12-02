@@ -5,7 +5,6 @@ import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
 import type User from 'flarum/common/models/User';
-import Discussion from 'flarum/common/models/Discussion';
 import Post from 'flarum/common/models/Post';
 import ItemList from 'flarum/common/utils/ItemList';
 import classList from 'flarum/common/utils/classList';
@@ -417,7 +416,7 @@ export default class PostsBinPage extends Page {
               Button,
               {
                 className: 'Button DiscussionList-editModalBtn',
-                title: app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { discussion: post.id() }), // TODO disc title
+                title: app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { discussion: post.id() }),
                 onclick: () => app.modal.show(RestorePostModal, { post: post, postRestored: this.postRestored }),
               },
               <Icon name="fas fa-trash-restore" />
@@ -426,7 +425,7 @@ export default class PostsBinPage extends Page {
               Button,
               {
                 className: 'Button DiscussionList-editModalBtn',
-                title: app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { discussion: post.id() }), // TODO disc title
+                title: app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { discussion: post.id() }),
                 onclick: () => app.modal.show(DeletePostModal, { post: post, postDeleted: this.postDeleted }),
               },
               <Icon name="fas fa-times" />

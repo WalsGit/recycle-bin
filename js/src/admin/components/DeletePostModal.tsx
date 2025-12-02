@@ -51,7 +51,7 @@ export default class DeletePostModal extends FormModal {
 
     app
       .request({
-        url: `${app.forum.attribute('apiUrl')}/posts/${this.post.id()}`, // TODO check url
+        url: `${app.forum.attribute('apiUrl')}/posts/${this.post.id()}`,
         method: 'DELETE',
       })
       .then(() => {

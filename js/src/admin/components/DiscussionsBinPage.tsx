@@ -101,7 +101,7 @@ export default class RecycleBinPage extends Page {
     })
       .then((result: unknown) => {
         const typedResult = result as { hidden_discussions_count: number };
-        this.hiddenDiscussionsCount(typedResult.hidden_discussions_count); // Met à jour le stream
+        this.hiddenDiscussionsCount(typedResult.hidden_discussions_count); // updates the stream
       })
       .catch((error: any) => {
         console.error(error);
