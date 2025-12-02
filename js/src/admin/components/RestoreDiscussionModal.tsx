@@ -1,9 +1,10 @@
+import Form from 'flarum/common/components/Form';
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import FormModal from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
-export default class RestoreDiscussionModal extends Modal {
+export default class RestoreDiscussionModal extends FormModal {
   discussion: any;
   discussionRestored: Stream<boolean> | undefined;
 
@@ -27,7 +28,7 @@ export default class RestoreDiscussionModal extends Modal {
         <p>
           {app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.confirmation')} <strong>{this.discussion.title()}</strong>
         </p>
-        <div className="Form Form--centered">
+        <Form className="Form--centered">
           <div className="Form-group">
             {Button.component(
               {
@@ -38,7 +39,7 @@ export default class RestoreDiscussionModal extends Modal {
               app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.restore_button')
             )}
           </div>
-        </div>
+        </Form>
       </div>
     );
   }

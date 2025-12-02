@@ -3,7 +3,7 @@ import Mithril from 'mithril';
 import app from 'flarum/admin/app';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Button from 'flarum/common/components/Button';
-import icon from 'flarum/common/helpers/icon';
+import Icon from 'flarum/common/components/Icon';
 import type User from 'flarum/common/models/User';
 import Discussion from 'flarum/common/models/Discussion';
 import Post from 'flarum/common/models/Post';
@@ -290,7 +290,7 @@ export default class PostsBinPage extends Page {
     items.add(
       'searchHelpText',
       <div class="helpText">
-        {icon('fas fa-info-circle')} {app.translator.trans('walsgit-recycle-bin.admin.search_post_help_text')}
+        <Icon name="fas fa-info-circle" /> {app.translator.trans('walsgit-recycle-bin.admin.search_post_help_text')}
       </div>,
       95
     );
@@ -420,7 +420,7 @@ export default class PostsBinPage extends Page {
                 title: app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { discussion: post.id() }), // TODO disc title
                 onclick: () => app.modal.show(RestorePostModal, { post: post, postRestored: this.postRestored }),
               },
-              icon('fas fa-trash-restore')
+              <Icon name="fas fa-trash-restore" />
             )}
             {m(
               Button,
@@ -429,7 +429,7 @@ export default class PostsBinPage extends Page {
                 title: app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { discussion: post.id() }), // TODO disc title
                 onclick: () => app.modal.show(DeletePostModal, { post: post, postDeleted: this.postDeleted }),
               },
-              icon('fas fa-times')
+              <Icon name="fas fa-times" />
             )}
           </>
         ),
@@ -458,7 +458,7 @@ export default class PostsBinPage extends Page {
         }}
         disabled={!hasSelection}
       >
-        {icon('fas fa-trash-restore')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_restore_label')}
+        <Icon name="fas fa-trash-restore" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_restore_label')}
       </button>,
       90
     );
@@ -472,7 +472,7 @@ export default class PostsBinPage extends Page {
         }}
         disabled={!hasSelection}
       >
-        {icon('fas fa-times')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_delete_label')}
+        <Icon name="fas fa-times" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_delete_label')}
       </button>,
       80
     );
@@ -480,7 +480,7 @@ export default class PostsBinPage extends Page {
     massActions.add(
       'massHelpText',
       <div className="helpText">
-        {icon('fas fa-info-circle')} {app.translator.trans('walsgit-recycle-bin.admin.mass_help_text')}
+        <Icon name="fas fa-info-circle" /> {app.translator.trans('walsgit-recycle-bin.admin.mass_help_text')}
       </div>,
       70
     );

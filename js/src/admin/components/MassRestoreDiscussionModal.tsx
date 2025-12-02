@@ -1,8 +1,8 @@
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import FormModal from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 
-export default class MassRestoreDiscussionModal extends Modal {
+export default class MassRestoreDiscussionModal extends FormModal {
   selectedDiscussions!: Set<string>;
 
   oninit(vnode: any) {

@@ -3,7 +3,7 @@ import Mithril from 'mithril';
 import app from 'flarum/admin/app';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Button from 'flarum/common/components/Button';
-import icon from 'flarum/common/helpers/icon';
+import Icon from 'flarum/common/components/Icon';
 import type User from 'flarum/common/models/User';
 import Discussion from 'flarum/common/models/Discussion';
 import ItemList from 'flarum/common/utils/ItemList';
@@ -288,7 +288,7 @@ export default class RecycleBinPage extends Page {
     items.add(
       'searchHelpText',
       <div class="helpText">
-        {icon('fas fa-info-circle')} {app.translator.trans('walsgit-recycle-bin.admin.search_help_text')}
+        <Icon name="fas fa-info-circle" /> {app.translator.trans('walsgit-recycle-bin.admin.search_help_text')}
       </div>,
       95
     );
@@ -415,7 +415,7 @@ export default class RecycleBinPage extends Page {
                 title: app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussion: discussion.title() }),
                 onclick: () => app.modal.show(RestoreDiscussionModal, { discussion: discussion, discussionRestored: this.discussionRestored }),
               },
-              icon('fas fa-trash-restore')
+              <Icon name="fas fa-trash-restore" />
             )}
             {m(
               Button,
@@ -424,7 +424,7 @@ export default class RecycleBinPage extends Page {
                 title: app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() }),
                 onclick: () => app.modal.show(DeleteDiscussionModal, { discussion: discussion, discussionDeleted: this.discussionDeleted }),
               },
-              icon('fas fa-times')
+              <Icon name="fas fa-times" />
             )}
           </>
         ),
@@ -453,7 +453,7 @@ export default class RecycleBinPage extends Page {
         }}
         disabled={!hasSelection}
       >
-        {icon('fas fa-trash-restore')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')}
+        <Icon name="fas fa-trash-restore" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')}
       </button>,
       90
     );
@@ -467,7 +467,7 @@ export default class RecycleBinPage extends Page {
         }}
         disabled={!hasSelection}
       >
-        {icon('fas fa-times')} {app.translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')}
+        <Icon name="fas fa-times" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')}
       </button>,
       80
     );
@@ -475,7 +475,7 @@ export default class RecycleBinPage extends Page {
     massActions.add(
       'massHelpText',
       <div className="helpText">
-        {icon('fas fa-info-circle')} {app.translator.trans('walsgit-recycle-bin.admin.mass_help_text')}
+        <Icon name="fas fa-info-circle" /> {app.translator.trans('walsgit-recycle-bin.admin.mass_help_text')}
       </div>,
       70
     );

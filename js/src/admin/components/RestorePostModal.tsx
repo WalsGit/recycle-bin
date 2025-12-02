@@ -1,9 +1,10 @@
+import Form from 'flarum/common/components/Form';
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import FormModal from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
-export default class RestorePostModal extends Modal {
+export default class RestorePostModal extends FormModal {
   post: any;
   postRestored: Stream<boolean> | undefined;
 
@@ -30,7 +31,7 @@ export default class RestorePostModal extends Modal {
         <pre>
           <code>{this.post.content()}</code>
         </pre>
-        <div className="Form Form--centered">
+        <Form className="Form--centered">
           <div className="Form-group">
             {Button.component(
               {
@@ -41,7 +42,7 @@ export default class RestorePostModal extends Modal {
               app.translator.trans('walsgit-recycle-bin.admin.restore_post.restore_button')
             )}
           </div>
-        </div>
+        </Form>
       </div>
     );
   }
