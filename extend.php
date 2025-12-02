@@ -26,7 +26,7 @@ return [
     (new Extend\Routes('api'))
         ->get('/recycle-bin/discussion-statistics', 'recycle-bin.discussion-statistics', DiscussionStatisticsController::class)
         ->get('/recycle-bin/post-statistics', 'recycle-bin.post-statistics', PostStatisticsController::class),
-    (new Extend\Filter(PostFilterer::class))
-        ->addFilter(HiddenPostFilter::class)
-        ->addFilter(ContentPostFilter::class),
+    (new Extend\SearchDriver(\Flarum\Search\Database\DatabaseSearchDriver::class))
+        ->addFilter(\Flarum\Post\Filter\PostSearcher::class, HiddenPostFilter::class)
+        ->addFilter(\Flarum\Post\Filter\PostSearcher::class, ContentPostFilter::class),
 ];
