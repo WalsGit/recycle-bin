@@ -2,8 +2,8 @@
 
 namespace Walsgit\RecycleBin\Filter;
 
-use Flarum\Filter\FilterInterface;
-use Flarum\Filter\FilterState;
+use Flarum\Search\Filter\FilterInterface;
+use Flarum\Search\SearchState;
 
 class ContentPostFilter implements FilterInterface
 {
@@ -12,8 +12,8 @@ class ContentPostFilter implements FilterInterface
         return 'content';
     }
 
-    public function filter(FilterState $filterState, string $filterValue, bool $negate)
+    public function filter(SearchState $state, array|string $value, bool $negate): void
     {
-        $filterState->getQuery()->where('posts.content', 'like', "%$filterValue%");
+        $state->getQuery()->where('posts.content', 'like', "%$value%");
     }
 }

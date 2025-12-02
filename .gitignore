@@ -11,3 +11,4 @@ tests/.phpunit.result.cache
 .vscode
 js/coverage-ts
 TODO.md
+/node_modules

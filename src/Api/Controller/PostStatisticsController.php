@@ -10,11 +10,8 @@ use Flarum\Post\PostRepository;
 
 class PostStatisticsController implements RequestHandlerInterface
 {
-    protected $posts;
-
-    public function __construct(PostRepository $posts)
+    public function __construct(protected PostRepository $posts)
     {
-        $this->posts = $posts;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

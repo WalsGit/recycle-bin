@@ -10,11 +10,8 @@ use Flarum\Discussion\DiscussionRepository;
 
 class DiscussionStatisticsController implements RequestHandlerInterface
 {
-    protected $discussions;
-
-    public function __construct(DiscussionRepository $discussions)
+    public function __construct(protected DiscussionRepository $discussions)
     {
-        $this->discussions = $discussions;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

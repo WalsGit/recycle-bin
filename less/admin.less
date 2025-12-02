@@ -3,7 +3,7 @@
     margin-top: 0 !important;
 
     .RecycleBin-menu {
-        background: @control-bg;
+        background: var(--control-bg);
         margin-bottom: 0px;
     
         .Button {
@@ -11,7 +11,7 @@
             border-radius: 0;
 
             &.item-selected {
-            background: darken(@control-bg, 10%);
+            background: var(--control-bg-darken-10);
             }
         }
     }
@@ -103,9 +103,7 @@
             }
 
             &--shaded {
-                background: var(--body-bg-shaded);
-
-                & when (@config-dark-mode = true) {
+                background: var(--body-bg-shaded);[data-theme^=dark] & {
                     background: var(--body-bg-light);
                 }
             }
@@ -179,4 +177,11 @@
         padding: 5px;
         border-radius: var(--border-radius);
     }
+}
+
+[data-theme^=light] {
+  --control-bg-darken-10: darken(@control-bg-light, 10%);
+}
+[data-theme^=dark] {
+  --control-bg-darken-10: darken(@control-bg-dark, 10%);
 }

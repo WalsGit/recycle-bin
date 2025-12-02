@@ -1,67 +1,67 @@
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import FormModal from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
-export default class DeleteDiscussionModal extends Modal {
-    discussion: any;
-    discussionDeleted: Stream<boolean> | undefined; 
+export default class DeleteDiscussionModal extends FormModal {
+  discussion: any;
+  discussionDeleted: Stream<boolean> | undefined;
 
-    oninit(vnode: any) {
+  oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = vnode.attrs.discussion;
-    this.discussionDeleted = this.attrs.discussionDeleted; 
-    }
+    this.discussionDeleted = this.attrs.discussionDeleted;
+  }
 
-    className() {
+  className() {
     return 'DeleteDiscussionModal Modal--small';
-    }
+  }
 
-    title() {
+  title() {
     return app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.title');
-    }
+  }
 
-    content() {
+  content() {
     return (
-        <div className="Modal-body">
-            <p>{app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.confirmation')} <strong>{this.discussion.title()}</strong></p>
-            <div className="Form-group">
-                {Button.component(
-                {
-                    className: 'Button Button--primary Button--block',
-                    type: 'submit',
-                    loading: this.loading,
-                },
-                app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.delete_button')
-                )}
-            </div>
+      <div className="Modal-body">
+        <p>
+          {app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.confirmation')} <strong>{this.discussion.title()}</strong>
+        </p>
+        <div className="Form-group">
+          {Button.component(
+            {
+              className: 'Button Button--primary Button--block',
+              type: 'submit',
+              loading: this.loading,
+            },
+            app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.delete_button')
+          )}
         </div>
+      </div>
     );
-    }
+  }
 
-    onsubmit(e: Event) {
-        e.preventDefault();
+  onsubmit(e: Event) {
+    e.preventDefault();
 
-        this.loading = true;
+    this.loading = true;
 
-        app.request({
-            url: `${app.forum.attribute('apiUrl')}/discussions/${this.discussion.id()}`,
-            method: 'DELETE',
-        })
-        .then(() => {
-            app.modal.close();
-            if (this.discussionDeleted) {
-                this.discussionDeleted(true);
-            }
-            m.redraw();
-            app.alerts.show(
-                { type: 'success' },
-                app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success')
-            );
-        })
-        .catch(() => {
-            this.loading = false;
-            m.redraw();
-        });
-    }
+    app
+      .request({
+        url: `${app.forum.attribute('apiUrl')}/discussions/${this.discussion.id()}`,
+        method: 'DELETE',
+      })
+      .then(() => {
+        app.modal.close();
+        if (this.discussionDeleted) {
+          this.discussionDeleted(true);
+        }
+        m.redraw();
+        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success'));
+      })
+      .catch(() => {
+        this.loading = false;
+        m.redraw();
+      });
+  }
 }
