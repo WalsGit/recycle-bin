@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [2.0.1] - 2026-03-18
+### Security updates
+- Updated some dependencies
+
 ## [2.0.0] - 2025-12-02
 ### Changed
 - Upgraded to be compatible with Flarum V2 (as of v2.0.0-beta.4)
