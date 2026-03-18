@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [0.2.1] - 2026-03-18
+### Security updates
+- Updated some dependencies
+
 ## [0.2.0] - 2025-01-08
 ### Added
 - Support for hidden posts (posts bin)
