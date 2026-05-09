@@ -3,7 +3,7 @@ import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 
 interface MassDeleteDiscussionModalAttrs extends IFormModalAttrs {
-    selectedDiscussions: Set<string>;
+  selectedDiscussions: Set<string>;
 }
 
 export default class MassDeleteDiscussionModal extends FormModal<MassDeleteDiscussionModalAttrs> {

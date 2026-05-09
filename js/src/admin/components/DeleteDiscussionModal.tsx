@@ -4,8 +4,8 @@ import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
 interface DeleteDiscussionModalAttrs extends IFormModalAttrs {
-    discussion: any;
-    discussionDeleted: Stream<boolean>;
+  discussion: any;
+  discussionDeleted: Stream<boolean>;
 }
 
 export default class DeleteDiscussionModal extends FormModal<DeleteDiscussionModalAttrs> {

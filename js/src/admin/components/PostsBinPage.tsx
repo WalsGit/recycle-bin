@@ -514,8 +514,8 @@ export default class PostsBinPage extends Page {
         'filter[content]': query,
         'page[limit]': this.numPerPage,
         'page[offset]': pageNumber * this.numPerPage,
-      }
-      })
+      },
+    })
       .then((response: any) => {
         this.moreData = !!response.links?.next;
         this.pageData = response.data;

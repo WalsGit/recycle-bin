@@ -5,8 +5,8 @@ import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
 interface RestorePostModalAttrs extends IFormModalAttrs {
-    post: any;
-    postRestored: Stream<boolean>;
+  post: any;
+  postRestored: Stream<boolean>;
 }
 
 export default class RestorePostModal extends FormModal<RestorePostModalAttrs> {

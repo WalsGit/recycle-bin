@@ -5,8 +5,8 @@ import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
 interface RestoreDiscussionModalAttrs extends IFormModalAttrs {
-    discussion: any;
-    discussionRestored: Stream<boolean>;
+  discussion: any;
+  discussionRestored: Stream<boolean>;
 }
 
 export default class RestoreDiscussionModal extends FormModal<RestoreDiscussionModalAttrs> {
