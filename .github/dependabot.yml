@@ -1,0 +1,37 @@
+version: 2
+updates:
+  # --- BRANCH MAIN (Flarum v2) ---
+  
+  # Backend : PHP / Composer
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "main"
+    open-pull-requests-limit: 5
+
+  # Frontend : JavaScript / Npm & Yarn
+  - package-ecosystem: "npm" 
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "main"
+    open-pull-requests-limit: 5
+
+  # --- BRANCH FLARUM1 (Flarum v1) ---
+
+  # Backend : PHP / Composer
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "flarum1"
+    open-pull-requests-limit: 5
+
+  # Frontend : JavaScript / Npm & Yarn
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "flarum1"
+    open-pull-requests-limit: 5
