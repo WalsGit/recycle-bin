@@ -14,5 +14,6 @@ jobs:
       backend_directory: .
       js_package_manager: yarn
       main_git_branch: main
+      node_version: 24
     secrets:
       bundlewatch_github_token: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
