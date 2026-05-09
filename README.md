@@ -6,9 +6,13 @@ A [Flarum](https://flarum.org) extension to manage deleted (hidden) discussions 
 
 [![Screenshot](https://i.postimg.cc/y69G3pfp/2024-10-09-16-09-34-flarum-test-baeb96af962a.png)](https://postimg.cc/qgJw9wH2)
 
+## Versions
+Starting with the version `2.0.0` of this extension, it will only be compatible with `Flarum v2.*`.
+Last version of the extension compatible with `Flarum v1.8.*` is `walsgit/recycle-bin:"0.2.2"`.
+
 ### With Recycle Bin you can:
 - list all hidden discussions and posts
-- restore (unhide) a hidden discussion or post
+- restore a hidden discussion or post
 - forever delete a hidden discussion or post (remove from db)
 - Mass restore & delete discussions or posts
 
@@ -19,8 +23,8 @@ A [Flarum](https://flarum.org) extension to manage deleted (hidden) discussions 
 ### Notes
 - This is my very first Flarum extension
 - Developed and tested on Flarum 1.8.5 (v 0.2 of the extension dev. & tested on Flarum 1.8.9)
-- Extention settings page is based on the core UserListPage.tsx (Users settings page).
-- Developped this with the help of AI (mainly ChatGPT, Cody & Gemini)
+- Extension settings page is based on the core UserListPage.tsx (Users settings page).
+- Developed this with the help of AI (mainly ChatGPT, Cody & Gemini)
 
 
 ## Installation
