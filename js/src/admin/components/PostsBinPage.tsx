@@ -506,34 +506,21 @@ export default class PostsBinPage extends Page {
 
     const query = this.query.trim();
 
-    app.store
-      .find<Post[]>('posts', {
-        filter: { hidden: true, content: query },
-        page: {
-          limit: this.numPerPage,
-          offset: pageNumber * this.numPerPage,
-        },
+    m.request({
+      method: 'GET',
+      url: `${app.forum.attribute('apiUrl')}/posts`,
+      params: {
+        'filter[hidden]': 'true',
+        'filter[content]': query,
+        'page[limit]': this.numPerPage,
+        'page[offset]': pageNumber * this.numPerPage,
+      }
       })
-      .then((apiData) => {
-        // Next link won't be present if there's no more data
-        this.moreData = !!apiData.payload?.links?.next;
-
-        let data = apiData.filter((post: Post) => post.isHidden());
-
-        // @ts-ignore
-        delete data.payload;
-
-        const lastPage = this.getTotalPageCount();
-
-        if (pageNumber > lastPage) {
-          this.loadPage(lastPage - 1);
-        } else {
-          this.pageData = data;
-          this.pageNumber = pageNumber;
-          this.loadingPageNumber = pageNumber;
-          this.isLoadingPage = false;
-        }
-
+      .then((response: any) => {
+        this.moreData = !!response.links?.next;
+        this.pageData = response.data;
+        this.pageNumber = pageNumber;
+        this.isLoadingPage = false;
         m.redraw();
       })
       .catch((err: Error) => {
