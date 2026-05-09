@@ -1,16 +1,21 @@
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
-export default class RestoreDiscussionModal extends Modal {
+interface RestoreDiscussionModalAttrs extends IInternalModalAttrs {
+    discussion: any;
+    discussionRestored: Stream<boolean>;
+}
+
+export default class RestoreDiscussionModal extends Modal<RestoreDiscussionModalAttrs> {
     discussion: any;
     discussionRestored: Stream<boolean> | undefined; 
 
     oninit(vnode: any) {
     super.oninit(vnode);
-    this.discussion = this.attrs.discussion;
-    this.discussionRestored = this.attrs.discussionRestored; 
+    this.discussion = vnode.attrs.discussion;
+    this.discussionRestored = vnode.attrs.discussionRestored;
     }
 
     className() {

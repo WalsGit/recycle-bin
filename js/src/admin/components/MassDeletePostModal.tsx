@@ -1,13 +1,17 @@
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 
-export default class MassDeletePostModal extends Modal {
+interface MassDeletePostModalAttrs extends IInternalModalAttrs {
+    selectedPosts: Set<string>;
+}
+
+export default class MassDeletePostModal extends Modal<MassDeletePostModalAttrs> {
     selectedPosts!: Set<string>;
 
     oninit(vnode: any) {
         super.oninit(vnode);
-        this.selectedPosts = this.attrs.selectedPosts;
+        this.selectedPosts = vnode.attrs.selectedPosts;
     }
 
     className() {

@@ -1,16 +1,21 @@
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
-export default class RestorePostModal extends Modal {
+interface RestorePostModalAttrs extends IInternalModalAttrs {
+    post: any;
+    postRestored: Stream<boolean>;
+}
+
+export default class RestorePostModal extends Modal<RestorePostModalAttrs> {
     post: any;
     postRestored: Stream<boolean> | undefined; 
 
     oninit(vnode: any) {
     super.oninit(vnode);
-    this.post = this.attrs.post;
-    this.postRestored = this.attrs.postRestored; 
+    this.post = vnode.attrs.post;
+    this.postRestored = vnode.attrs.postRestored; 
     }
 
     className() {

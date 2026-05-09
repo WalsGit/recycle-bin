@@ -1,13 +1,17 @@
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 
-export default class MassRestoreDiscussionModal extends Modal {
+interface MassRestoreDiscussionModalAttrs extends IInternalModalAttrs {
+    selectedDiscussions: Set<string>;
+}
+
+export default class MassRestoreDiscussionModal extends Modal<MassRestoreDiscussionModalAttrs> {
 	selectedDiscussions!: Set<string>;
 
 	oninit(vnode: any) {
 		super.oninit(vnode);
-		this.selectedDiscussions = this.attrs.selectedDiscussions;
+		this.selectedDiscussions = vnode.attrs.selectedDiscussions;
 	}
 
 	className() {
