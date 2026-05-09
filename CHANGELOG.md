@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [2.0.3] - 2026-05-09
+### Changed
+- Removed old misplaced files
+
 ## [2.0.2] - 2026-05-09
 ### Security updates
 - Updated some dependencies
