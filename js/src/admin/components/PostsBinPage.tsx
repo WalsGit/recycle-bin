@@ -5,7 +5,6 @@ import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Button from 'flarum/common/components/Button';
 import icon from 'flarum/common/helpers/icon';
 import type User from 'flarum/common/models/User';
-import Discussion from 'flarum/common/models/Discussion';
 import Post from 'flarum/common/models/Post';
 import ItemList from 'flarum/common/utils/ItemList';
 import classList from 'flarum/common/utils/classList';
