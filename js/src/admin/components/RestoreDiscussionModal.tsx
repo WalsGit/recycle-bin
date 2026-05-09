@@ -1,17 +1,22 @@
 import Form from 'flarum/common/components/Form';
 import app from 'flarum/admin/app';
-import FormModal from 'flarum/common/components/FormModal';
+import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
-export default class RestoreDiscussionModal extends FormModal {
+interface RestoreDiscussionModalAttrs extends IFormModalAttrs {
+    discussion: any;
+    discussionRestored: Stream<boolean>;
+}
+
+export default class RestoreDiscussionModal extends FormModal<RestoreDiscussionModalAttrs> {
   discussion: any;
   discussionRestored: Stream<boolean> | undefined;
 
   oninit(vnode: any) {
     super.oninit(vnode);
-    this.discussion = this.attrs.discussion;
-    this.discussionRestored = this.attrs.discussionRestored;
+    this.discussion = vnode.attrs.discussion;
+    this.discussionRestored = vnode.attrs.discussionRestored;
   }
 
   className() {

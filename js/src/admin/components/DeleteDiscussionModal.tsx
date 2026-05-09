@@ -1,16 +1,21 @@
 import app from 'flarum/admin/app';
-import FormModal from 'flarum/common/components/FormModal';
+import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 
-export default class DeleteDiscussionModal extends FormModal {
+interface DeleteDiscussionModalAttrs extends IFormModalAttrs {
+    discussion: any;
+    discussionDeleted: Stream<boolean>;
+}
+
+export default class DeleteDiscussionModal extends FormModal<DeleteDiscussionModalAttrs> {
   discussion: any;
   discussionDeleted: Stream<boolean> | undefined;
 
   oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = vnode.attrs.discussion;
-    this.discussionDeleted = this.attrs.discussionDeleted;
+    this.discussionDeleted = vnode.attrs.discussionDeleted;
   }
 
   className() {

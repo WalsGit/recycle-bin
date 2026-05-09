@@ -1,13 +1,17 @@
 import app from 'flarum/admin/app';
-import FormModal from 'flarum/common/components/FormModal';
+import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 
-export default class MassDeleteDiscussionModal extends FormModal {
+interface MassDeleteDiscussionModalAttrs extends IFormModalAttrs {
+    selectedDiscussions: Set<string>;
+}
+
+export default class MassDeleteDiscussionModal extends FormModal<MassDeleteDiscussionModalAttrs> {
   selectedDiscussions!: Set<string>;
 
   oninit(vnode: any) {
     super.oninit(vnode);
-    this.selectedDiscussions = this.attrs.selectedDiscussions;
+    this.selectedDiscussions = vnode.attrs.selectedDiscussions;
   }
 
   className() {
