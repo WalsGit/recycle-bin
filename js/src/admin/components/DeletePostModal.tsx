@@ -10,7 +10,7 @@ export default class DeletePostModal extends Modal {
     oninit(vnode: any) {
     super.oninit(vnode);
     this.post = vnode.attrs.post;
-    this.postDeleted = this.attrs.postDeleted;
+    this.postDeleted = vnode.attrs.postDeleted;
     }
 
     className() {
