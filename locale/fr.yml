@@ -14,7 +14,7 @@ walsgit-recycle-bin:
     discussion_title: 'Titre de la discussion'
     discussion_link_tooltip: 'Voir la discussion'
     author: 'Auteur'
-    unknownn_user: 'Utilisateur inconnu'
+    unknown_user: 'Utilisateur inconnu'
     created_at: 'Créée le'
     hidden_at: 'Cachée le'
     unknown_date: 'Date inconnue'
@@ -61,13 +61,13 @@ walsgit-recycle-bin:
       success: 'Les posts sélectionnés ont bien été rétablis'
     mass_delete_modal:
       title: 'Supprimer définitivement ces discussions'
-      text_start: 'Êtes-vous sûr de vouloir <u>suprrimer définitivement</u> ces '
+      text_start: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> ces '
       text_end: ' discussions ?'
       submit_button: 'Supprimer définitivement ces discussions'
       success: 'Les discussions sélectionnées ont bien été définitivement supprimées'
     mass_delete_post_modal:
       title: 'Supprimer définitivement ces posts'
-      text_start: 'Êtes-vous sûr de vouloir <u>suprrimer définitivement</u> ces '
+      text_start: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> ces '
       text_end: ' posts sélectionnés ?'
       submit_button: 'Supprimer définitivement ces posts'
       success: 'Les posts sélectionnés ont bien été définitivement supprimés'
@@ -80,7 +80,7 @@ walsgit-recycle-bin:
       go_to_page_textbox_a11y_label: 'Allez directement à la page numéro'
       next_button: 'Aller à la page suivante'
       last_page_button: 'Aller à la dernière page'
-    mass_help_text: "Merci d'attendre le rafraichissement de la page après la confirmation du rétablissement ou de la suppression de plusieurs discussions à la fois"
+    mass_help_text: "Merci d'attendre le rafraîchissement de la page après la confirmation du rétablissement ou de la suppression de plusieurs discussions à la fois"
     grid:
       invalid_column_content: "Contenu invalide !"
     post:
