@@ -416,8 +416,8 @@ export default class RecycleBinPage extends Page {
               Button,
               {
                 className: 'Button DiscussionList-editModalBtn',
-                title: app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussion: discussion.title() }),
-                ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussion: discussion.title() }),
+                title: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussionId: discussion.id() })),
+                ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_tooltip', { discussionId: discussion.id() })),
                 onclick: () => app.modal.show(RestoreDiscussionModal, { discussion: discussion, discussionRestored: this.discussionRestored }),
               },
               <Icon name="fas fa-trash-restore" />
@@ -426,8 +426,8 @@ export default class RecycleBinPage extends Page {
               Button,
               {
                 className: 'Button DiscussionList-editModalBtn',
-                title: app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() }),
-                ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussion: discussion.title() }),
+                title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussionId: discussion.id() })),
+                ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussionId: discussion.id() })),
                 onclick: () => app.modal.show(DeleteDiscussionModal, { discussion: discussion, discussionDeleted: this.discussionDeleted }),
               },
               <Icon name="fas fa-times" />

@@ -19,8 +19,8 @@ walsgit-recycle-bin:
     hidden_at: 'Cachée le'
     unknown_date: 'Date inconnue'
     actions: 'Actions'
-    restore_tooltip: 'Rétablir la discussion'
-    restore_post_tooltip: 'Rétablir le post'
+    restore_tooltip: 'Rétablir la discussion #{discussionId}'
+    restore_post_tooltip: 'Rétablir le post #{postId}'
     restore_discussion:
       title: 'Rétablir la discussion'
       confirmation: 'Êtes-vous sûr de vouloir rétablir cette discussion :'

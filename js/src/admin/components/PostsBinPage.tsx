@@ -420,8 +420,8 @@ export default class PostsBinPage extends Page {
               Button,
               {
                 className: 'Button DiscussionList-editModalBtn',
-                title: app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { discussion: post.id() }),
-                ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { discussion: post.id() }),
+                title: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
+                ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
                 onclick: () => app.modal.show(RestorePostModal, { post: post, postRestored: this.postRestored }),
               },
               <Icon name="fas fa-trash-restore" />
@@ -430,8 +430,8 @@ export default class PostsBinPage extends Page {
               Button,
               {
                 className: 'Button DiscussionList-editModalBtn',
-                title: app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { discussion: post.id() }),
-                ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { discussion: post.id() }),
+                title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
+                ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
                 onclick: () => app.modal.show(DeletePostModal, { post: post, postDeleted: this.postDeleted }),
               },
               <Icon name="fas fa-times" />
