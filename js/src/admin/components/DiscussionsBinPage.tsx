@@ -500,9 +500,12 @@ export default class RecycleBinPage extends Page {
 
     this.selectedDiscussions.clear();
 
+    const is = app.translator.trans('core.lib.gambits.group_keys.is');
+    const hidden = app.translator.trans('core.lib.gambits.discussions.hidden.key');
+
     app.store
       .find<Discussion[]>('discussions', {
-        filter: { q: `is:hidden ${this.query}`.trim() },
+        filter: { q: `${is}:${hidden} ${this.query}`.trim() },
         page: {
           limit: this.numPerPage,
           offset: pageNumber * this.numPerPage,
