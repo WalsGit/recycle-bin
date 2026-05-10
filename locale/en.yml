@@ -14,7 +14,7 @@ walsgit-recycle-bin:
     discussion_title: 'Discussion title'
     discussion_link_tooltip: 'View discussion'
     author: 'Author'
-    unknownn_user: 'Unknown user'
+    unknown_user: 'Unknown user'
     created_at: 'Created at'
     hidden_at: 'Hidden at'
     unknown_date: 'Unknown date'
