@@ -199,14 +199,14 @@ export default class PostsBinPage extends Page {
         <nav className="RecycleBinPage-gridPagination">
           {m(Button, {
             disabled: this.pageNumber === 0,
-            title: app.translator.trans('walsgit-recycle-bin.admin.pagination.first_page_button'),
+            ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.first_page_button'),
             onclick: this.goToPage.bind(this, 1),
             icon: 'fas fa-step-backward',
             className: 'Button Button--icon RecycleBinPage-firstPageBtn',
           })}
           {m(Button, {
             disabled: this.pageNumber === 0,
-            title: app.translator.trans('walsgit-recycle-bin.admin.pagination.back_button'),
+            ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.back_button'),
             onclick: this.previousPage.bind(this),
             icon: 'fas fa-chevron-left',
             className: 'Button Button--icon RecycleBinPage-backBtn',
@@ -249,14 +249,14 @@ export default class PostsBinPage extends Page {
           </span>
           {m(Button, {
             disabled: !this.moreData,
-            title: app.translator.trans('walsgit-recycle-bin.admin.pagination.next_button'),
+            ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.next_button'),
             onclick: this.nextPage.bind(this),
             icon: 'fas fa-chevron-right',
             className: 'Button Button--icon RecycleBinPage-nextBtn',
           })}
           {m(Button, {
             disabled: !this.moreData,
-            title: app.translator.trans('walsgit-recycle-bin.admin.pagination.last_page_button'),
+            ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.last_page_button'),
             onclick: this.goToPage.bind(this, this.getTotalPageCount()),
             icon: 'fas fa-step-forward',
             className: 'Button Button--icon RecycleBinPage-lastPageBtn',
@@ -416,7 +416,7 @@ export default class PostsBinPage extends Page {
               Button,
               {
                 className: 'Button DiscussionList-editModalBtn',
-                title: app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { discussion: post.id() }), // TODO disc title
+                ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
                 onclick: () => app.modal.show(RestorePostModal, { post: post, postRestored: this.postRestored }),
               },
               icon('fas fa-trash-restore')
@@ -425,7 +425,7 @@ export default class PostsBinPage extends Page {
               Button,
               {
                 className: 'Button DiscussionList-editModalBtn',
-                title: app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { discussion: post.id() }), // TODO disc title
+                ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
                 onclick: () => app.modal.show(DeletePostModal, { post: post, postDeleted: this.postDeleted }),
               },
               icon('fas fa-times')
