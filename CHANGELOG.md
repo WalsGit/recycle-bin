@@ -1,6 +1,17 @@
 
 # Changelog
 
+## [0.2.3] - 2026-05-10
+### Added
+- Discussion & post IDs on aria-labels
+
+### Changed
+- replaced deprecated title for aria-labels on buttons
+
+### Fixed
+- Typing issue was preventing Posts Bin Page from loading.
+- Some locale key & text typos
+
 ## [0.2.2] - 2026-05-09
 ### Security updates
 - Updated some dependencies
