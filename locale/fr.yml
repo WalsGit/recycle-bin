@@ -14,13 +14,13 @@ walsgit-recycle-bin:
     discussion_title: 'Titre de la discussion'
     discussion_link_tooltip: 'Voir la discussion'
     author: 'Auteur'
-    unknownn_user: 'Utilisateur inconnu'
+    unknown_user: 'Utilisateur inconnu'
     created_at: 'Créée le'
     hidden_at: 'Cachée le'
     unknown_date: 'Date inconnue'
     actions: 'Actions'
-    restore_tooltip: 'Rétablir la discussion'
-    restore_post_tooltip: 'Rétablir le post'
+    restore_tooltip: 'Rétablir la discussion #{discussionId}'
+    restore_post_tooltip: 'Rétablir le post #{postId}'
     restore_discussion:
       title: 'Rétablir la discussion'
       confirmation: 'Êtes-vous sûr de vouloir rétablir cette discussion :'
@@ -41,8 +41,8 @@ walsgit-recycle-bin:
       confirmation: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> ce post (irréversible) :'
       delete_button: 'Supprimer définitivement ce post'
       success: 'Le post a bien été définitivement supprimé'
-    delete_tooltip: 'Supprimer définitivement la discussion'
-    delete_post_tooltip: 'Supprimer définitivement le post'
+    delete_tooltip: 'Supprimer définitivement la discussion #{discussionId}'
+    delete_post_tooltip: 'Supprimer définitivement le post #{postId}'
     bulk_actions: 'Actions pour les discussions sélectionnées : '
     bulk_post_actions: 'Actions pour les posts sélectionnés : '
     bulk_restore_label: 'Rétablir les discussions sélectionnées'
@@ -61,13 +61,13 @@ walsgit-recycle-bin:
       success: 'Les posts sélectionnés ont bien été rétablis'
     mass_delete_modal:
       title: 'Supprimer définitivement ces discussions'
-      text_start: 'Êtes-vous sûr de vouloir <u>suprrimer définitivement</u> ces '
+      text_start: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> ces '
       text_end: ' discussions ?'
       submit_button: 'Supprimer définitivement ces discussions'
       success: 'Les discussions sélectionnées ont bien été définitivement supprimées'
     mass_delete_post_modal:
       title: 'Supprimer définitivement ces posts'
-      text_start: 'Êtes-vous sûr de vouloir <u>suprrimer définitivement</u> ces '
+      text_start: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> ces '
       text_end: ' posts sélectionnés ?'
       submit_button: 'Supprimer définitivement ces posts'
       success: 'Les posts sélectionnés ont bien été définitivement supprimés'
@@ -80,7 +80,7 @@ walsgit-recycle-bin:
       go_to_page_textbox_a11y_label: 'Allez directement à la page numéro'
       next_button: 'Aller à la page suivante'
       last_page_button: 'Aller à la dernière page'
-    mass_help_text: "Merci d'attendre le rafraichissement de la page après la confirmation du rétablissement ou de la suppression de plusieurs discussions à la fois"
+    mass_help_text: "Merci d'attendre le rafraîchissement de la page après la confirmation du rétablissement ou de la suppression de plusieurs discussions à la fois"
     grid:
       invalid_column_content: "Contenu invalide !"
     post:

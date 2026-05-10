@@ -1,6 +1,16 @@
 
 # Changelog
 
+## [2.0.4] - 2026-05-10
+### Added
+- Aria-labels to buttons
+- Discussion & post IDs on button titles & aria-labels
+
+### Fixed
+- Hidden discussions weren't showing in the table when Flarum's language wasn't set to English.
+- Typing issue was preventing Posts Bin Page from loading.
+- Some locale key & text typos
+
 ## [2.0.3] - 2026-05-09
 ### Changed
 - Removed old misplaced files
