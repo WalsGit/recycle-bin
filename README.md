@@ -8,7 +8,7 @@ A [Flarum](https://flarum.org) extension to manage deleted (hidden) discussions 
 
 ## Versions
 Starting with the version `2.0.0` of this extension, it will only be compatible with `Flarum v2.*`.
-Last version of the extension compatible with `Flarum v1.8.*` is `walsgit/recycle-bin:"0.2.2"`.
+Last version of the extension compatible with `Flarum v1.8.*` is `walsgit/recycle-bin:"0.2.3"`.
 
 ### With Recycle Bin you can:
 - list all hidden discussions and posts
