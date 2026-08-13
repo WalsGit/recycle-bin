@@ -1,6 +1,10 @@
 
 # Changelog
 
+## [2.0.5] - 2026-06-30
+### Security updates
+- Updated some dependencies
+
 ## [2.0.4] - 2026-05-10
 ### Added
 - Aria-labels to buttons
@@ -113,7 +117,7 @@
 
 ## [0.0.4] - 2024-10-04
 ### Added
-- Extended AdminPayload to add total number of discussions and hidden discussions app.modelStatistcs.discussions.total & app.modellStatistcs.discussions.hidden
+- Extended AdminPayload to add total number of discussions and hidden discussions app.modelStatistics.discussions.total & app.modelStatistics.discussions.hidden
 - Changelog.md
 - Checkboxes for each listed hidden discussion
 
@@ -125,5 +129,5 @@
 
 ## [0.0.3] - 2024-10-03
 ### Added
-- up untill 0.0.3 was the intial project setup and first somewhat basic working fonctionality
+- up until 0.0.3 was the initial project setup and first somewhat basic working functionality
 
