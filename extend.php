@@ -14,7 +14,6 @@ namespace Walsgit\RecycleBin;
 use Flarum\Extend;
 use Walsgit\RecycleBin\Api\Controller\DiscussionStatisticsController;
 use Walsgit\RecycleBin\Api\Controller\PostStatisticsController;
-use Flarum\Post\Filter\PostFilterer;
 use Walsgit\RecycleBin\Filter\HiddenPostFilter;
 use Walsgit\RecycleBin\Filter\ContentPostFilter;
 
