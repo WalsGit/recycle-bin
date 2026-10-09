@@ -17,14 +17,14 @@ type ColumnData = {
  */
 export default class RecycleBinPage extends Page {
     private query;
-    private throttledSearch;
-    private discussionRestored;
-    private discussionDeleted;
-    private hiddenDiscussionsCount;
+    private readonly throttledSearch;
+    private readonly discussionRestored;
+    private readonly discussionDeleted;
+    private readonly hiddenDiscussionsCount;
     /**
      * Number of discussions to load per page.
      */
-    private numPerPage;
+    private readonly numPerPage;
     /**
      * Current page number. Zero-indexed.
      */
@@ -51,8 +51,9 @@ export default class RecycleBinPage extends Page {
     /**
      * Tracking which discussions have been selected for mass actions.
      */
-    private selectedDiscussions;
+    private readonly selectedDiscussions;
     private toggleDiscussionSelection;
+    private refreshStatistics;
     oninit(vnode: Mithril.Vnode<IPageAttrs, this>): void;
     /**
      * Component to render.
@@ -81,7 +82,7 @@ export default class RecycleBinPage extends Page {
      *
      * @param pageNumber The **zero-based** page number to load and display
      */
-    loadPage(pageNumber: number): Promise<void>;
+    loadPage(pageNumber: number): void;
     nextPage(): void;
     previousPage(): void;
     /**

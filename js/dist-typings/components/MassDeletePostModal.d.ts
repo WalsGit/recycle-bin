@@ -1,6 +1,7 @@
 import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 interface MassDeletePostModalAttrs extends IFormModalAttrs {
     selectedPosts: Set<string>;
+    onSuccess?: () => void;
 }
 export default class MassDeletePostModal extends FormModal<MassDeletePostModalAttrs> {
     selectedPosts: Set<string>;

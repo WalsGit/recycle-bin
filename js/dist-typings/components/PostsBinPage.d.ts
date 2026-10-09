@@ -17,14 +17,14 @@ type ColumnData = {
  */
 export default class PostsBinPage extends Page {
     private query;
-    private throttledSearch;
-    private postRestored;
-    private postDeleted;
-    private hiddenPostsCount;
+    private readonly throttledSearch;
+    private readonly postRestored;
+    private readonly postDeleted;
+    private readonly hiddenPostsCount;
     /**
      * Number of discussions to load per page.
      */
-    private numPerPage;
+    private readonly numPerPage;
     /**
      * Current page number. Zero-indexed.
      */
@@ -51,8 +51,9 @@ export default class PostsBinPage extends Page {
     /**
      * Tracking which discussions have been selected for mass actions.
      */
-    private selectedPosts;
+    private readonly selectedPosts;
     private togglePostSelection;
+    private refreshStatistics;
     oninit(vnode: Mithril.Vnode<IPageAttrs, this>): void;
     /**
      * Component to render.
@@ -81,7 +82,7 @@ export default class PostsBinPage extends Page {
      *
      * @param pageNumber The **zero-based** page number to load and display
      */
-    loadPage(pageNumber: number): Promise<void>;
+    loadPage(pageNumber: number): void;
     nextPage(): void;
     previousPage(): void;
     /**

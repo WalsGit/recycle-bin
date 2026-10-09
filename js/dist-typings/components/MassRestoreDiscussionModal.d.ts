@@ -1,6 +1,7 @@
 import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 interface MassRestoreDiscussionModalAttrs extends IFormModalAttrs {
     selectedDiscussions: Set<string>;
+    onSuccess?: () => void;
 }
 export default class MassRestoreDiscussionModal extends FormModal<MassRestoreDiscussionModalAttrs> {
     selectedDiscussions: Set<string>;
