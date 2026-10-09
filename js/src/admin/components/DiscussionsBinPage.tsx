@@ -33,15 +33,15 @@ type ColumnData = {
  */
 export default class RecycleBinPage extends Page {
   private query: string = '';
-  private throttledSearch = debounce(250, () => this.loadPage(0));
-  private discussionRestored: Stream<boolean> = Stream(false);
-  private discussionDeleted: Stream<boolean> = Stream(false);
-  private hiddenDiscussionsCount: Stream<number> = Stream(0);
+  private readonly throttledSearch = debounce(250, () => this.loadPage(0));
+  private readonly discussionRestored: Stream<boolean> = Stream(false);
+  private readonly discussionDeleted: Stream<boolean> = Stream(false);
+  private readonly hiddenDiscussionsCount: Stream<number> = Stream(0);
 
   /**
    * Number of discussions to load per page.
    */
-  private numPerPage: number = 25;
+  private readonly numPerPage: number = 25;
 
   /**
    * Current page number. Zero-indexed.
@@ -58,7 +58,7 @@ export default class RecycleBinPage extends Page {
    */
   private getTotalPageCount(): number {
     const count = this.hiddenDiscussionsCount();
-    if (count === -1 || isNaN(count)) return 0;
+    if (count === -1 || Number.isNaN(count)) return 0;
 
     return Math.ceil(count / this.numPerPage);
   }
@@ -80,7 +80,7 @@ export default class RecycleBinPage extends Page {
   /**
    * Tracking which discussions have been selected for mass actions.
    */
-  private selectedDiscussions: Set<string> = new Set();
+  private readonly selectedDiscussions: Set<string> = new Set();
 
   private toggleDiscussionSelection(e: Event, discussionId: string) {
     const checkbox = e.target as HTMLInputElement;
@@ -92,25 +92,29 @@ export default class RecycleBinPage extends Page {
     m.redraw();
   }
 
-  oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
-    super.oninit(vnode);
-
-    m.request({
-      method: 'GET',
-      url: '/api/recycle-bin/discussion-statistics',
-    })
-      .then((result: unknown) => {
-        const typedResult = result as { hidden_discussions_count: number };
-        this.hiddenDiscussionsCount(typedResult.hidden_discussions_count); // updates the stream
+  private refreshStatistics() {
+    app
+      .request<{ hidden_discussions_count: number }>({
+        method: 'GET',
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/discussion-statistics`,
+      })
+      .then((result) => {
+        this.hiddenDiscussionsCount(result.hidden_discussions_count);
       })
       .catch((error: any) => {
         console.error(error);
       });
+  }
+
+  oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
+    super.oninit(vnode);
+
+    this.refreshStatistics();
 
     // Get page query value from URL
-    const page = parseInt(m.route.param('page'));
+    const page = Number.parseInt(m.route.param('page'));
 
-    if (isNaN(page) || page < 1) {
+    if (Number.isNaN(page) || page < 1) {
       this.setPageNumberInUrl(1);
       this.pageNumber = 0;
     } else {
@@ -138,7 +142,7 @@ export default class RecycleBinPage extends Page {
    * Component to render.
    */
   view(vnode: Mithril.Vnode<IPageAttrs, this>): Mithril.Children {
-    if (typeof this.pageData === 'undefined') {
+    if (this.pageData === undefined) {
       this.loadPage(this.pageNumber);
 
       return (
@@ -168,17 +172,24 @@ export default class RecycleBinPage extends Page {
           aria-busy={this.isLoadingPage ? 'true' : 'false'}
         >
           {columns.map((column, colIndex) => (
-            <div className="RecycleBinPage-grid-header" role="columnheader" aria-colindex={colIndex + 1} aria-rowindex={1}>
+            <div
+              key={`header-${column.itemName || colIndex}`}
+              className="RecycleBinPage-grid-header"
+              role="columnheader"
+              aria-colindex={colIndex + 1}
+              aria-rowindex={1}
+            >
               {column.name}
             </div>
           ))}
 
           {this.pageData.map((discussion, rowIndex) =>
             columns.map((col, colIndex) => {
-              const columnContent = col.content && col.content(discussion);
+              const columnContent = col.content?.(discussion);
 
               return (
                 <div
+                  key={`${discussion.id()}-${col.itemName || colIndex}`}
                   className={classList(['RecycleBinPage-grid-rowItem', rowIndex % 2 > 0 && 'RecycleBinPage-grid-rowItem--shaded'])}
                   data-discussion-id={discussion.id()}
                   data-column-name={col.itemName}
@@ -225,9 +236,9 @@ export default class RecycleBinPage extends Page {
                   className="FormControl RecycleBinPage-pageNumberInput"
                   onchange={(e: InputEvent) => {
                     const target = e.target as HTMLInputElement;
-                    let pageNumber = parseInt(target.value);
+                    let pageNumber = Number.parseInt(target.value);
 
-                    if (isNaN(pageNumber)) {
+                    if (Number.isNaN(pageNumber)) {
                       target.value = (this.pageNumber + 1).toString();
                       return;
                     }
@@ -385,7 +396,6 @@ export default class RecycleBinPage extends Page {
         name: app.translator.trans('walsgit-recycle-bin.admin.created_at'),
         content: (discussion: Discussion) => (
           <span className="DiscussionList-creationDate" title={discussion.createdAt()}>
-            {/*dayjs(discussion.createdAt()).format('LLL')*/}
             {discussion.createdAt() ? humanTime(discussion.createdAt() as Date) : app.translator.trans('walsgit-recycle-bin.admin.unknown_date')}
           </span>
         ),
@@ -455,7 +465,13 @@ export default class RecycleBinPage extends Page {
       <button
         className="Button"
         onclick={() => {
-          app.modal.show(MassRestoreDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
+          void app.modal.show(MassRestoreDiscussionModal, {
+            selectedDiscussions: this.selectedDiscussions,
+            onSuccess: () => {
+              this.loadPage(this.pageNumber);
+              this.refreshStatistics();
+            },
+          });
         }}
         disabled={!hasSelection}
       >
@@ -469,7 +485,13 @@ export default class RecycleBinPage extends Page {
       <button
         className="Button"
         onclick={() => {
-          app.modal.show(MassDeleteDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
+          void app.modal.show(MassDeleteDiscussionModal, {
+            selectedDiscussions: this.selectedDiscussions,
+            onSuccess: () => {
+              this.loadPage(this.pageNumber);
+              this.refreshStatistics();
+            },
+          });
         }}
         disabled={!hasSelection}
       >
@@ -498,7 +520,7 @@ export default class RecycleBinPage extends Page {
    *
    * @param pageNumber The **zero-based** page number to load and display
    */
-  async loadPage(pageNumber: number) {
+  loadPage(pageNumber: number) {
     if (pageNumber < 0) pageNumber = 0;
 
     this.loadingPageNumber = pageNumber;

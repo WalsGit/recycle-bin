@@ -2,6 +2,7 @@
 
 namespace Walsgit\RecycleBin\Api\Controller;
 
+use Flarum\Http\RequestUtil;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -16,6 +17,9 @@ class DiscussionStatisticsController implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $actor = RequestUtil::getActor($request);
+        $actor->assertAdmin();
+
         $hiddenCount = $this->discussions->query()->whereNotNull('hidden_at')->count();
 
         return new JsonResponse(['hidden_discussions_count' => $hiddenCount]);

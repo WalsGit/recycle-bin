@@ -14,6 +14,11 @@ class ContentPostFilter implements FilterInterface
 
     public function filter(SearchState $state, array|string $value, bool $negate): void
     {
-        $state->getQuery()->where('posts.content', 'like', "%$value%");
+        if (is_array($value)) {
+            return;
+        }
+        
+        $operator = $negate ? 'not like' : 'like';
+        $state->getQuery()->where('posts.content', $operator, "%$value%");
     }
 }

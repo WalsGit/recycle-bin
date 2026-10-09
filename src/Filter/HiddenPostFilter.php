@@ -14,6 +14,10 @@ class HiddenPostFilter implements FilterInterface
 
     public function filter(SearchState $state, array|string $value, bool $negate): void
     {
-        $state->getQuery()->where('posts.hidden_at', $negate ? '=' : '!=', null);
+        if ($negate) {
+            $state->getQuery()->whereNull('posts.hidden_at'); 
+        } else {
+            $state->getQuery()->whereNotNull('posts.hidden_at');
+            }
     }
 }

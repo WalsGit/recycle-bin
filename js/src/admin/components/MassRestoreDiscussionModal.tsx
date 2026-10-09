@@ -4,6 +4,7 @@ import Button from 'flarum/common/components/Button';
 
 interface MassRestoreDiscussionModalAttrs extends IFormModalAttrs {
   selectedDiscussions: Set<string>;
+  onSuccess?: () => void;
 }
 
 export default class MassRestoreDiscussionModal extends FormModal<MassRestoreDiscussionModalAttrs> {
@@ -45,18 +46,22 @@ export default class MassRestoreDiscussionModal extends FormModal<MassRestoreDis
   onsubmit() {
     this.loading = true;
 
-    const promises = Array.from(this.selectedDiscussions).map((discussionId) => {
-      return app.store.find('discussions', discussionId).then((discussion) => {
-        return discussion.save({ isHidden: false });
-      });
-    });
-
-    Promise.all(promises)
+    app
+      .request({
+        method: 'POST',
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-discussions`,
+        body: {
+          action: 'restore',
+          ids: Array.from(this.selectedDiscussions),
+        },
+      })
       .then(() => {
         this.hide();
+        if (this.attrs.onSuccess) {
+          this.attrs.onSuccess();
+        }
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.success'));
-        window.location.reload();
       })
       .catch(() => {
         this.loading = false;

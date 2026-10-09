@@ -4,6 +4,7 @@ import Button from 'flarum/common/components/Button';
 
 interface MassRestorePostModalAttrs extends IFormModalAttrs {
   selectedPosts: Set<string>;
+  onSuccess?: () => void;
 }
 
 export default class MassRestorePostModal extends FormModal<MassRestorePostModalAttrs> {
@@ -45,18 +46,22 @@ export default class MassRestorePostModal extends FormModal<MassRestorePostModal
   onsubmit() {
     this.loading = true;
 
-    const promises = Array.from(this.selectedPosts).map((postId) => {
-      return app.store.find('posts', postId).then((post) => {
-        return post.save({ isHidden: false });
-      });
-    });
-
-    Promise.all(promises)
+    app
+      .request({
+        method: 'POST',
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-posts`,
+        body: {
+          action: 'restore',
+          ids: Array.from(this.selectedPosts),
+        },
+      })
       .then(() => {
         this.hide();
+        if (this.attrs.onSuccess) {
+          this.attrs.onSuccess();
+        }
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.mass_restore_post_modal.success'));
-        window.location.reload();
       })
       .catch(() => {
         this.loading = false;
