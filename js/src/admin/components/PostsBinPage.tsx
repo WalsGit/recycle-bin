@@ -34,15 +34,15 @@ type ColumnData = {
  */
 export default class PostsBinPage extends Page {
   private query: string = '';
-  private throttledSearch = debounce(250, () => this.loadPage(0));
-  private postRestored: Stream<boolean> = Stream(false);
-  private postDeleted: Stream<boolean> = Stream(false);
-  private hiddenPostsCount: Stream<number> = Stream(0);
+  private readonly throttledSearch = debounce(250, () => this.loadPage(0));
+  private readonly postRestored: Stream<boolean> = Stream(false);
+  private readonly postDeleted: Stream<boolean> = Stream(false);
+  private readonly hiddenPostsCount: Stream<number> = Stream(0);
 
   /**
    * Number of discussions to load per page.
    */
-  private numPerPage: number = 25;
+  private readonly numPerPage: number = 25;
 
   /**
    * Current page number. Zero-indexed.
@@ -59,7 +59,7 @@ export default class PostsBinPage extends Page {
    */
   private getTotalPageCount(): number {
     const count = this.hiddenPostsCount();
-    if (count === -1 || isNaN(count)) return 0;
+    if (count === -1 || Number.isNaN(count)) return 0;
 
     return Math.ceil(count / this.numPerPage);
   }
@@ -81,7 +81,7 @@ export default class PostsBinPage extends Page {
   /**
    * Tracking which discussions have been selected for mass actions.
    */
-  private selectedPosts: Set<string> = new Set();
+  private readonly selectedPosts: Set<string> = new Set();
 
   private togglePostSelection(e: Event, postId: string) {
     const checkbox = e.target as HTMLInputElement;
@@ -112,9 +112,9 @@ export default class PostsBinPage extends Page {
     this.refreshStatistics();
 
     // Get page query value from URL
-    const page = parseInt(m.route.param('page'));
+    const page = Number.parseInt(m.route.param('page'));
 
-    if (isNaN(page) || page < 1) {
+    if (Number.isNaN(page) || page < 1) {
       this.setPageNumberInUrl(1);
       this.pageNumber = 0;
     } else {
@@ -142,7 +142,7 @@ export default class PostsBinPage extends Page {
    * Component to render.
    */
   view(vnode: Mithril.Vnode<IPageAttrs, this>): Mithril.Children {
-    if (typeof this.pageData === 'undefined') {
+    if (this.pageData === undefined) {
       this.loadPage(this.pageNumber);
 
       return (
@@ -172,17 +172,18 @@ export default class PostsBinPage extends Page {
           aria-busy={this.isLoadingPage ? 'true' : 'false'}
         >
           {columns.map((column, colIndex) => (
-            <div className="RecycleBinPage-grid-header" role="columnheader" aria-colindex={colIndex + 1} aria-rowindex={1}>
+            <div key={`header-${column.itemName || colIndex}`} className="RecycleBinPage-grid-header" role="columnheader" aria-colindex={colIndex + 1} aria-rowindex={1}>
               {column.name}
             </div>
           ))}
 
           {this.pageData.map((post, rowIndex) =>
             columns.map((col, colIndex) => {
-              const columnContent = col.content && col.content(post);
+              const columnContent = col.content?.(post);
 
               return (
                 <div
+                  key={`${post.id()}-${col.itemName || colIndex}`}
                   className={classList(['RecycleBinPage-grid-rowItem', rowIndex % 2 > 0 && 'RecycleBinPage-grid-rowItem--shaded'])}
                   data-post-id={post.id()}
                   data-column-name={col.itemName}
@@ -229,9 +230,9 @@ export default class PostsBinPage extends Page {
                   className="FormControl RecycleBinPage-pageNumberInput"
                   onchange={(e: InputEvent) => {
                     const target = e.target as HTMLInputElement;
-                    let pageNumber = parseInt(target.value);
+                    let pageNumber = Number.parseInt(target.value);
 
-                    if (isNaN(pageNumber)) {
+                    if (Number.isNaN(pageNumber)) {
                       target.value = (this.pageNumber + 1).toString();
                       return;
                     }
@@ -461,7 +462,7 @@ export default class PostsBinPage extends Page {
       <button
         className="Button"
         onclick={() => {
-          app.modal.show(MassRestorePostModal, {
+          void app.modal.show(MassRestorePostModal, {
             selectedPosts: this.selectedPosts,
             onSuccess: () => {
               this.loadPage(this.pageNumber);
@@ -481,7 +482,7 @@ export default class PostsBinPage extends Page {
       <button
         className="Button"
         onclick={() => {
-          app.modal.show(MassDeletePostModal, {
+          void app.modal.show(MassDeletePostModal, {
             selectedPosts: this.selectedPosts,
             onSuccess: () => {
               this.loadPage(this.pageNumber);
@@ -516,7 +517,7 @@ export default class PostsBinPage extends Page {
    *
    * @param pageNumber The **zero-based** page number to load and display
    */
-  async loadPage(pageNumber: number) {
+  loadPage(pageNumber: number) {
     if (pageNumber < 0) pageNumber = 0;
 
     this.loadingPageNumber = pageNumber;
