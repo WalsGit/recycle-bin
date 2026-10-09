@@ -1,12 +1,14 @@
 {
     "name": "walsgit/recycle-bin",
-    "description": "Flarum extension to manage deleted (hidden) discussions",
+    "description": "Flarum extension to manage deleted (hidden) discussions & posts",
     "keywords": [
         "flarum",
+        "extension",
         "discussions",
         "recycle bin",
         "deleted",
-        "hidden"
+        "hidden",
+        "restore"
     ],
     "type": "flarum-extension",
     "license": "MIT",
