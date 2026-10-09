@@ -392,7 +392,6 @@ export default class PostsBinPage extends Page {
         name: app.translator.trans('walsgit-recycle-bin.admin.created_at'),
         content: (post: Post) => (
           <span className="DiscussionList-creationDate" title={post.createdAt()}>
-            {/*dayjs(discussion.createdAt()).format('LLL')*/}
             {post.createdAt() ? humanTime(post.createdAt() as Date) : app.translator.trans('walsgit-recycle-bin.admin.unknown_date')}
           </span>
         ),

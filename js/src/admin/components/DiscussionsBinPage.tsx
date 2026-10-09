@@ -388,7 +388,6 @@ export default class RecycleBinPage extends Page {
         name: app.translator.trans('walsgit-recycle-bin.admin.created_at'),
         content: (discussion: Discussion) => (
           <span className="DiscussionList-creationDate" title={discussion.createdAt()}>
-            {/*dayjs(discussion.createdAt()).format('LLL')*/}
             {discussion.createdAt() ? humanTime(discussion.createdAt() as Date) : app.translator.trans('walsgit-recycle-bin.admin.unknown_date')}
           </span>
         ),
