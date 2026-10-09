@@ -46,28 +46,26 @@ export default class MassDeletePostModal extends FormModal<MassDeletePostModalAt
   onsubmit() {
     this.loading = true;
 
-    app.request({
-      method: 'POST',
-      url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-posts`,
-      body: {
-        action: 'delete',
-        ids: Array.from(this.selectedPosts),
-      },
-    })
-    .then(() => {
-      this.hide();
-      if (this.attrs.onSuccess) {
-        this.attrs.onSuccess();
-      }
-      m.redraw();
-      app.alerts.show(
-        { type: 'success' },
-        app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.success')
-      );
-    })
-    .catch(() => {
-      this.loading = false;
-      m.redraw();
-    });
+    app
+      .request({
+        method: 'POST',
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-posts`,
+        body: {
+          action: 'delete',
+          ids: Array.from(this.selectedPosts),
+        },
+      })
+      .then(() => {
+        this.hide();
+        if (this.attrs.onSuccess) {
+          this.attrs.onSuccess();
+        }
+        m.redraw();
+        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.success'));
+      })
+      .catch(() => {
+        this.loading = false;
+        m.redraw();
+      });
   }
 }

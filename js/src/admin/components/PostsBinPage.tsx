@@ -94,10 +94,11 @@ export default class PostsBinPage extends Page {
   }
 
   private refreshStatistics() {
-    app.request<{ hidden_posts_count: number }>({
-      method: 'GET',
-      url: `${app.forum.attribute('apiUrl')}/recycle-bin/post-statistics`,
-    })
+    app
+      .request<{ hidden_posts_count: number }>({
+        method: 'GET',
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/post-statistics`,
+      })
       .then((result) => {
         this.hiddenPostsCount(result.hidden_posts_count);
       })
@@ -172,7 +173,13 @@ export default class PostsBinPage extends Page {
           aria-busy={this.isLoadingPage ? 'true' : 'false'}
         >
           {columns.map((column, colIndex) => (
-            <div key={`header-${column.itemName || colIndex}`} className="RecycleBinPage-grid-header" role="columnheader" aria-colindex={colIndex + 1} aria-rowindex={1}>
+            <div
+              key={`header-${column.itemName || colIndex}`}
+              className="RecycleBinPage-grid-header"
+              role="columnheader"
+              aria-colindex={colIndex + 1}
+              aria-rowindex={1}
+            >
               {column.name}
             </div>
           ))}

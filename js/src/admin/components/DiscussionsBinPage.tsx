@@ -93,10 +93,11 @@ export default class RecycleBinPage extends Page {
   }
 
   private refreshStatistics() {
-    app.request<{ hidden_discussions_count: number }>({
-      method: 'GET',
-      url: `${app.forum.attribute('apiUrl')}/recycle-bin/discussion-statistics`,
-    })
+    app
+      .request<{ hidden_discussions_count: number }>({
+        method: 'GET',
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/discussion-statistics`,
+      })
       .then((result) => {
         this.hiddenDiscussionsCount(result.hidden_discussions_count);
       })
@@ -171,7 +172,13 @@ export default class RecycleBinPage extends Page {
           aria-busy={this.isLoadingPage ? 'true' : 'false'}
         >
           {columns.map((column, colIndex) => (
-            <div key={`header-${column.itemName || colIndex}`} className="RecycleBinPage-grid-header" role="columnheader" aria-colindex={colIndex + 1} aria-rowindex={1}>
+            <div
+              key={`header-${column.itemName || colIndex}`}
+              className="RecycleBinPage-grid-header"
+              role="columnheader"
+              aria-colindex={colIndex + 1}
+              aria-rowindex={1}
+            >
               {column.name}
             </div>
           ))}
