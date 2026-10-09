@@ -18,6 +18,7 @@ class ContentPostFilter implements FilterInterface
             return;
         }
         
-        $state->getQuery()->where('posts.content', 'like', "%$value%");
+        $operator = $negate ? 'not like' : 'like';
+        $state->getQuery()->where('posts.content', $operator, "%$value%");
     }
 }
