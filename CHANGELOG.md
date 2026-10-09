@@ -1,6 +1,21 @@
 
 # Changelog
 
+## [2.0.7] - 2026-10-09
+### Fixed
+- Redundant admin page registrations
+- Mass action "N+1" performance issue (now uses new mass actions api endpoint)
+- No more page page or windows reloads needed to update data after user action
+- Code cleanup & improvements.
+
+### Added
+- Admin checks on statistics api endpoints
+- New mass actions endpoints & controllers
+
+## [2.0.6] - 2026-08-13
+### Security updates
+- Updated some dependencies
+
 ## [2.0.5] - 2026-06-30
 ### Security updates
 - Updated some dependencies

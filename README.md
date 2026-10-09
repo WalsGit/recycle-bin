@@ -7,25 +7,19 @@ A [Flarum](https://flarum.org) extension to manage deleted (hidden) discussions 
 [![Screenshot](https://i.postimg.cc/y69G3pfp/2024-10-09-16-09-34-flarum-test-baeb96af962a.png)](https://postimg.cc/qgJw9wH2)
 
 ## Versions
-Starting with the version `2.0.0` of this extension, it will only be compatible with `Flarum v2.*`.
-Last version of the extension compatible with `Flarum v1.8.*` is `walsgit/recycle-bin:"0.2.3"`.
+Starting with the version `2.0.0` of this extension, it will only be compatible with `Flarum v2.*`. Latest version was developed and tested on Flarum version `2.0.0-rc.8`.
+`Flarum v1.8.*` will no longer be supported. Last version of the extension compatible with `Flarum v1.8.*` is `walsgit/recycle-bin:"0.2.3"`.
 
-### With Recycle Bin you can:
-- list all hidden discussions and posts
-- restore a hidden discussion or post
-- forever delete a hidden discussion or post (remove from db)
-- Mass restore & delete discussions or posts
-
-### 🐞 Known issues :
-- Search filter for discussions only works with complete words (returns a empty list for partial words) and isn't limited to discussion titles but also returns discussions where the searched word is found in its messages (replies) too.
-- Mass restore or delete need a full page refresh to update de list and total number of hidden discussions (the page refresh is implemented but it's not ideal, you'll have to wait for it after confirming your mass action)
+### Features
+- listing of all hidden discussions and posts (with direct links, authors, dates + filter through them by keywords)
+- restoring hidden discussions or posts
+- forever deleting hidden discussions or posts (remove them from db)
+- mass restoring or deleting.
 
 ### Notes
-- This is my very first Flarum extension
-- Developed and tested on Flarum 1.8.5 (v 0.2 of the extension dev. & tested on Flarum 1.8.9)
-- Extension settings page is based on the core UserListPage.tsx (Users settings page).
-- Developed this with the help of AI (mainly ChatGPT, Cody & Gemini)
-
+- This was my very first Flarum extension
+- Extension settings page is based on the core UserListPage.tsx (Users settings page) from flarum 1.8.5.
+- Developed this with the help of AI (mainly ChatGPT, Gemini & Cody)
 
 ## Installation
 
