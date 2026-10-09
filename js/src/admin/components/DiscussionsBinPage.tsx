@@ -92,19 +92,23 @@ export default class RecycleBinPage extends Page {
     m.redraw();
   }
 
-  oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
-    super.oninit(vnode);
-
+  private refreshStatistics() {
     app.request<{ hidden_discussions_count: number }>({
       method: 'GET',
-      url: app.forum.attribute('apiUrl') + '/recycle-bin/discussion-statistics',
+      url: `${app.forum.attribute('apiUrl')}/recycle-bin/discussion-statistics`,
     })
       .then((result) => {
-        this.hiddenDiscussionsCount(result.hidden_discussions_count); // updates the stream
+        this.hiddenDiscussionsCount(result.hidden_discussions_count);
       })
       .catch((error: any) => {
         console.error(error);
       });
+  }
+
+  oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
+    super.oninit(vnode);
+
+    this.refreshStatistics();
 
     // Get page query value from URL
     const page = parseInt(m.route.param('page'));
@@ -454,7 +458,13 @@ export default class RecycleBinPage extends Page {
       <button
         className="Button"
         onclick={() => {
-          app.modal.show(MassRestoreDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
+          app.modal.show(MassRestoreDiscussionModal, {
+            selectedDiscussions: this.selectedDiscussions,
+            onSuccess: () => {
+              this.loadPage(this.pageNumber);
+              this.refreshStatistics();
+            },
+          });
         }}
         disabled={!hasSelection}
       >
@@ -468,7 +478,13 @@ export default class RecycleBinPage extends Page {
       <button
         className="Button"
         onclick={() => {
-          app.modal.show(MassDeleteDiscussionModal, { selectedDiscussions: this.selectedDiscussions });
+          app.modal.show(MassDeleteDiscussionModal, {
+            selectedDiscussions: this.selectedDiscussions,
+            onSuccess: () => {
+              this.loadPage(this.pageNumber);
+              this.refreshStatistics();
+            },
+          });
         }}
         disabled={!hasSelection}
       >

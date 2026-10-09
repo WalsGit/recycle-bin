@@ -93,12 +93,10 @@ export default class PostsBinPage extends Page {
     m.redraw();
   }
 
-  oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
-    super.oninit(vnode);
-
-    app.request<{ hidden_posts_count: number}>({
+  private refreshStatistics() {
+    app.request<{ hidden_posts_count: number }>({
       method: 'GET',
-      url: app.forum.attribute('apiUrl') + '/recycle-bin/post-statistics',
+      url: `${app.forum.attribute('apiUrl')}/recycle-bin/post-statistics`,
     })
       .then((result) => {
         this.hiddenPostsCount(result.hidden_posts_count);
@@ -106,6 +104,12 @@ export default class PostsBinPage extends Page {
       .catch((error: any) => {
         console.error(error);
       });
+  }
+
+  oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
+    super.oninit(vnode);
+
+    this.refreshStatistics();
 
     // Get page query value from URL
     const page = parseInt(m.route.param('page'));
@@ -458,7 +462,13 @@ export default class PostsBinPage extends Page {
       <button
         className="Button"
         onclick={() => {
-          app.modal.show(MassRestorePostModal, { selectedPosts: this.selectedPosts });
+          app.modal.show(MassRestorePostModal, {
+            selectedPosts: this.selectedPosts,
+            onSuccess: () => {
+              this.loadPage(this.pageNumber);
+              this.refreshStatistics();
+            },
+          });
         }}
         disabled={!hasSelection}
       >
@@ -472,7 +482,13 @@ export default class PostsBinPage extends Page {
       <button
         className="Button"
         onclick={() => {
-          app.modal.show(MassDeletePostModal, { selectedPosts: this.selectedPosts });
+          app.modal.show(MassDeletePostModal, {
+            selectedPosts: this.selectedPosts,
+            onSuccess: () => {
+              this.loadPage(this.pageNumber);
+              this.refreshStatistics();
+            },
+          });
         }}
         disabled={!hasSelection}
       >

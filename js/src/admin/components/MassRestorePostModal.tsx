@@ -55,12 +55,14 @@ export default class MassRestorePostModal extends FormModal<MassRestorePostModal
     })
     .then(() => {
       this.hide();
+      if (this.attrs.onSuccess) {
+        this.attrs.onSuccess();
+      }
       m.redraw();
       app.alerts.show(
         { type: 'success' },
         app.translator.trans('walsgit-recycle-bin.admin.mass_restore_post_modal.success')
       );
-      window.location.reload();
     })
     .catch(() => {
       this.loading = false;

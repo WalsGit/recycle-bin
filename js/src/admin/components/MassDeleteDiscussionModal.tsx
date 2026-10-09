@@ -56,12 +56,14 @@ export default class MassDeleteDiscussionModal extends FormModal<MassDeleteDiscu
     })
     .then(() => {
       this.hide();
+      if (this.attrs.onSuccess) {
+        this.attrs.onSuccess();
+      }
       m.redraw();
       app.alerts.show(
         { type: 'success' },
         app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.success')
       );
-      window.location.reload();
     })
     .catch(() => {
       this.loading = false;
