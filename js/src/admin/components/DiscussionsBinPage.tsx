@@ -95,13 +95,12 @@ export default class RecycleBinPage extends Page {
   oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
     super.oninit(vnode);
 
-    m.request({
+    app.request<{ hidden_discussions_count: number }>({
       method: 'GET',
-      url: '/api/recycle-bin/discussion-statistics',
+      url: app.forum.attribute('apiUrl') + '/recycle-bin/discussion-statistics',
     })
-      .then((result: unknown) => {
-        const typedResult = result as { hidden_discussions_count: number };
-        this.hiddenDiscussionsCount(typedResult.hidden_discussions_count); // updates the stream
+      .then((result) => {
+        this.hiddenDiscussionsCount(result.hidden_discussions_count); // updates the stream
       })
       .catch((error: any) => {
         console.error(error);

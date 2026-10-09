@@ -96,13 +96,12 @@ export default class PostsBinPage extends Page {
   oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
     super.oninit(vnode);
 
-    m.request({
+    app.request<{ hidden_posts_count: number}>({
       method: 'GET',
-      url: '/api/recycle-bin/post-statistics',
+      url: app.forum.attribute('apiUrl') + '/recycle-bin/post-statistics',
     })
-      .then((result: unknown) => {
-        const typedResult = result as { hidden_posts_count: number };
-        this.hiddenPostsCount(typedResult.hidden_posts_count);
+      .then((result) => {
+        this.hiddenPostsCount(result.hidden_posts_count);
       })
       .catch((error: any) => {
         console.error(error);
