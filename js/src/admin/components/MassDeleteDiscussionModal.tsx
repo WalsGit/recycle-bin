@@ -4,6 +4,7 @@ import Button from 'flarum/common/components/Button';
 
 interface MassDeleteDiscussionModalAttrs extends IFormModalAttrs {
   selectedDiscussions: Set<string>;
+  onSuccess?: () => void;
 }
 
 export default class MassDeleteDiscussionModal extends FormModal<MassDeleteDiscussionModalAttrs> {

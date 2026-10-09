@@ -4,6 +4,7 @@ import Button from 'flarum/common/components/Button';
 
 interface MassRestorePostModalAttrs extends IFormModalAttrs {
   selectedPosts: Set<string>;
+  onSuccess?: () => void;
 }
 
 export default class MassRestorePostModal extends FormModal<MassRestorePostModalAttrs> {

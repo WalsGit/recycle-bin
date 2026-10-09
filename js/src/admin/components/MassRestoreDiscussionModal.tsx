@@ -4,6 +4,7 @@ import Button from 'flarum/common/components/Button';
 
 interface MassRestoreDiscussionModalAttrs extends IFormModalAttrs {
   selectedDiscussions: Set<string>;
+  onSuccess?: () => void;
 }
 
 export default class MassRestoreDiscussionModal extends FormModal<MassRestoreDiscussionModalAttrs> {
