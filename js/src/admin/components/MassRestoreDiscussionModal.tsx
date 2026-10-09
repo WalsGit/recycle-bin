@@ -45,22 +45,26 @@ export default class MassRestoreDiscussionModal extends FormModal<MassRestoreDis
   onsubmit() {
     this.loading = true;
 
-    const promises = Array.from(this.selectedDiscussions).map((discussionId) => {
-      return app.store.find('discussions', discussionId).then((discussion) => {
-        return discussion.save({ isHidden: false });
-      });
+    app.request({
+      method: 'POST',
+      url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-discussions`,
+      body: {
+        action: 'restore',
+        ids: Array.from(this.selectedDiscussions),
+      },
+    })
+    .then(() => {
+      this.hide();
+      m.redraw();
+      app.alerts.show(
+        { type: 'success' },
+        app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.success')
+      );
+      window.location.reload();
+    })
+    .catch(() => {
+      this.loading = false;
+      m.redraw();
     });
-
-    Promise.all(promises)
-      .then(() => {
-        this.hide();
-        m.redraw();
-        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.success'));
-        window.location.reload();
-      })
-      .catch(() => {
-        this.loading = false;
-        m.redraw();
-      });
   }
 }
