@@ -80,7 +80,6 @@ walsgit-recycle-bin:
       go_to_page_textbox_a11y_label: 'Allez directement à la page numéro'
       next_button: 'Aller à la page suivante'
       last_page_button: 'Aller à la dernière page'
-    mass_help_text: "Merci d'attendre le rafraîchissement de la page après la confirmation du rétablissement ou de la suppression de plusieurs discussions à la fois"
     grid:
       invalid_column_content: "Contenu invalide !"
     post:

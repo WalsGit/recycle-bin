@@ -511,14 +511,6 @@ export default class PostsBinPage extends Page {
       80
     );
 
-    massActions.add(
-      'massHelpText',
-      <div className="helpText">
-        <Icon name="fas fa-info-circle" /> {app.translator.trans('walsgit-recycle-bin.admin.mass_help_text')}
-      </div>,
-      70
-    );
-
     return massActions;
   }
 
