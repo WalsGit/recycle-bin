@@ -14,6 +14,10 @@ class ContentPostFilter implements FilterInterface
 
     public function filter(SearchState $state, array|string $value, bool $negate): void
     {
+        if (! $state->getActor()->isAdmin()) {
+            return;
+        }
+        
         if (is_array($value)) {
             return;
         }
