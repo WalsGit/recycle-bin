@@ -12,6 +12,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MassDiscussionsController implements RequestHandlerInterface
 {
+    private const MAX_IDS_PER_REQUEST = 100;
+
     public function __construct(
         protected DiscussionRepository $discussions,
         protected ConnectionInterface $db
@@ -31,21 +33,25 @@ class MassDiscussionsController implements RequestHandlerInterface
             return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }
 
+        $ids = array_slice($ids, 0, self::MAX_IDS_PER_REQUEST);
+
         $count = 0;
 
-        $this->db->transaction(function () use ($ids, $action, &$count) {
-            $discussionModels = $this->discussions->query()->whereIn('id', $ids)->get();
+        foreach (array_chunk($ids, 50) as $chunk) {
+            $this->db->transaction(function () use ($chunk, $action, &$count) {
+                $discussionModels = $this->discussions->query()->whereIn('id', $chunk)->get();
 
-            foreach ($discussionModels as $discussion) {
-                if ($action === 'restore') {
-                    $discussion->restore();
-                    $count++;
-                } elseif ($action === 'delete') {
-                    $discussion->delete();
-                    $count++;
+                foreach ($discussionModels as $discussion) {
+                    if ($action === 'restore') {
+                        $discussion->restore();
+                        $count++;
+                    } elseif ($action === 'delete') {
+                        $discussion->delete();
+                        $count++;
+                    }
                 }
-            }
-        });
+            });
+        }
 
         return new JsonResponse([
             'success'           => true,

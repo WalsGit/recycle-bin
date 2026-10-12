@@ -12,6 +12,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MassPostsController implements RequestHandlerInterface
 {
+    private const MAX_IDS_PER_REQUEST = 100;
+
     public function __construct(
         protected PostRepository $posts,
         protected ConnectionInterface $db
@@ -31,22 +33,26 @@ class MassPostsController implements RequestHandlerInterface
             return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }
 
+        $ids = array_slice($ids, 0, self::MAX_IDS_PER_REQUEST);
+
         $count = 0;
 
-        $this->db->transaction(function () use ($ids, $action, &$count) {
-            $postModels = $this->posts->query()->whereIn('id', $ids)->get();
+        foreach (array_chunk($ids, 50) as $chunk) {
+            $this->db->transaction(function () use ($chunk, $action, &$count) {
+                $postModels = $this->posts->query()->whereIn('id', $chunk)->get();
 
-            foreach ($postModels as $post) {
-                if ($action === 'restore') {
-                    $post->restore();
-                    $post->save();
-                    $count++;
-                } elseif ($action === 'delete') {
-                    $post->delete();
-                    $count++;
+                foreach ($postModels as $post) {
+                    if ($action === 'restore') {
+                        $post->restore();
+                        $post->save();
+                        $count++;
+                    } elseif ($action === 'delete') {
+                        $post->delete();
+                        $count++;
+                    }
                 }
-            }
-        });
+            });
+        }
 
         return new JsonResponse([
             'success'           => true,
