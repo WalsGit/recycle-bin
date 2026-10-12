@@ -570,7 +570,7 @@ export default class RecycleBinPage extends Page {
    */
   goToPage(page: number) {
     const currentParams = m.route.param();
-    
+
     m.route.set(
       app.route('extension', {
         ...currentParams,

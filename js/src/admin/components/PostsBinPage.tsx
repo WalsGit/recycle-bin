@@ -135,17 +135,17 @@ export default class PostsBinPage extends Page {
   }
 
   onbeforeupdate(vnode: Mithril.Vnode<IPageAttrs, this>) {
-      super.onbeforeupdate(vnode);
-  
-      const pageParam = Number.parseInt(m.route.param('page'));
-      const newPageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
-  
-      if (newPageNumber !== this.pageNumber) {
-        this.pageNumber = newPageNumber;
-        this.loadPage(this.pageNumber);
-      }
+    super.onbeforeupdate(vnode);
+
+    const pageParam = Number.parseInt(m.route.param('page'));
+    const newPageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
+
+    if (newPageNumber !== this.pageNumber) {
+      this.pageNumber = newPageNumber;
+      this.loadPage(this.pageNumber);
     }
-  
+  }
+
   /**
    * Component to render.
    */
@@ -575,7 +575,7 @@ export default class PostsBinPage extends Page {
    */
   goToPage(page: number) {
     const currentParams = m.route.param();
-    
+
     m.route.set(
       app.route('extension', {
         ...currentParams,
