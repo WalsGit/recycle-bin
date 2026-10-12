@@ -19,6 +19,9 @@ class ContentPostFilter implements FilterInterface
         }
         
         $operator = $negate ? 'not like' : 'like';
-        $state->getQuery()->where('posts.content', $operator, "%$value%");
+
+        $escapedValue = addcslashes($value, '%_\\');
+        
+        $state->getQuery()->where('posts.content', $operator, "%{$escapedValue}%");
     }
 }
