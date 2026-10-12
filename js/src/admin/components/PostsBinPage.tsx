@@ -113,16 +113,10 @@ export default class PostsBinPage extends Page {
     this.refreshStatistics();
 
     // Get page query value from URL
-    const page = Number.parseInt(m.route.param('page'));
+    const pageParam = Number.parseInt(m.route.param('page'));
+    this.pageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
 
-    if (Number.isNaN(page) || page < 1) {
-      this.setPageNumberInUrl(1);
-      this.pageNumber = 0;
-    } else {
-      this.pageNumber = page - 1;
-    }
-
-    this.loadingPageNumber = this.pageNumber;
+    this.loadPage(this.pageNumber);
 
     this.postRestored.map((restored: any) => {
       if (restored) {
@@ -139,6 +133,19 @@ export default class PostsBinPage extends Page {
       }
     });
   }
+
+  onbeforeupdate(vnode: Mithril.Vnode<IPageAttrs, this>) {
+      super.onbeforeupdate(vnode);
+  
+      const pageParam = Number.parseInt(m.route.param('page'));
+      const newPageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
+  
+      if (newPageNumber !== this.pageNumber) {
+        this.pageNumber = newPageNumber;
+        this.loadPage(this.pageNumber);
+      }
+    }
+  
   /**
    * Component to render.
    */
@@ -518,18 +525,13 @@ export default class PostsBinPage extends Page {
   /**
    * Asynchronously fetch the next set of hidden discussions to be rendered.
    *
-   * Returns an array of Discussions, plus the raw API payload.
-   *
-   * Uses the `this.numPerPage` as the response limit, and automatically calculates the offset required from `pageNumber`.
-   *
    * @param pageNumber The **zero-based** page number to load and display
    */
   loadPage(pageNumber: number) {
     if (pageNumber < 0) pageNumber = 0;
 
+    this.isLoadingPage = true;
     this.loadingPageNumber = pageNumber;
-    this.setPageNumberInUrl(pageNumber + 1);
-
     this.selectedPosts.clear();
 
     const query = this.query.trim();
@@ -545,9 +547,9 @@ export default class PostsBinPage extends Page {
           offset: pageNumber * this.numPerPage,
         },
       })
-      .then((result) => {
-        this.moreData = !!result.payload.links?.next;
-        this.pageData = result;
+      .then((apiData) => {
+        this.moreData = !!apiData.payload.links?.next;
+        this.pageData = apiData;
         this.pageNumber = pageNumber;
         this.isLoadingPage = false;
         m.redraw();
@@ -555,31 +557,31 @@ export default class PostsBinPage extends Page {
       .catch((err: Error) => {
         console.error(err);
         this.pageData = [];
+        this.isLoadingPage = false;
+        m.redraw();
       });
   }
+
   nextPage() {
-    this.isLoadingPage = true;
-    this.loadPage(this.pageNumber + 1);
+    this.goToPage(this.pageNumber + 2);
   }
 
   previousPage() {
-    this.isLoadingPage = true;
-    this.loadPage(this.pageNumber - 1);
+    this.goToPage(this.pageNumber);
   }
 
   /**
    * @param page The **1-based** page number
    */
   goToPage(page: number) {
-    this.isLoadingPage = true;
-    this.loadPage(page - 1);
-  }
-
-  private setPageNumberInUrl(pageNumber: number) {
-    const search = window.location.hash.split('?', 2);
-    const params = new URLSearchParams(search?.[1] ?? '');
-
-    params.set('page', `${pageNumber}`);
-    window.location.hash = search?.[0] + '?' + params.toString();
+    const currentParams = m.route.param();
+    
+    m.route.set(
+      app.route('extension', {
+        ...currentParams,
+        id: 'walsgit-recycle-bin',
+        page,
+      })
+    );
   }
 }

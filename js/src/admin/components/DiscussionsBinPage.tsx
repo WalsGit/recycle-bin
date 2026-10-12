@@ -112,18 +112,12 @@ export default class RecycleBinPage extends Page {
     this.refreshStatistics();
 
     // Get page query value from URL
-    const page = Number.parseInt(m.route.param('page'));
+    const pageParam = Number.parseInt(m.route.param('page'));
+    this.pageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
 
-    if (Number.isNaN(page) || page < 1) {
-      this.setPageNumberInUrl(1);
-      this.pageNumber = 0;
-    } else {
-      this.pageNumber = page - 1;
-    }
+    this.loadPage(this.pageNumber);
 
-    this.loadingPageNumber = this.pageNumber;
-
-    this.discussionRestored.map((restored: any) => {
+    this.discussionRestored.map((restored: boolean) => {
       if (restored) {
         this.loadPage(this.pageNumber);
         this.hiddenDiscussionsCount(this.hiddenDiscussionsCount() - 1);
@@ -138,6 +132,19 @@ export default class RecycleBinPage extends Page {
       }
     });
   }
+
+  onbeforeupdate(vnode: Mithril.Vnode<IPageAttrs, this>) {
+    super.onbeforeupdate(vnode);
+
+    const pageParam = Number.parseInt(m.route.param('page'));
+    const newPageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
+
+    if (newPageNumber !== this.pageNumber) {
+      this.pageNumber = newPageNumber;
+      this.loadPage(this.pageNumber);
+    }
+  }
+
   /**
    * Component to render.
    */
@@ -514,18 +521,13 @@ export default class RecycleBinPage extends Page {
   /**
    * Asynchronously fetch the next set of hidden discussions to be rendered.
    *
-   * Returns an array of Discussions, plus the raw API payload.
-   *
-   * Uses the `this.numPerPage` as the response limit, and automatically calculates the offset required from `pageNumber`.
-   *
    * @param pageNumber The **zero-based** page number to load and display
    */
   loadPage(pageNumber: number) {
     if (pageNumber < 0) pageNumber = 0;
 
+    this.isLoadingPage = true;
     this.loadingPageNumber = pageNumber;
-    this.setPageNumberInUrl(pageNumber + 1);
-
     this.selectedDiscussions.clear();
 
     const is = app.translator.trans('core.lib.gambits.group_keys.is');
@@ -540,55 +542,41 @@ export default class RecycleBinPage extends Page {
         },
       })
       .then((apiData) => {
-        // Next link won't be present if there's no more data
         this.moreData = !!apiData.payload?.links?.next;
-
-        let data = apiData.filter((discussion: Discussion) => discussion.isHidden());
-
-        // @ts-ignore
-        delete data.payload;
-
-        const lastPage = this.getTotalPageCount();
-
-        if (pageNumber > lastPage) {
-          this.loadPage(lastPage - 1);
-        } else {
-          this.pageData = data;
-          this.pageNumber = pageNumber;
-          this.loadingPageNumber = pageNumber;
-          this.isLoadingPage = false;
-        }
-
+        this.pageData = apiData;
+        this.pageNumber = pageNumber;
+        this.loadingPageNumber = pageNumber;
+        this.isLoadingPage = false;
         m.redraw();
       })
       .catch((err: Error) => {
         console.error(err);
         this.pageData = [];
+        this.isLoadingPage = false;
+        m.redraw();
       });
   }
+
   nextPage() {
-    this.isLoadingPage = true;
-    this.loadPage(this.pageNumber + 1);
+    this.goToPage(this.pageNumber + 2);
   }
 
   previousPage() {
-    this.isLoadingPage = true;
-    this.loadPage(this.pageNumber - 1);
+    this.goToPage(this.pageNumber);
   }
 
   /**
    * @param page The **1-based** page number
    */
   goToPage(page: number) {
-    this.isLoadingPage = true;
-    this.loadPage(page - 1);
-  }
-
-  private setPageNumberInUrl(pageNumber: number) {
-    const search = window.location.hash.split('?', 2);
-    const params = new URLSearchParams(search?.[1] ?? '');
-
-    params.set('page', `${pageNumber}`);
-    window.location.hash = search?.[0] + '?' + params.toString();
+    const currentParams = m.route.param();
+    
+    m.route.set(
+      app.route('extension', {
+        ...currentParams,
+        id: 'walsgit-recycle-bin',
+        page,
+      })
+    );
   }
 }
