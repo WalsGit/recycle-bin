@@ -63,9 +63,9 @@ export default class MassRestoreDiscussionModal extends FormModal<MassRestoreDis
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.mass_restore_modal.success'));
       })
-      .catch(() => {
-        this.loading = false;
-        m.redraw();
+      .catch((error) => {
+        this.loaded();
+        this.onerror(error);
       });
   }
 }

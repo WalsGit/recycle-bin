@@ -64,9 +64,9 @@ export default class DeleteDiscussionModal extends FormModal<DeleteDiscussionMod
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success'));
       })
-      .catch(() => {
-        this.loading = false;
-        m.redraw();
+      .catch((error) => {
+        this.loaded();
+        this.onerror(error);
       });
   }
 }

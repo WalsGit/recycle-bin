@@ -67,9 +67,9 @@ export default class RestorePostModal extends FormModal<RestorePostModalAttrs> {
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.restore_post.success'));
       })
-      .catch(() => {
-        this.loading = false;
-        m.redraw();
+      .catch((error: any) => {
+        this.loaded();
+        this.onerror(error);
       });
   }
 }

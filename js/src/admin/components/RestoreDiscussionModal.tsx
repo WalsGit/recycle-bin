@@ -3,6 +3,7 @@ import app from 'flarum/admin/app';
 import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
+import RequestError from 'flarum/common/utils/RequestError';
 
 interface RestoreDiscussionModalAttrs extends IFormModalAttrs {
   discussion: any;
@@ -64,9 +65,9 @@ export default class RestoreDiscussionModal extends FormModal<RestoreDiscussionM
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success'));
       })
-      .catch(() => {
-        this.loading = false;
-        m.redraw();
+      .catch((error: any) => {
+        this.loaded();
+        this.onerror(error);
       });
   }
 }

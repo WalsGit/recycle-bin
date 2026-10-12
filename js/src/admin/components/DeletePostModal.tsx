@@ -62,9 +62,9 @@ export default class DeletePostModal extends FormModal {
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.delete_post.success'));
       })
-      .catch(() => {
-        this.loading = false;
-        m.redraw();
+      .catch((error) => {
+        this.loaded();
+        this.onerror(error);
       });
   }
 }

@@ -64,9 +64,9 @@ export default class MassDeleteDiscussionModal extends FormModal<MassDeleteDiscu
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.success'));
       })
-      .catch(() => {
-        this.loading = false;
-        m.redraw();
+      .catch((error) => {
+        this.loaded();
+        this.onerror(error);
       });
   }
 }
