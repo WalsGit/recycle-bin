@@ -38,8 +38,7 @@ class MassPostsController implements RequestHandlerInterface
 
             foreach ($postModels as $post) {
                 if ($action === 'restore') {
-                    $post->hidden_at = null;
-                    $post->hidden_user_id = null;
+                    $post->restore();
                     $post->save();
                     $count++;
                 } elseif ($action === 'delete') {

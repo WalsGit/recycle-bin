@@ -38,9 +38,7 @@ class MassDiscussionsController implements RequestHandlerInterface
 
             foreach ($discussionModels as $discussion) {
                 if ($action === 'restore') {
-                    $discussion->hidden_at = null;
-                    $discussion->hidden_user_id = null;
-                    $discussion->save();
+                    $discussion->restore();
                     $count++;
                 } elseif ($action === 'delete') {
                     $discussion->delete();
