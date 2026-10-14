@@ -50,9 +50,10 @@ export default class MassDeleteDiscussionModal extends FormModal<MassDeleteDiscu
     app
       .request({
         method: 'POST',
-        url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-discussions`,
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-discussion`,
         body: {
           action: 'delete',
+          type: 'discussions',
           ids: Array.from(this.selectedDiscussions),
         },
       })

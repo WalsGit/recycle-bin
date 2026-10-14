@@ -49,9 +49,10 @@ export default class MassRestoreDiscussionModal extends FormModal<MassRestoreDis
     app
       .request({
         method: 'POST',
-        url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-discussions`,
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-discussion`,
         body: {
           action: 'restore',
+          type: 'discussions',
           ids: Array.from(this.selectedDiscussions),
         },
       })
