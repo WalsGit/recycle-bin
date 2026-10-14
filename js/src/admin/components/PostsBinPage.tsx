@@ -1,89 +1,33 @@
-import Page, { IPageAttrs } from 'flarum/common/components/Page';
 import Mithril from 'mithril';
 import app from 'flarum/admin/app';
-import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
-import type User from 'flarum/common/models/User';
 import Post from 'flarum/common/models/Post';
+import User from 'flarum/common/models/User';
 import ItemList from 'flarum/common/utils/ItemList';
-import classList from 'flarum/common/utils/classList';
-import extractText from 'flarum/common/utils/extractText';
-import { debounce } from 'flarum/common/utils/throttleDebounce';
-import humanTime from 'flarum/common/helpers/humanTime';
 import Stream from 'flarum/common/utils/Stream';
+import extractText from 'flarum/common/utils/extractText';
+import humanTime from 'flarum/common/helpers/humanTime';
+import { truncate } from 'flarum/common/utils/string';
+import AbstractBinPage from './AbstractBinPage';
 import RestorePostModal from './RestorePostModal';
 import DeletePostModal from './DeletePostModal';
 import MassRestorePostModal from './MassRestorePostModal';
 import MassDeletePostModal from './MassDeletePostModal';
-import { truncate } from 'flarum/common/utils/string';
 
 type ColumnData = {
-  /**
-   * Column title
-   */
   name: Mithril.Children;
-  /**
-   * Component(s) to show for this column.
-   */
   content: (post: Post) => Mithril.Children;
 };
 
-/**
- * Admin page which displays a paginated list of all hidden posts on the forum.
- */
-export default class PostsBinPage extends Page {
-  private query: string = '';
-  private readonly throttledSearch = debounce(250, () => this.loadPage(0));
-  private readonly postRestored: Stream<boolean> = Stream(false);
-  private readonly postDeleted: Stream<boolean> = Stream(false);
-  private readonly hiddenPostsCount: Stream<number> = Stream(0);
+export default class PostsBinPage extends AbstractBinPage<Post> {
+  protected readonly itemRestored: Stream<boolean> = Stream(false);
+  protected readonly itemDeleted: Stream<boolean> = Stream(false);
+  protected readonly itemsCount: Stream<number> = Stream(0);
 
-  /**
-   * Number of discussions to load per page.
-   */
-  private readonly numPerPage: number = 25;
+  protected readonly selectedPosts: Set<string> = new Set();
 
-  /**
-   * Current page number. Zero-indexed.
-   */
-  private pageNumber: number = 0;
-
-  /**
-   * Page number being loaded. Zero-indexed.
-   */
-  private loadingPageNumber: number = 0;
-
-  /**
-   * Get total number of hidden discussion pages.
-   */
-  private getTotalPageCount(): number {
-    const count = this.hiddenPostsCount();
-    if (count === -1 || Number.isNaN(count)) return 0;
-
-    return Math.ceil(count / this.numPerPage);
-  }
-
-  /**
-   * This page's array of discussions.
-   *
-   * `undefined` when page loads as no data has been fetched.
-   */
-  private pageData: Post[] | undefined = undefined;
-
-  /**
-   * Are there more hidden discussions available?
-   */
-  private moreData: boolean = false;
-
-  private isLoadingPage: boolean = false;
-
-  /**
-   * Tracking which discussions have been selected for mass actions.
-   */
-  private readonly selectedPosts: Set<string> = new Set();
-
-  private togglePostSelection(e: Event, postId: string) {
+  protected toggleSelection(e: Event, postId: string): void {
     const checkbox = e.target as HTMLInputElement;
     if (checkbox.checked) {
       this.selectedPosts.add(postId);
@@ -93,199 +37,30 @@ export default class PostsBinPage extends Page {
     m.redraw();
   }
 
-  private refreshStatistics() {
+  protected refreshStatistics(): void {
     app
       .request<{ hidden_posts_count: number }>({
         method: 'GET',
         url: `${app.forum.attribute('apiUrl')}/recycle-bin/post-statistics`,
       })
       .then((result) => {
-        this.hiddenPostsCount(result.hidden_posts_count);
+        this.itemsCount(result.hidden_posts_count);
       })
       .catch((error: any) => {
         console.error(error);
       });
   }
 
-  oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
-    super.oninit(vnode);
-
-    this.refreshStatistics();
-
-    // Get page query value from URL
-    const pageParam = Number.parseInt(m.route.param('page'));
-    this.pageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
-
-    this.loadPage(this.pageNumber);
-
-    this.postRestored.map((restored: any) => {
-      if (restored) {
-        this.loadPage(this.pageNumber);
-        this.hiddenPostsCount(this.hiddenPostsCount() - 1);
-        this.postRestored(false); // Reset the Stream
-      }
-    });
-    this.postDeleted.map((deleted: any) => {
-      if (deleted) {
-        this.loadPage(this.pageNumber);
-        this.hiddenPostsCount(this.hiddenPostsCount() - 1);
-        this.postDeleted(false); // Reset the Stream
-      }
-    });
+  protected getApiUrl(): string {
+    return 'posts';
   }
 
-  onbeforeupdate(vnode: Mithril.Vnode<IPageAttrs, this>) {
-    super.onbeforeupdate(vnode);
-
-    const pageParam = Number.parseInt(m.route.param('page'));
-    const newPageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
-
-    if (newPageNumber !== this.pageNumber) {
-      this.pageNumber = newPageNumber;
-      this.loadPage(this.pageNumber);
-    }
+  protected getTitleTranslationKey(): string {
+    return 'walsgit-recycle-bin.admin.posts_bin';
   }
 
-  /**
-   * Component to render.
-   */
-  view(vnode: Mithril.Vnode<IPageAttrs, this>): Mithril.Children {
-    if (this.pageData === undefined) {
-      this.loadPage(this.pageNumber);
-
-      return (
-        <div className="extensionPage-settings">
-          <div className="container">
-            <section className="RecycleBinPage-grid RecycleBinPage-grid--loading">
-              {m(LoadingIndicator, { containerClassName: 'LoadingIndicator--block', size: 'large' })}
-            </section>
-          </div>
-        </div>
-      );
-    }
-
-    const columns = this.columns().toArray();
-
-    return (
-      <div className="ExtensionPage-settings">
-        <h2>{app.translator.trans('walsgit-recycle-bin.admin.posts_bin')}</h2>
-        <div className="RecycleBinPage-header">{this.headerItems().toArray()}</div>
-        <section
-          className={classList(['RecycleBinPage-grid', this.isLoadingPage ? 'RecycleBinPage-grid--loadingPage' : 'RecycleBinPage-grid--loaded'])}
-          style={{ '--columns': columns.length }}
-          role="table"
-          aria-rowcount={this.pageData.length + 1}
-          aria-colcount={columns.length}
-          aria-live="polite"
-          aria-busy={this.isLoadingPage ? 'true' : 'false'}
-        >
-          {columns.map((column, colIndex) => (
-            <div
-              key={`header-${column.itemName || colIndex}`}
-              className="RecycleBinPage-grid-header"
-              role="columnheader"
-              aria-colindex={colIndex + 1}
-              aria-rowindex={1}
-            >
-              {column.name}
-            </div>
-          ))}
-
-          {this.pageData.map((post, rowIndex) =>
-            columns.map((col, colIndex) => {
-              const columnContent = col.content?.(post);
-
-              return (
-                <div
-                  key={`${post.id()}-${col.itemName || colIndex}`}
-                  className={classList(['RecycleBinPage-grid-rowItem', rowIndex % 2 > 0 && 'RecycleBinPage-grid-rowItem--shaded'])}
-                  data-post-id={post.id()}
-                  data-column-name={col.itemName}
-                  aria-colindex={colIndex + 1}
-                  aria-rowindex={rowIndex + 2}
-                  role="cell"
-                >
-                  {columnContent || app.translator.trans('walsgit-recycle-bin.admin.grid.invalid_column_content')}
-                </div>
-              );
-            })
-          )}
-
-          {this.isLoadingPage && m(LoadingIndicator, { size: 'large' })}
-        </section>
-        <div className="RecycleBinPage-massActions">{this.massActions().toArray()}</div>
-        <nav className="RecycleBinPage-gridPagination">
-          {m(Button, {
-            disabled: this.pageNumber === 0,
-            title: app.translator.trans('walsgit-recycle-bin.admin.pagination.first_page_button'),
-            ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.first_page_button'),
-            onclick: this.goToPage.bind(this, 1),
-            icon: 'fas fa-step-backward',
-            className: 'Button Button--icon RecycleBinPage-firstPageBtn',
-          })}
-          {m(Button, {
-            disabled: this.pageNumber === 0,
-            title: app.translator.trans('walsgit-recycle-bin.admin.pagination.back_button'),
-            ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.back_button'),
-            onclick: this.previousPage.bind(this),
-            icon: 'fas fa-chevron-left',
-            className: 'Button Button--icon RecycleBinPage-backBtn',
-          })}
-          <span className="RecycleBinPage-pageNumber">
-            {app.translator.trans('walsgit-recycle-bin.admin.pagination.page_counter', {
-              current: (
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={this.loadingPageNumber + 1}
-                  aria-label={extractText(app.translator.trans('walsgit-recycle-bin.admin.pagination.go_to_page_textbox_a11y_label'))}
-                  autoComplete="off"
-                  className="FormControl RecycleBinPage-pageNumberInput"
-                  onchange={(e: InputEvent) => {
-                    const target = e.target as HTMLInputElement;
-                    let pageNumber = Number.parseInt(target.value);
-
-                    if (Number.isNaN(pageNumber)) {
-                      target.value = (this.pageNumber + 1).toString();
-                      return;
-                    }
-
-                    if (pageNumber < 1) {
-                      pageNumber = 1;
-                    } else if (pageNumber > this.getTotalPageCount()) {
-                      pageNumber = this.getTotalPageCount();
-                    }
-
-                    target.value = pageNumber.toString();
-
-                    this.goToPage(pageNumber);
-                  }}
-                />
-              ),
-              currentNum: this.pageNumber + 1,
-              total: this.getTotalPageCount(),
-            })}
-          </span>
-          {m(Button, {
-            disabled: !this.moreData,
-            title: app.translator.trans('walsgit-recycle-bin.admin.pagination.next_button'),
-            ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.next_button'),
-            onclick: this.nextPage.bind(this),
-            icon: 'fas fa-chevron-right',
-            className: 'Button Button--icon RecycleBinPage-nextBtn',
-          })}
-          {m(Button, {
-            disabled: !this.moreData,
-            title: app.translator.trans('walsgit-recycle-bin.admin.pagination.last_page_button'),
-            ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.last_page_button'),
-            onclick: this.goToPage.bind(this, this.getTotalPageCount()),
-            icon: 'fas fa-step-forward',
-            className: 'Button Button--icon RecycleBinPage-lastPageBtn',
-          })}
-        </nav>
-      </div>
-    );
+  protected getModelName(): string {
+    return 'post';
   }
 
   headerItems(): ItemList<Mithril.Children> {
@@ -297,7 +72,8 @@ export default class PostsBinPage extends Page {
         <input
           className="FormControl SearchBar"
           type="search"
-          placeholder={app.translator.trans('walsgit-recycle-bin.admin.search_post_placeholder')}
+          placeholder={app.translator.trans('walsgit-recycle-bin.admin.search_post_placeholder') as string}
+          value={this.query}
           oninput={(e: InputEvent) => {
             this.isLoadingPage = true;
             this.query = (e?.target as HTMLInputElement)?.value;
@@ -310,16 +86,16 @@ export default class PostsBinPage extends Page {
 
     items.add(
       'searchHelpText',
-      <div class="helpText">
+      <div className="helpText">
         <Icon name="fas fa-info-circle" /> {app.translator.trans('walsgit-recycle-bin.admin.search_post_help_text')}
       </div>,
       95
     );
 
     items.add(
-      'totalHiddenDiscussions',
-      <p class="RecycleBinPage-totalDiscussions">
-        {app.translator.trans('walsgit-recycle-bin.admin.total_hidden_posts')}: {this.hiddenPostsCount()}
+      'totalHiddenPosts',
+      <p className="RecycleBinPage-totalDiscussions">
+        {app.translator.trans('walsgit-recycle-bin.admin.total_hidden_posts')}: {this.itemsCount()}
       </p>,
       90
     );
@@ -327,40 +103,27 @@ export default class PostsBinPage extends Page {
     return items;
   }
 
-  /**
-   * Build an item list of columns to show for each hidden discussion.
-   *
-   * Each column in the list should be an object with keys `name` and `content`.
-   *
-   * `name` is a string that will be used as the column name.
-   * `content` is a function with the Discussion model passed as the first and only argument.
-   */
   columns(): ItemList<ColumnData> {
-    const columns = new ItemList<ColumnData>();
+    const items = new ItemList<ColumnData>();
+    const baseUrl = app.forum.attribute('baseUrl') as string;
 
-    columns.add(
-      'selection',
+    items.add(
+      'select',
       {
         name: '',
-        content: (post: Post) => {
-          return (
-            <input
-              type="checkbox"
-              className="RecycleBinPage-Checkbox"
-              onclick={(e: Event) => {
-                const id = post.id();
-                if (id !== undefined) {
-                  this.togglePostSelection(e, id);
-                }
-              }}
-            />
-          );
-        },
+        content: (post: Post) => (
+          <input
+            type="checkbox"
+            className="RecycleBinPage-Checkbox"
+            checked={this.selectedPosts.has(post.id()!)}
+            onchange={(e: Event) => this.toggleSelection(e, post.id()!)}
+          />
+        ),
       },
       100
     );
 
-    columns.add(
+    items.add(
       'id',
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.post.id'),
@@ -369,12 +132,13 @@ export default class PostsBinPage extends Page {
       99
     );
 
-    columns.add(
+    items.add(
       'post',
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.post.title'),
         content: (post: Post) => {
-          const postUrl = `${app.forum.attribute('baseUrl')}/d/${post.discussion().slug()}/${post.number()}`;
+          const discussion = post.discussion();
+          const postUrl = discussion ? `${baseUrl}/d/${discussion.slug()}/${post.number()}` : baseUrl;
 
           return (
             <span>
@@ -389,8 +153,8 @@ export default class PostsBinPage extends Page {
       90
     );
 
-    columns.add(
-      'author',
+    items.add(
+      'user',
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.author'),
         content: (post: Post) => {
@@ -401,12 +165,12 @@ export default class PostsBinPage extends Page {
       85
     );
 
-    columns.add(
+    items.add(
       'createdAt',
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.created_at'),
         content: (post: Post) => (
-          <span className="DiscussionList-creationDate" title={post.createdAt()}>
+          <span className="DiscussionList-creationDate" title={post.createdAt() ? String(post.createdAt()) : undefined}>
             {post.createdAt() ? humanTime(post.createdAt() as Date) : app.translator.trans('walsgit-recycle-bin.admin.unknown_date')}
           </span>
         ),
@@ -414,12 +178,12 @@ export default class PostsBinPage extends Page {
       80
     );
 
-    columns.add(
+    items.add(
       'hiddenAt',
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.hidden_at'),
         content: (post: Post) => (
-          <span className="DiscussionList-hiddenDate" title={post.hiddenAt()}>
+          <span className="DiscussionList-hiddenDate" title={post.hiddenAt() ? String(post.hiddenAt()) : undefined}>
             {post.hiddenAt() ? humanTime(post.hiddenAt() as Date) : app.translator.trans('walsgit-recycle-bin.admin.unknown_date')}
           </span>
         ),
@@ -427,153 +191,91 @@ export default class PostsBinPage extends Page {
       80
     );
 
-    columns.add(
+    items.add(
       'actions',
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.actions'),
-        content: (post: Post) => (
-          <>
-            {m(
-              Button,
-              {
-                className: 'Button DiscussionList-editModalBtn',
-                title: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
-                ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
-                onclick: () => app.modal.show(RestorePostModal, { post: post, postRestored: this.postRestored }),
+        content: (post: Post) => [
+          m(
+            Button,
+            {
+              className: 'Button DiscussionList-editModalBtn',
+              title: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
+              ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
+              onclick: () => {
+                void app.modal.show(RestorePostModal, { post: post, postRestored: this.itemRestored });
               },
-              <Icon name="fas fa-trash-restore" />
-            )}
-            {m(
-              Button,
-              {
-                className: 'Button DiscussionList-editModalBtn',
-                title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
-                ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
-                onclick: () => app.modal.show(DeletePostModal, { post: post, postDeleted: this.postDeleted }),
+            },
+            <Icon name="fas fa-trash-restore" />
+          ),
+          m(
+            Button,
+            {
+              className: 'Button DiscussionList-editModalBtn',
+              title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
+              ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
+              onclick: () => {
+                void app.modal.show(DeletePostModal, { post: post, postDeleted: this.itemDeleted });
               },
-              <Icon name="fas fa-times" />
-            )}
-          </>
-        ),
+            },
+            <Icon name="fas fa-times" />
+          ),
+        ],
       },
       -90
     );
 
-    return columns;
+    return items;
   }
 
-  /**
-   * Build an item list of mass actions buttons to show under the hidden discussions list.
-   */
   massActions(): ItemList<Mithril.Children> {
-    const massActions = new ItemList<Mithril.Children>();
+    const items = new ItemList<Mithril.Children>();
     const hasSelection = this.selectedPosts.size > 0;
 
-    massActions.add('actionsLabel', <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_post_actions')}</span>, 100);
+    items.add('actionsLabel', <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_post_actions')}</span>, 100);
 
-    massActions.add(
-      'massRestore',
+    items.add(
+      'restore',
       <button
         className="Button"
+        disabled={!hasSelection}
         onclick={() => {
           void app.modal.show(MassRestorePostModal, {
             selectedPosts: this.selectedPosts,
             onSuccess: () => {
-              this.loadPage(this.pageNumber);
+              this.selectedPosts.clear();
+              void this.loadPage(this.pageNumber);
               this.refreshStatistics();
             },
           });
         }}
-        disabled={!hasSelection}
       >
         <Icon name="fas fa-trash-restore" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_restore_label')}
       </button>,
       90
     );
 
-    massActions.add(
-      'massDelete',
+    items.add(
+      'delete',
       <button
         className="Button"
+        disabled={!hasSelection}
         onclick={() => {
           void app.modal.show(MassDeletePostModal, {
             selectedPosts: this.selectedPosts,
             onSuccess: () => {
-              this.loadPage(this.pageNumber);
+              this.selectedPosts.clear();
+              void this.loadPage(this.pageNumber);
               this.refreshStatistics();
             },
           });
         }}
-        disabled={!hasSelection}
       >
         <Icon name="fas fa-times" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_delete_label')}
       </button>,
       80
     );
 
-    return massActions;
-  }
-
-  /**
-   * Asynchronously fetch the next set of hidden discussions to be rendered.
-   *
-   * @param pageNumber The **zero-based** page number to load and display
-   */
-  loadPage(pageNumber: number) {
-    if (pageNumber < 0) pageNumber = 0;
-
-    this.isLoadingPage = true;
-    this.loadingPageNumber = pageNumber;
-    this.selectedPosts.clear();
-
-    const query = this.query.trim();
-
-    app.store
-      .find<Post[]>('posts', {
-        filter: {
-          hidden: 'true',
-          content: query,
-        },
-        page: {
-          limit: this.numPerPage,
-          offset: pageNumber * this.numPerPage,
-        },
-      })
-      .then((apiData) => {
-        this.moreData = !!apiData.payload.links?.next;
-        this.pageData = apiData;
-        this.pageNumber = pageNumber;
-        this.isLoadingPage = false;
-        m.redraw();
-      })
-      .catch((err: Error) => {
-        console.error(err);
-        this.pageData = [];
-        this.isLoadingPage = false;
-        m.redraw();
-      });
-  }
-
-  nextPage() {
-    this.goToPage(this.pageNumber + 2);
-  }
-
-  previousPage() {
-    this.goToPage(this.pageNumber);
-  }
-
-  /**
-   * @param page The **1-based** page number
-   */
-  goToPage(page: number) {
-    const currentParams = m.route.param();
-
-    m.route.set(
-      app.route('extension', {
-        ...currentParams,
-        id: 'walsgit-recycle-bin',
-        page,
-      })
-    );
+    return items;
   }
 }
