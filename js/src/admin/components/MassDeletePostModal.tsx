@@ -16,19 +16,19 @@ export default class MassDeletePostModal extends FormModal<MassDeletePostModalAt
   }
 
   className() {
-    return 'MassDeleteDiscussionModal Modal--small';
+    return 'MassDeletePostModal Modal--small';
   }
 
   title() {
-    return app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.title');
+    return app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.title');
   }
 
   content() {
     return (
       <div className="Modal-body">
         <p>
-          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_start')} <strong>{this.selectedPosts.size}</strong>{' '}
-          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_end')}
+          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.text_start', { u: <u></u> })} <strong>{this.selectedPosts.size}</strong>{' '}
+          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.text_end')}
         </p>
         <div className="Form-group">
           {m(
@@ -62,7 +62,7 @@ export default class MassDeletePostModal extends FormModal<MassDeletePostModalAt
           this.attrs.onSuccess();
         }
         m.redraw();
-        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.success'));
+        app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.success'));
       })
       .catch((error) => {
         this.loaded();

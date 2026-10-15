@@ -216,8 +216,8 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
             Button,
             {
               className: 'Button DiscussionList-editModalBtn',
-              title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_discussion_tooltip', { discussionId: discussion.id() })),
-              ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_discussion_tooltip', { discussionId: discussion.id() })),
+              title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussionId: discussion.id() })),
+              ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussionId: discussion.id() })),
               onclick: () => {
                 void app.modal.show(DeleteDiscussionModal, {
                   discussion,

@@ -67,7 +67,7 @@ walsgit-recycle-bin:
       success: 'Successfully deleted the selected discussions'
     mass_delete_post_modal:
       title: 'Forever delete these posts'
-      text_start: 'Are you sure you want to <u>forever delete</u> these '
+      text_start: "Are you sure you want to <u>forever delete</u> these "
       text_end: ' selected posts?'
       submit_button: 'Forever delete these posts'
       success: 'Successfully deleted the selected posts'
@@ -86,4 +86,3 @@ walsgit-recycle-bin:
       id: "ID"
       title: "Post text"
       open_post: "Open post"
-

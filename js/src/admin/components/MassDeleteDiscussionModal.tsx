@@ -27,7 +27,7 @@ export default class MassDeleteDiscussionModal extends FormModal<MassDeleteDiscu
     return (
       <div className="Modal-body">
         <p>
-          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_start')} <strong>{this.selectedDiscussions.size}</strong>{' '}
+          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_start', { u: <u></u> })} <strong>{this.selectedDiscussions.size}</strong>{' '}
           {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_modal.text_end')}
         </p>
         <div className="Form-group">

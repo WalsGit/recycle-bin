@@ -25,7 +25,7 @@ export default class DeletePostModal extends FormModal {
     return (
       <div className="Modal-body">
         <p>
-          {app.translator.trans('walsgit-recycle-bin.admin.delete_post.confirmation')} <strong>{this.post.discussion().title()}</strong> :
+          {app.translator.trans('walsgit-recycle-bin.admin.delete_post.confirmation', { u: <u></u> })} <strong>{this.post.discussion().title()}</strong> :
         </p>
         <pre>
           <code>{this.post.content()}</code>
