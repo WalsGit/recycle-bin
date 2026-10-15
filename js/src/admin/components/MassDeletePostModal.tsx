@@ -27,8 +27,8 @@ export default class MassDeletePostModal extends FormModal<MassDeletePostModalAt
     return (
       <div className="Modal-body">
         <p>
-          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.text_start', { u: <u></u> })} <strong>{this.selectedPosts.size}</strong>{' '}
-          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.text_end')}
+          {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.text_start', { u: <u></u> })}{' '}
+          <strong>{this.selectedPosts.size}</strong> {app.translator.trans('walsgit-recycle-bin.admin.mass_delete_post_modal.text_end')}
         </p>
         <div className="Form-group">
           {m(

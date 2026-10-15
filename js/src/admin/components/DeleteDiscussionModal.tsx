@@ -30,7 +30,8 @@ export default class DeleteDiscussionModal extends FormModal<DeleteDiscussionMod
     return (
       <div className="Modal-body">
         <p>
-          {app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.confirmation', { u: <u></u> })} <strong>{this.discussion.title()}</strong>
+          {app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.confirmation', { u: <u></u> })}{' '}
+          <strong>{this.discussion.title()}</strong>
         </p>
         <div className="Form-group">
           {Button.component(
