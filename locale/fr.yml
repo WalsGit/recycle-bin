@@ -19,7 +19,7 @@ walsgit-recycle-bin:
     hidden_at: 'Cachée le'
     unknown_date: 'Date inconnue'
     actions: 'Actions'
-    restore_tooltip: 'Rétablir la discussion #{discussionId}'
+    restore_discussion_tooltip: 'Rétablir la discussion #{discussionId}'
     restore_post_tooltip: 'Rétablir le post #{postId}'
     restore_discussion:
       title: 'Rétablir la discussion'
@@ -87,4 +87,3 @@ walsgit-recycle-bin:
       title: "Texte du post"
       open_post: "Ouvrir le post"
 
-  forum:

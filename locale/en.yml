@@ -19,7 +19,7 @@ walsgit-recycle-bin:
     hidden_at: 'Hidden at'
     unknown_date: 'Unknown date'
     actions: 'Actions'
-    restore_tooltip: 'Restore discussion #{discussionId}'
+    restore_discussion_tooltip: 'Restore discussion #{discussionId}'
     restore_post_tooltip: 'Restore post #{postId}'
     restore_discussion:
       title: 'Restore discussion'
@@ -87,4 +87,3 @@ walsgit-recycle-bin:
       title: "Post text"
       open_post: "Open post"
 
-  forum:
