@@ -78,7 +78,7 @@ export default abstract class AbstractBinPage<ModelType = any> extends Page {
   view(vnode: Mithril.Vnode<IPageAttrs, this>): Mithril.Children {
     if (this.pageData === undefined) {
       return (
-        <div className="extensionPage-settings">
+        <div className="ExtensionPage-settings">
           <div className="container">
             <section className="RecycleBinPage-grid RecycleBinPage-grid--loading">
               {m(LoadingIndicator, { containerClassName: 'LoadingIndicator--block', size: 'large' })}
