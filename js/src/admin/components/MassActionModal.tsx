@@ -11,7 +11,7 @@ interface MassActionModalAttrs extends IFormModalAttrs {
 }
 
 export default class MassActionModal extends FormModal<MassActionModalAttrs> {
-	private get translationPrefix(): string {
+  private get translationPrefix(): string {
     const { action, type } = this.attrs;
     const suffix = type === 'post' ? '_post' : '';
 
