@@ -10,10 +10,8 @@ import extractText from 'flarum/common/utils/extractText';
 import humanTime from 'flarum/common/helpers/humanTime';
 import { truncate } from 'flarum/common/utils/string';
 import AbstractBinPage from './AbstractBinPage';
-import RestorePostModal from './RestorePostModal';
-import DeletePostModal from './DeletePostModal';
-import MassRestorePostModal from './MassRestorePostModal';
-import MassDeletePostModal from './MassDeletePostModal';
+import ItemActionModal, { BinAction } from './ItemActionModal';
+import MassActionModal from './MassActionModal';
 
 type ColumnData = {
   name: Mithril.Children;
@@ -47,6 +45,30 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
       .catch((error: any) => {
         console.error(error);
       });
+  }
+
+  protected openItemModal(post: Post, action: BinAction): void {
+    void app.modal.show(ItemActionModal, {
+      item: post,
+      type: 'post',
+      action,
+      onSuccess: () => {
+        this.selectedPosts.delete(post.id()!);
+        this.refreshAfterChange();
+      },
+    });
+  }
+
+  protected openMassModal(action: BinAction): void {
+    void app.modal.show(MassActionModal, {
+      selectedIds: this.selectedPosts,
+      type: 'post',
+      action,
+      onSuccess: () => {
+        this.selectedPosts.clear();
+        this.refreshAfterChange();
+      },
+    });
   }
 
   protected getApiUrl(): string {
@@ -200,15 +222,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
               className: 'Button DiscussionList-editModalBtn',
               title: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
               ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
-              onclick: () => {
-                void app.modal.show(RestorePostModal, {
-                  post,
-                  onSuccess: () => {
-                    this.selectedPosts.clear();
-                    this.refreshAfterChange();
-                  },
-                });
-              },
+              onclick: () => this.openItemModal(post, 'restore'),
             },
             <Icon name="fas fa-trash-restore" />
           ),
@@ -218,15 +232,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
               className: 'Button DiscussionList-editModalBtn',
               title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
               ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
-              onclick: () => {
-                void app.modal.show(DeletePostModal, {
-                  post,
-                  onSuccess: () => {
-                    this.selectedPosts.clear();
-                    this.refreshAfterChange();
-                  },
-                });
-              },
+              onclick: () => this.openItemModal(post, 'delete'),
             },
             <Icon name="fas fa-times" />
           ),
@@ -246,20 +252,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
 
     items.add(
       'restore',
-      <button
-        className="Button"
-        disabled={!hasSelection}
-        onclick={() => {
-          void app.modal.show(MassRestorePostModal, {
-            selectedPosts: this.selectedPosts,
-            onSuccess: () => {
-              this.selectedPosts.clear();
-              void this.loadPage(this.pageNumber);
-              this.refreshStatistics();
-            },
-          });
-        }}
-      >
+      <button className="Button" disabled={!hasSelection} onclick={() => this.openMassModal('restore')}>
         <Icon name="fas fa-trash-restore" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_restore_label')}
       </button>,
       90
@@ -267,20 +260,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
 
     items.add(
       'delete',
-      <button
-        className="Button"
-        disabled={!hasSelection}
-        onclick={() => {
-          void app.modal.show(MassDeletePostModal, {
-            selectedPosts: this.selectedPosts,
-            onSuccess: () => {
-              this.selectedPosts.clear();
-              void this.loadPage(this.pageNumber);
-              this.refreshStatistics();
-            },
-          });
-        }}
-      >
+      <button className="Button" disabled={!hasSelection} onclick={() => this.openMassModal('delete')}>
         <Icon name="fas fa-times" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_delete_label')}
       </button>,
       80

@@ -8,10 +8,8 @@ import Stream from 'flarum/common/utils/Stream';
 import extractText from 'flarum/common/utils/extractText';
 import humanTime from 'flarum/common/helpers/humanTime';
 import AbstractBinPage from './AbstractBinPage';
-import RestoreDiscussionModal from './RestoreDiscussionModal';
-import DeleteDiscussionModal from './DeleteDiscussionModal';
-import MassRestoreDiscussionModal from './MassRestoreDiscussionModal';
-import MassDeleteDiscussionModal from './MassDeleteDiscussionModal';
+import ItemActionModal, { BinAction } from './ItemActionModal';
+import MassActionModal from './MassActionModal';
 
 type ColumnData = {
   name: Mithril.Children;
@@ -45,6 +43,30 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
       .catch((error: any) => {
         console.error(error);
       });
+  }
+
+  protected openItemModal(discussion: Discussion, action: BinAction): void {
+    void app.modal.show(ItemActionModal, {
+      item: discussion,
+      type: 'discussion',
+      action,
+      onSuccess: () => {
+        this.selectedDiscussions.delete(discussion.id()!);
+        this.refreshAfterChange();
+      },
+    });
+  }
+
+  protected openMassModal(action: BinAction): void {
+    void app.modal.show(MassActionModal, {
+      selectedIds: this.selectedDiscussions,
+      type: 'discussion',
+      action,
+      onSuccess: () => {
+        this.selectedDiscussions.clear();
+        this.refreshAfterChange();
+      },
+    });
   }
 
   protected getApiUrl(): string {
@@ -201,15 +223,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
               className: 'Button DiscussionList-editModalBtn',
               title: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_discussion_tooltip', { discussionId: discussion.id() })),
               ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_discussion_tooltip', { discussionId: discussion.id() })),
-              onclick: () => {
-                void app.modal.show(RestoreDiscussionModal, {
-                  discussion,
-                  onSuccess: () => {
-                    this.selectedDiscussions.clear();
-                    this.refreshAfterChange();
-                  },
-                });
-              },
+              onclick: () => this.openItemModal(discussion, 'restore'),
             },
             <Icon name="fas fa-trash-restore" />
           ),
@@ -219,15 +233,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
               className: 'Button DiscussionList-editModalBtn',
               title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussionId: discussion.id() })),
               ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_tooltip', { discussionId: discussion.id() })),
-              onclick: () => {
-                void app.modal.show(DeleteDiscussionModal, {
-                  discussion,
-                  onSuccess: () => {
-                    this.selectedDiscussions.clear();
-                    this.refreshAfterChange();
-                  },
-                });
-              },
+              onclick: () => this.openItemModal(discussion, 'delete'),
             },
             <Icon name="fas fa-times" />
           ),
@@ -247,20 +253,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
 
     items.add(
       'restore',
-      <button
-        className="Button"
-        disabled={!hasSelection}
-        onclick={() => {
-          void app.modal.show(MassRestoreDiscussionModal, {
-            selectedDiscussions: this.selectedDiscussions,
-            onSuccess: () => {
-              this.selectedDiscussions.clear();
-              void this.loadPage(this.pageNumber);
-              this.refreshStatistics();
-            },
-          });
-        }}
-      >
+      <button className="Button" disabled={!hasSelection} onclick={() => this.openMassModal('restore')}>
         <Icon name="fas fa-trash-restore" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_restore_label')}
       </button>,
       90
@@ -268,20 +261,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
 
     items.add(
       'delete',
-      <button
-        className="Button"
-        disabled={!hasSelection}
-        onclick={() => {
-          void app.modal.show(MassDeleteDiscussionModal, {
-            selectedDiscussions: this.selectedDiscussions,
-            onSuccess: () => {
-              this.selectedDiscussions.clear();
-              void this.loadPage(this.pageNumber);
-              this.refreshStatistics();
-            },
-          });
-        }}
-      >
+      <button className="Button" disabled={!hasSelection} onclick={() => this.openMassModal('delete')}>
         <Icon name="fas fa-times" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_delete_label')}
       </button>,
       80
