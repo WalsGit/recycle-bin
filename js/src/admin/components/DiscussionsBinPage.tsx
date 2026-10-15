@@ -19,8 +19,6 @@ type ColumnData = {
 };
 
 export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
-  protected readonly itemRestored: Stream<boolean> = Stream(false);
-  protected readonly itemDeleted: Stream<boolean> = Stream(false);
   protected readonly itemsCount: Stream<number> = Stream(0);
 
   protected readonly selectedDiscussions: Set<string> = new Set();
@@ -206,7 +204,10 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
               onclick: () => {
                 void app.modal.show(RestoreDiscussionModal, {
                   discussion,
-                  discussionRestored: this.itemRestored,
+                  onSuccess: () => {
+                    this.selectedDiscussions.clear();
+                    this.refreshAfterChange();
+                  },
                 });
               },
             },
@@ -221,7 +222,10 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
               onclick: () => {
                 void app.modal.show(DeleteDiscussionModal, {
                   discussion,
-                  discussionDeleted: this.itemDeleted,
+                  onSuccess: () => {
+                    this.selectedDiscussions.clear();
+                    this.refreshAfterChange();
+                  },
                 });
               },
             },

@@ -2,21 +2,18 @@ import Form from 'flarum/common/components/Form';
 import app from 'flarum/admin/app';
 import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
-import Stream from 'flarum/common/utils/Stream';
 
 interface RestorePostModalAttrs extends IFormModalAttrs {
   post: any;
-  postRestored: Stream<boolean>;
+  onSuccess?: () => void;
 }
 
 export default class RestorePostModal extends FormModal<RestorePostModalAttrs> {
   post: any;
-  postRestored: Stream<boolean> | undefined;
 
   oninit(vnode: any) {
     super.oninit(vnode);
     this.post = vnode.attrs.post;
-    this.postRestored = vnode.attrs.postRestored;
   }
 
   className() {
@@ -61,9 +58,7 @@ export default class RestorePostModal extends FormModal<RestorePostModalAttrs> {
       .save({ isHidden: false })
       .then(() => {
         this.hide();
-        if (this.postRestored) {
-          this.postRestored(true);
-        }
+        this.attrs.onSuccess?.();
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.restore_post.success'));
       })

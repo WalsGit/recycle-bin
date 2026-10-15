@@ -1,21 +1,18 @@
 import app from 'flarum/admin/app';
 import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
-import Stream from 'flarum/common/utils/Stream';
 
 interface DeleteDiscussionModalAttrs extends IFormModalAttrs {
   discussion: any;
-  discussionDeleted: Stream<boolean>;
+  onSuccess?: () => void;
 }
 
 export default class DeleteDiscussionModal extends FormModal<DeleteDiscussionModalAttrs> {
   discussion: any;
-  discussionDeleted: Stream<boolean> | undefined;
 
   oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = vnode.attrs.discussion;
-    this.discussionDeleted = vnode.attrs.discussionDeleted;
   }
 
   className() {
@@ -59,9 +56,7 @@ export default class DeleteDiscussionModal extends FormModal<DeleteDiscussionMod
       })
       .then(() => {
         app.modal.close();
-        if (this.discussionDeleted) {
-          this.discussionDeleted(true);
-        }
+        this.attrs.onSuccess?.();
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.delete_discussion.success'));
       })

@@ -12,8 +12,6 @@ import Stream from 'flarum/common/utils/Stream';
 export default abstract class AbstractBinPage<ModelType = any> extends Page {
   protected query: string = '';
   protected readonly throttledSearch = debounce(250, () => this.loadPage(0));
-  protected abstract readonly itemRestored: Stream<boolean>;
-  protected abstract readonly itemDeleted: Stream<boolean>;
   protected abstract readonly itemsCount: Stream<number>;
 
   protected readonly numPerPage: number = 25;
@@ -45,22 +43,6 @@ export default abstract class AbstractBinPage<ModelType = any> extends Page {
     this.pageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
 
     void this.loadPage(this.pageNumber);
-
-    this.itemRestored.map((restored: boolean) => {
-      if (restored) {
-        void this.loadPage(this.pageNumber);
-        this.itemsCount(this.itemsCount() - 1);
-        this.itemRestored(false);
-      }
-    });
-
-    this.itemDeleted.map((deleted: boolean) => {
-      if (deleted) {
-        void this.loadPage(this.pageNumber);
-        this.itemsCount(this.itemsCount() - 1);
-        this.itemDeleted(false);
-      }
-    });
   }
 
   onbeforeupdate(vnode: Mithril.Vnode<IPageAttrs, this>) {
@@ -217,6 +199,11 @@ export default abstract class AbstractBinPage<ModelType = any> extends Page {
   abstract headerItems(): ItemList<Mithril.Children>;
   abstract columns(): ItemList<any>;
   abstract massActions(): ItemList<Mithril.Children>;
+
+  protected refreshAfterChange(): void {
+    void this.loadPage(this.pageNumber);
+    this.refreshStatistics();
+  }
 
   async loadPage(pageNumber: number): Promise<void> {
     this.isLoadingPage = true;

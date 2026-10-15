@@ -1,16 +1,18 @@
 import app from 'flarum/admin/app';
-import FormModal from 'flarum/common/components/FormModal';
+import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
-import Stream from 'flarum/common/utils/Stream';
 
-export default class DeletePostModal extends FormModal {
+interface DeletePostModalAttrs extends IFormModalAttrs {
   post: any;
-  postDeleted: Stream<boolean> | undefined;
+  onSuccess?: () => void;
+}
+
+export default class DeletePostModal extends FormModal<DeletePostModalAttrs> {
+  post: any;
 
   oninit(vnode: any) {
     super.oninit(vnode);
     this.post = vnode.attrs.post;
-    this.postDeleted = vnode.attrs.postDeleted;
   }
 
   className() {
@@ -57,9 +59,7 @@ export default class DeletePostModal extends FormModal {
       })
       .then(() => {
         app.modal.close();
-        if (this.postDeleted) {
-          this.postDeleted(true);
-        }
+        this.attrs.onSuccess?.();
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.delete_post.success'));
       })

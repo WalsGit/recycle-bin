@@ -2,22 +2,18 @@ import Form from 'flarum/common/components/Form';
 import app from 'flarum/admin/app';
 import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
-import Stream from 'flarum/common/utils/Stream';
-import RequestError from 'flarum/common/utils/RequestError';
 
 interface RestoreDiscussionModalAttrs extends IFormModalAttrs {
   discussion: any;
-  discussionRestored: Stream<boolean>;
+  onSuccess?: () => void;
 }
 
 export default class RestoreDiscussionModal extends FormModal<RestoreDiscussionModalAttrs> {
   discussion: any;
-  discussionRestored: Stream<boolean> | undefined;
 
   oninit(vnode: any) {
     super.oninit(vnode);
     this.discussion = vnode.attrs.discussion;
-    this.discussionRestored = vnode.attrs.discussionRestored;
   }
 
   className() {
@@ -59,9 +55,7 @@ export default class RestoreDiscussionModal extends FormModal<RestoreDiscussionM
       .save({ isHidden: false })
       .then(() => {
         this.hide();
-        if (this.discussionRestored) {
-          this.discussionRestored(true);
-        }
+        this.attrs.onSuccess?.();
         m.redraw();
         app.alerts.show({ type: 'success' }, app.translator.trans('walsgit-recycle-bin.admin.restore_discussion.success'));
       })

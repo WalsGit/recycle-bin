@@ -21,8 +21,6 @@ type ColumnData = {
 };
 
 export default class PostsBinPage extends AbstractBinPage<Post> {
-  protected readonly itemRestored: Stream<boolean> = Stream(false);
-  protected readonly itemDeleted: Stream<boolean> = Stream(false);
   protected readonly itemsCount: Stream<number> = Stream(0);
 
   protected readonly selectedPosts: Set<string> = new Set();
@@ -203,7 +201,13 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
               title: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
               ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.restore_post_tooltip', { postId: post.id() })),
               onclick: () => {
-                void app.modal.show(RestorePostModal, { post: post, postRestored: this.itemRestored });
+                void app.modal.show(RestorePostModal, {
+                  post,
+                  onSuccess: () => {
+                    this.selectedPosts.clear();
+                    this.refreshAfterChange();
+                  },
+                });
               },
             },
             <Icon name="fas fa-trash-restore" />
@@ -215,7 +219,13 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
               title: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
               ariaLabel: extractText(app.translator.trans('walsgit-recycle-bin.admin.delete_post_tooltip', { postId: post.id() })),
               onclick: () => {
-                void app.modal.show(DeletePostModal, { post: post, postDeleted: this.itemDeleted });
+                void app.modal.show(DeletePostModal, {
+                  post,
+                  onSuccess: () => {
+                    this.selectedPosts.clear();
+                    this.refreshAfterChange();
+                  },
+                });
               },
             },
             <Icon name="fas fa-times" />
