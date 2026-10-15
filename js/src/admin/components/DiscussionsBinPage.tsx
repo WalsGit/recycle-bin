@@ -8,8 +8,7 @@ import Stream from 'flarum/common/utils/Stream';
 import extractText from 'flarum/common/utils/extractText';
 import humanTime from 'flarum/common/helpers/humanTime';
 import AbstractBinPage from './AbstractBinPage';
-import ItemActionModal, { BinAction } from './ItemActionModal';
-import MassActionModal from './MassActionModal';
+import { BinItemType } from './ItemActionModal';
 
 type ColumnData = {
   name: Mithril.Children;
@@ -18,18 +17,6 @@ type ColumnData = {
 
 export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
   protected readonly itemsCount: Stream<number> = Stream(0);
-
-  protected readonly selectedDiscussions: Set<string> = new Set();
-
-  protected toggleSelection(e: Event, discussionId: string): void {
-    const checkbox = e.target as HTMLInputElement;
-    if (checkbox.checked) {
-      this.selectedDiscussions.add(discussionId);
-    } else {
-      this.selectedDiscussions.delete(discussionId);
-    }
-    m.redraw();
-  }
 
   protected refreshStatistics(): void {
     app
@@ -45,30 +32,6 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
       });
   }
 
-  protected openItemModal(discussion: Discussion, action: BinAction): void {
-    void app.modal.show(ItemActionModal, {
-      item: discussion,
-      type: 'discussion',
-      action,
-      onSuccess: () => {
-        this.selectedDiscussions.delete(discussion.id()!);
-        this.refreshAfterChange();
-      },
-    });
-  }
-
-  protected openMassModal(action: BinAction): void {
-    void app.modal.show(MassActionModal, {
-      selectedIds: this.selectedDiscussions,
-      type: 'discussion',
-      action,
-      onSuccess: () => {
-        this.selectedDiscussions.clear();
-        this.refreshAfterChange();
-      },
-    });
-  }
-
   protected getApiUrl(): string {
     return 'discussions';
   }
@@ -77,7 +40,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
     return 'walsgit-recycle-bin.admin.discussions_bin';
   }
 
-  protected getModelName(): string {
+  protected getModelName(): BinItemType {
     return 'discussion';
   }
 
@@ -132,7 +95,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
           <input
             type="checkbox"
             className="RecycleBinPage-Checkbox"
-            checked={this.selectedDiscussions.has(discussion.id()!)}
+            checked={this.selectedIds.has(discussion.id()!)}
             onchange={(e: Event) => this.toggleSelection(e, discussion.id()!)}
           />
         ),
@@ -247,7 +210,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
 
   massActions(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
-    const hasSelection = this.selectedDiscussions.size > 0;
+    const hasSelection = this.selectedIds.size > 0;
 
     items.add('actionsLabel', <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_actions')}</span>, 100);
 

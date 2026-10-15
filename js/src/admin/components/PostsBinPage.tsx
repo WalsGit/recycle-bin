@@ -10,8 +10,7 @@ import extractText from 'flarum/common/utils/extractText';
 import humanTime from 'flarum/common/helpers/humanTime';
 import { truncate } from 'flarum/common/utils/string';
 import AbstractBinPage from './AbstractBinPage';
-import ItemActionModal, { BinAction } from './ItemActionModal';
-import MassActionModal from './MassActionModal';
+import { BinItemType } from './ItemActionModal';
 
 type ColumnData = {
   name: Mithril.Children;
@@ -20,18 +19,6 @@ type ColumnData = {
 
 export default class PostsBinPage extends AbstractBinPage<Post> {
   protected readonly itemsCount: Stream<number> = Stream(0);
-
-  protected readonly selectedPosts: Set<string> = new Set();
-
-  protected toggleSelection(e: Event, postId: string): void {
-    const checkbox = e.target as HTMLInputElement;
-    if (checkbox.checked) {
-      this.selectedPosts.add(postId);
-    } else {
-      this.selectedPosts.delete(postId);
-    }
-    m.redraw();
-  }
 
   protected refreshStatistics(): void {
     app
@@ -47,30 +34,6 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
       });
   }
 
-  protected openItemModal(post: Post, action: BinAction): void {
-    void app.modal.show(ItemActionModal, {
-      item: post,
-      type: 'post',
-      action,
-      onSuccess: () => {
-        this.selectedPosts.delete(post.id()!);
-        this.refreshAfterChange();
-      },
-    });
-  }
-
-  protected openMassModal(action: BinAction): void {
-    void app.modal.show(MassActionModal, {
-      selectedIds: this.selectedPosts,
-      type: 'post',
-      action,
-      onSuccess: () => {
-        this.selectedPosts.clear();
-        this.refreshAfterChange();
-      },
-    });
-  }
-
   protected getApiUrl(): string {
     return 'posts';
   }
@@ -79,7 +42,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
     return 'walsgit-recycle-bin.admin.posts_bin';
   }
 
-  protected getModelName(): string {
+  protected getModelName(): BinItemType {
     return 'post';
   }
 
@@ -135,7 +98,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
           <input
             type="checkbox"
             className="RecycleBinPage-Checkbox"
-            checked={this.selectedPosts.has(post.id()!)}
+            checked={this.selectedIds.has(post.id()!)}
             onchange={(e: Event) => this.toggleSelection(e, post.id()!)}
           />
         ),
@@ -246,7 +209,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
 
   massActions(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
-    const hasSelection = this.selectedPosts.size > 0;
+    const hasSelection = this.selectedIds.size > 0;
 
     items.add('actionsLabel', <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_post_actions')}</span>, 100);
 

@@ -8,8 +8,11 @@ import classList from 'flarum/common/utils/classList';
 import extractText from 'flarum/common/utils/extractText';
 import { debounce } from 'flarum/common/utils/throttleDebounce';
 import Stream from 'flarum/common/utils/Stream';
+import Model from 'flarum/common/Model';
+import ItemActionModal, { BinAction, BinItemType } from './ItemActionModal';
+import MassActionModal from './MassActionModal';
 
-export default abstract class AbstractBinPage<ModelType = any> extends Page {
+export default abstract class AbstractBinPage<ModelType extends Model = any> extends Page {
   protected query: string = '';
   protected readonly throttledSearch = debounce(250, () => this.loadPage(0));
   protected abstract readonly itemsCount: Stream<number>;
@@ -20,6 +23,7 @@ export default abstract class AbstractBinPage<ModelType = any> extends Page {
   protected pageData: ModelType[] | undefined = undefined;
   protected moreData: boolean = false;
   protected isLoadingPage: boolean = false;
+  protected readonly selectedIds: Set<string> = new Set();
 
   protected getTotalPageCount(): number {
     const count = this.itemsCount();
@@ -28,11 +32,10 @@ export default abstract class AbstractBinPage<ModelType = any> extends Page {
     return Math.ceil(count / this.numPerPage);
   }
 
-  protected abstract toggleSelection(e: Event, itemId: string): void;
   protected abstract refreshStatistics(): void;
   protected abstract getApiUrl(): string;
   protected abstract getTitleTranslationKey(): string;
-  protected abstract getModelName(): string;
+  protected abstract getModelName(): BinItemType;
 
   oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
     super.oninit(vnode);
@@ -199,6 +202,42 @@ export default abstract class AbstractBinPage<ModelType = any> extends Page {
   abstract headerItems(): ItemList<Mithril.Children>;
   abstract columns(): ItemList<any>;
   abstract massActions(): ItemList<Mithril.Children>;
+
+  protected toggleSelection(e: Event, itemId: string): void {
+    const checkbox = e.target as HTMLInputElement;
+
+    if (checkbox.checked) {
+      this.selectedIds.add(itemId);
+    } else {
+      this.selectedIds.delete(itemId);
+    }
+
+    m.redraw();
+  }
+
+  protected openItemModal(item: ModelType, action: BinAction): void {
+    void app.modal.show(ItemActionModal, {
+      item,
+      type: this.getModelName(),
+      action,
+      onSuccess: () => {
+        this.selectedIds.delete(item.id()!);
+        this.refreshAfterChange();
+      },
+    });
+  }
+
+  protected openMassModal(action: BinAction): void {
+    void app.modal.show(MassActionModal, {
+      selectedIds: this.selectedIds,
+      type: this.getModelName(),
+      action,
+      onSuccess: () => {
+        this.selectedIds.clear();
+        this.refreshAfterChange();
+      },
+    });
+  }
 
   protected refreshAfterChange(): void {
     void this.loadPage(this.pageNumber);
