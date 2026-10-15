@@ -23,7 +23,10 @@ class MassActionController implements RequestHandlerInterface
         $data = (array) $request->getParsedBody();
 
         $action = (string) ($data['action'] ?? '');
-        $ids = (array) ($data['ids'] ?? []);
+        $ids = array_values(array_unique(array_filter(
+            array_map('intval', array_filter((array) ($data['ids'] ?? []), 'is_scalar')),
+            fn (int $id) => $id > 0
+        )));
 
         // Resolve type from body parameter or URI fallback
         $type = $data['type'] ?? $request->getAttribute('type');
