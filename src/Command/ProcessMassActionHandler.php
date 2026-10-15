@@ -83,7 +83,10 @@ class ProcessMassActionHandler
             /**
              * @var \Illuminate\Database\Eloquent\Collection<int,Model> $items
              */
-            $items = $modelClass::query()->whereIn('id', $chunk)->get();
+            $items = $modelClass::query()
+                ->whereIn('id', $chunk)
+                ->whereNotNull('hidden_at')
+                ->get();
             $processed = 0;
 
             foreach ($items as $item) {
@@ -101,15 +104,12 @@ class ProcessMassActionHandler
     private function processItem(Model $item, string $action): void
     {
         if ($action === 'restore') {
-            if (method_exists($item, 'restore')) {
-                $item->restore();
-            }
+            $item->restore();
             $item->save();
+
             return;
         }
         
-        if ($action === 'delete') {
-            $item->delete();
-        }
+        $item->delete();
     }
 }
