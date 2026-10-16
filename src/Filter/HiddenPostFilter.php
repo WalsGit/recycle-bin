@@ -21,7 +21,9 @@ class HiddenPostFilter implements FilterInterface
         if ($negate) {
             $state->getQuery()->whereNull('posts.hidden_at');
         } else {
-            $state->getQuery()->whereNotNull('posts.hidden_at');
+            $state->getQuery()
+                ->whereNotNull('posts.hidden_at')
+                ->where('posts.type', 'comment');
             }
     }
 }

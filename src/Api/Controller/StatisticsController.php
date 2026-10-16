@@ -24,7 +24,7 @@ class StatisticsController implements RequestHandlerInterface
 
         return new JsonResponse([
             'hidden_discussions_count' => $this->discussions->query()->whereNotNull('hidden_at')->count(),
-            'hidden_posts_count'       => $this->posts->query()->whereNotNull('hidden_at')->count(),
+            'hidden_posts_count'       => $this->posts->query()->whereNotNull('hidden_at')->where('type', 'comment')->count(),
         ]);
     }
 }
