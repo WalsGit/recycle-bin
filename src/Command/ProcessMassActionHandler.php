@@ -32,7 +32,7 @@ class ProcessMassActionHandler
      * Handle the mass action command
      *
      * @throws \Flarum\User\Exception\PermissionDeniedException
-     * @throws InvalidArgumentException
+     * @throws ValidationException
      */
     public function handle(ProcessMassAction $command): int
     {
