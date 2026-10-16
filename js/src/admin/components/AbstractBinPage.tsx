@@ -268,6 +268,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
   columns(): ItemList<ColumnData<ModelType>> {
     const items = new ItemList<ColumnData<ModelType>>();
     const type = this.getModelName();
+    const baseUrl = app.forum.attribute('baseUrl') as string;
 
     const tooltip = (action: BinAction, item: ModelType): string =>
       extractText(app.translator.trans(`walsgit-recycle-bin.admin.${action}_${type}_tooltip`, { [`${type}Id`]: item.id() }));
@@ -286,6 +287,27 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
         ),
       },
       100
+    );
+
+    items.add(
+      'user',
+      {
+        name: app.translator.trans('walsgit-recycle-bin.admin.author'),
+        content: (item: ModelType) => {
+          const user = (item as any).user();
+
+          if (!user || typeof user.displayName !== 'function') {
+            return app.translator.trans('walsgit-recycle-bin.admin.unknown_user');
+          }
+
+          return (
+            <a href={`${baseUrl}/u/${user.slug()}`} target="_blank">
+              {user.displayName()}
+            </a>
+          );
+        },
+      },
+      85
     );
 
     const dateColumn = (nameKey: string, className: string, getDate: (item: any) => Date | null | undefined): ColumnData<ModelType> => ({

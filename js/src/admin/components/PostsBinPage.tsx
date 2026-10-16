@@ -1,6 +1,5 @@
 import app from 'flarum/admin/app';
 import Post from 'flarum/common/models/Post';
-import User from 'flarum/common/models/User';
 import ItemList from 'flarum/common/utils/ItemList';
 import Stream from 'flarum/common/utils/Stream';
 import { truncate } from 'flarum/common/utils/string';
@@ -80,18 +79,6 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
         },
       },
       90
-    );
-
-    items.add(
-      'user',
-      {
-        name: app.translator.trans('walsgit-recycle-bin.admin.author'),
-        content: (post: Post) => {
-          const user = post.user() as User;
-          return user && typeof user.displayName === 'function' ? user.displayName() : app.translator.trans('walsgit-recycle-bin.admin.unknown_user');
-        },
-      },
-      85
     );
 
     return items;

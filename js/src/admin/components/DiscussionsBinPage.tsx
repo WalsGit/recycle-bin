@@ -72,24 +72,6 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
       90
     );
 
-    items.add(
-      'user',
-      {
-        name: app.translator.trans('walsgit-recycle-bin.admin.author'),
-        content: (discussion: Discussion) => {
-          const user = discussion.user();
-          return user ? (
-            <a href={`${baseUrl}/u/${user.id()}`} target="_blank">
-              {user.displayName()}
-            </a>
-          ) : (
-            app.translator.trans('walsgit-recycle-bin.admin.unknown_user')
-          );
-        },
-      },
-      80
-    );
-
     return items;
   }
 }
