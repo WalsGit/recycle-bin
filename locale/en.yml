@@ -74,6 +74,20 @@ walsgit-recycle-bin:
       success: 'Successfully deleted the selected posts'
     bulk_delete_label: 'Delete selected discussions'
     bulk_post_delete_label: 'Delete selected posts'
+    bulk_delete_all_label: 'Delete all discussions'
+    bulk_post_delete_all_label: 'Delete all posts'
+    mass_delete_all_modal:
+      title: 'Forever delete all hidden discussions'
+      text_start: 'Are you sure you want to <u>forever delete</u> ALL '
+      text_end: ' discussions in the recycle bin (irreversible)?'
+      submit_button: 'Forever delete all discussions'
+      success: 'Successfully deleted all discussions'
+    mass_delete_all_post_modal:
+      title: 'Forever delete all posts'
+      text_start: 'Are you sure you want to <u>forever delete</u> ALL '
+      text_end: ' posts in the recycle bin (irreversible)?'
+      submit_button: 'Forever delete all posts'
+      success: 'Successfully deleted all posts'
     pagination:
       first_page_button: 'Go to first page'
       back_button: 'Back to previous page'

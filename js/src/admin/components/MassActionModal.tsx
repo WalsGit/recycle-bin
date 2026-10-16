@@ -7,15 +7,17 @@ interface MassActionModalAttrs extends IFormModalAttrs {
   selectedIds: Set<string>;
   type: BinItemType;
   action: BinAction;
+  all?: boolean;
+  totalCount?: number;
   onSuccess?: () => void;
 }
 
 export default class MassActionModal extends FormModal<MassActionModalAttrs> {
   private get translationPrefix(): string {
-    const { action, type } = this.attrs;
+    const { action, type, all } = this.attrs;
     const suffix = type === 'post' ? '_post' : '';
 
-    return `walsgit-recycle-bin.admin.mass_${action}${suffix}_modal`;
+    return `walsgit-recycle-bin.admin.mass_${action}${all ? '_all' : ''}${suffix}_modal`;
   }
 
   className() {
@@ -30,7 +32,8 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
     return (
       <div className="Modal-body">
         <p>
-          {app.translator.trans(`${this.translationPrefix}.text_start`, { u: <u></u> })} <strong>{this.attrs.selectedIds.size}</strong>{' '}
+          {app.translator.trans(`${this.translationPrefix}.text_start`, { u: <u></u> })}{' '}
+          <strong>{this.attrs.all ? this.attrs.totalCount : this.attrs.selectedIds.size}</strong>{' '}
           {app.translator.trans(`${this.translationPrefix}.text_end`)}
         </p>
         <div className="Form-group">
@@ -53,7 +56,7 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
 
     this.loading = true;
 
-    const { type, action, selectedIds } = this.attrs;
+    const { type, action, selectedIds, all } = this.attrs;
 
     app
       .request({
@@ -61,7 +64,7 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
         url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-${type}s`,
         body: {
           action,
-          ids: Array.from(selectedIds),
+          ...(all ? { all: true } : { ids: Array.from(selectedIds) }),
         },
       })
       .then(() => {

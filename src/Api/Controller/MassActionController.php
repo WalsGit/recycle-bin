@@ -31,8 +31,10 @@ class MassActionController implements RequestHandlerInterface
             fn (int $id) => $id > 0
         )));
 
+        $all = filter_var($data['all'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
         $count = $this->bus->dispatch(
-            new ProcessMassAction($actor, $type, $action, $ids)
+            new ProcessMassAction($actor, $type, $action, $ids, $all)
         );
 
         return new JsonResponse([

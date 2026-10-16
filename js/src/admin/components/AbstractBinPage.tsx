@@ -416,6 +416,14 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
       80
     );
 
+    items.add(
+      'deleteAll',
+      <button className="Button" disabled={this.itemsCount() === 0} onclick={() => this.openMassModal('delete', true)}>
+        <Icon name="fas fa-trash" /> {app.translator.trans(`${prefix}.bulk_${infix}delete_all_label`)}
+      </button>,
+      70
+    );
+
     return items;
   }
 
@@ -457,14 +465,23 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     });
   }
 
-  protected openMassModal(action: BinAction): void {
+  protected openMassModal(action: BinAction, all: boolean = false): void {
     void app.modal.show(MassActionModal, {
       selectedIds: this.selectedIds,
       type: this.getModelName(),
       action,
+      all,
+      totalCount: this.itemsCount(),
       onSuccess: () => {
         this.selectedIds.clear();
-        void this.refreshAfterChange();
+
+        if (all) {
+          // The bin is empty: go back to the first page
+          void this.loadPage(0);
+          this.refreshStatistics();
+        } else {
+          void this.refreshAfterChange();
+        }
       },
     });
   }

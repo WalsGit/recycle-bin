@@ -39,6 +39,9 @@ class ProcessMassActionHandler
         $this->validateCommand($command);
 
         $modelClass = $this->modelMap[$command->type];
+        if ($command->all) {
+            return $this->processAll($modelClass, $command->action);
+        }
         $count = 0;
 
         foreach (array_chunk($command->ids, self::CHUNK_SIZE) as $chunk) {
@@ -67,13 +70,42 @@ class ProcessMassActionHandler
             throw new ValidationException(['action' => 'Invalid action.']);
         }
 
-        if (empty($command->ids)) {
-            throw new ValidationException(['ids' => 'No items selected.']);
+        if (! $command->all) {
+            if (empty($command->ids)) {
+                throw new ValidationException(['ids' => 'No items selected.']);
+            }
+    
+            if (count($command->ids) > self::MAX_IDS_PER_REQUEST) {
+                throw new ValidationException(['ids' => 'Too many items selected (maximum ' . self::MAX_IDS_PER_REQUEST . ').']);
+            }
         }
 
-        if (count($command->ids) > self::MAX_IDS_PER_REQUEST) {
-            throw new ValidationException(['ids' => 'Too many items selected (maximum ' . self::MAX_IDS_PER_REQUEST . ').']);
+    }
+
+    /**
+     * Process every hidden item of the bin
+     *
+     * @param class-string<Model> $modelClass
+     */
+    private function processAll(string $modelClass, string $action): int
+    {
+        $count = 0;
+        $query = $modelClass::query()->whereNotNull('hidden_at');
+
+        if ($modelClass === Post::class) {
+            $query->where('type', 'comment');
         }
+
+        $query->chunkById(self::CHUNK_SIZE, function ($items) use (&$count, $action) {
+            $this->db->transaction(function () use ($items, &$count, $action) {
+                foreach ($items as $item) {
+                    $this->processItem($item, $action);
+                    $count++;
+                }
+            });
+        });
+
+        return $count;
     }
 
     /**
