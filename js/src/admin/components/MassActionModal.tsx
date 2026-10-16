@@ -61,7 +61,6 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
         url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-${type}s`,
         body: {
           action,
-          type: `${type}s`,
           ids: Array.from(selectedIds),
         },
       })

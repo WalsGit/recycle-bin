@@ -6,7 +6,7 @@ use Flarum\Discussion\Discussion;
 use Flarum\Post\Post;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
+use Flarum\Foundation\ValidationException;
 
 class ProcessMassActionHandler
 {
@@ -19,9 +19,7 @@ class ProcessMassActionHandler
      * @var array<string, class-string<Model>>
      */
     private array $modelMap =  [
-        'discussion'    => Discussion::class,
         'discussions'   => Discussion::class,
-        'post'          => Post::class,
         'posts'         => Post::class,
     ];
 
@@ -41,10 +39,9 @@ class ProcessMassActionHandler
         $this->validateCommand($command);
 
         $modelClass = $this->modelMap[$command->type];
-        $ids = array_slice($command->ids, 0, self::MAX_IDS_PER_REQUEST);
         $count = 0;
 
-        foreach (array_chunk($ids, self::CHUNK_SIZE) as $chunk) {
+        foreach (array_chunk($command->ids, self::CHUNK_SIZE) as $chunk) {
             $count += $this->processChunk($chunk, $modelClass, $command->action);
 
         }
@@ -56,18 +53,26 @@ class ProcessMassActionHandler
      * Validate actor permissions and payload
      *
      * @throws \Flarum\User\Exception\PermissionDeniedException
-     * @throws InvalidArgumentException
+     * @throws ValidationException
      */
     private function validateCommand(ProcessMassAction $command): void
     {
         $command->actor->assertAdmin();
 
         if (! isset($this->modelMap[$command->type])) {
-            throw new InvalidArgumentException('Invalid or unsupported resource type.');
+            throw new ValidationException(['type' => 'Invalid or unsupported resource type.']);
         }
 
-        if (empty($command->ids) || ! in_array($command->action, ['restore', 'delete'], true)) {
-            throw new InvalidArgumentException('Invalid parameters supplied for mass action.');
+        if (! in_array($command->action, ['restore', 'delete'], true)) {
+            throw new ValidationException(['action' => 'Invalid action.']);
+        }
+
+        if (empty($command->ids)) {
+            throw new ValidationException(['ids' => 'No items selected.']);
+        }
+
+        if (count($command->ids) > self::MAX_IDS_PER_REQUEST) {
+            throw new ValidationException(['ids' => 'Too many items selected (maximum ' . self::MAX_IDS_PER_REQUEST . ').']);
         }
     }
 
