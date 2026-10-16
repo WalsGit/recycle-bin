@@ -46,44 +46,16 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
     return 'post';
   }
 
-  headerItems(): ItemList<Mithril.Children> {
-    const items = new ItemList<Mithril.Children>();
+  protected getSearchPlaceholderKey(): string {
+    return 'walsgit-recycle-bin.admin.search_post_placeholder';
+  }
 
-    items.add(
-      'search',
-      <div className="Search-input">
-        <input
-          className="FormControl SearchBar"
-          type="search"
-          placeholder={app.translator.trans('walsgit-recycle-bin.admin.search_post_placeholder') as string}
-          value={this.query}
-          oninput={(e: InputEvent) => {
-            this.isLoadingPage = true;
-            this.query = (e?.target as HTMLInputElement)?.value;
-            this.throttledSearch();
-          }}
-        />
-      </div>,
-      100
-    );
+  protected getSearchHelpTextKey(): string {
+    return 'walsgit-recycle-bin.admin.search_post_help_text';
+  }
 
-    items.add(
-      'searchHelpText',
-      <div className="helpText">
-        <Icon name="fas fa-info-circle" /> {app.translator.trans('walsgit-recycle-bin.admin.search_post_help_text')}
-      </div>,
-      95
-    );
-
-    items.add(
-      'totalHiddenPosts',
-      <p className="RecycleBinPage-totalDiscussions">
-        {app.translator.trans('walsgit-recycle-bin.admin.total_hidden_posts')}: {this.itemsCount()}
-      </p>,
-      90
-    );
-
-    return items;
+  protected getTotalLabelKey(): string {
+    return 'walsgit-recycle-bin.admin.total_hidden_posts';
   }
 
   columns(): ItemList<ColumnData> {

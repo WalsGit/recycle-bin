@@ -44,43 +44,16 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
     return 'discussion';
   }
 
-  headerItems(): ItemList<Mithril.Children> {
-    const items = new ItemList<Mithril.Children>();
+  protected getSearchPlaceholderKey(): string {
+    return 'walsgit-recycle-bin.admin.search_placeholder';
+  }
 
-    items.add(
-      'search',
-      <div className="Search-input">
-        <input
-          className="FormControl SearchBar"
-          type="search"
-          placeholder={app.translator.trans('walsgit-recycle-bin.admin.search_placeholder') as string}
-          value={this.query}
-          oninput={(e: InputEvent) => {
-            this.query = (e.target as HTMLInputElement).value;
-            this.throttledSearch();
-          }}
-        />
-      </div>,
-      100
-    );
+  protected getSearchHelpTextKey(): string {
+    return 'walsgit-recycle-bin.admin.search_help_text';
+  }
 
-    items.add(
-      'searchHelpText',
-      <div className="helpText">
-        <Icon name="fas fa-info-circle" /> {app.translator.trans('walsgit-recycle-bin.admin.search_help_text')}
-      </div>,
-      95
-    );
-
-    items.add(
-      'totalHiddenDiscussions',
-      <p className="RecycleBinPage-totalDiscussions">
-        {app.translator.trans('walsgit-recycle-bin.admin.total_hidden_discussions')}: {this.itemsCount()}
-      </p>,
-      90
-    );
-
-    return items;
+  protected getTotalLabelKey(): string {
+    return 'walsgit-recycle-bin.admin.total_hidden_discussions';
   }
 
   columns(): ItemList<ColumnData> {

@@ -37,6 +37,9 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
   protected abstract getApiUrl(): string;
   protected abstract getTitleTranslationKey(): string;
   protected abstract getModelName(): BinItemType;
+  protected abstract getSearchPlaceholderKey(): string;
+  protected abstract getSearchHelpTextKey(): string;
+  protected abstract getTotalLabelKey(): string;
 
   oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
     super.oninit(vnode);
@@ -200,7 +203,45 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     );
   }
 
-  abstract headerItems(): ItemList<Mithril.Children>;
+  headerItems(): ItemList<Mithril.Children> {
+    const items = new ItemList<Mithril.Children>();
+
+    items.add(
+      'search',
+      <div className="Search-input">
+        <input
+          className="FormControl SearchBar"
+          type="search"
+          placeholder={extractText(app.translator.trans(this.getSearchPlaceholderKey()))}
+          value={this.query}
+          oninput={(e: InputEvent) => {
+            this.query = (e.target as HTMLInputElement).value;
+            this.throttledSearch();
+          }}
+        />
+      </div>,
+      100
+    );
+
+    items.add(
+      'searchHelpText',
+      <div className="helpText">
+        <Icon name="fas fa-info-circle" /> {app.translator.trans(this.getSearchHelpTextKey())}
+      </div>,
+      95
+    );
+
+    items.add(
+      'totalHiddenItems',
+      <p className="RecycleBinPage-totalDiscussions">
+        {app.translator.trans(this.getTotalLabelKey())}: {this.itemsCount()}
+      </p>,
+      90
+    );
+
+    return items;
+  }
+
   abstract columns(): ItemList<any>;
 
   massActions(): ItemList<Mithril.Children> {
