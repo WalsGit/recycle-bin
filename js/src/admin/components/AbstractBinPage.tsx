@@ -78,20 +78,9 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
 
     const pageParam = Number.parseInt(m.route.param('page'));
     this.pageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
+    this.query = m.route.param('q') || '';
 
     void this.loadPage(this.pageNumber);
-  }
-
-  onbeforeupdate(vnode: Mithril.Vnode<IPageAttrs, this>) {
-    super.onbeforeupdate(vnode);
-
-    const pageParam = Number.parseInt(m.route.param('page'));
-    const newPageNumber = !Number.isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
-
-    if (newPageNumber !== this.pageNumber) {
-      this.pageNumber = newPageNumber;
-      void this.loadPage(this.pageNumber);
-    }
   }
 
   view(vnode: Mithril.Vnode<IPageAttrs, this>): Mithril.Children {
@@ -266,7 +255,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
 
     items.add(
       'totalHiddenItems',
-      <p className="RecycleBinPage-totalDiscussions">
+      <p className="RecycleBinPage-total">
         {app.translator.trans(this.getTotalLabelKey())}: {this.itemsCount()}
       </p>,
       90
@@ -495,6 +484,8 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
 
       if (requestId !== this.latestRequestId) return;
 
+      this.selectedIds.clear();
+
       this.pageData = results as ModelType[];
       this.moreData = !!results.payload?.links?.next;
       this.pageNumber = pageNumber;
@@ -533,14 +524,15 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
 
   protected setPageNumberInUrl(pageNumber: number) {
     const bin = m.route.param().bin || 'discussions-bin';
-    void m.route.set(
-      app.route('extension', {
-        id: 'walsgit-recycle-bin',
-        bin,
-        page: pageNumber + 1,
-      }),
-      undefined,
-      { replace: true }
-    );
+
+    const path = app.route('extension', {
+      id: 'walsgit-recycle-bin',
+      bin,
+      page: pageNumber + 1,
+      q: this.query.trim() || undefined,
+    });
+
+    // The router prefix (e.g. `#`) must be added back, as replaceState bypasses the router
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${m.route.prefix}${path}`);
   }
 }
