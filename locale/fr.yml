@@ -8,7 +8,10 @@ walsgit-recycle-bin:
     search_post_help_text: 'Recherche des mots dans les posts cachés'
     total_hidden_discussions: 'Nombre total de discussions cachées'
     total_hidden_posts: 'Nombre total de posts cachés'
-    empty_list: 'Aucune discussion dans la corbeille.'
+    empty_discussions_list: "Il n'y a aucune discussion dans la corbeille."
+    empty_posts_list: "Il n'y a aucun post dans la corbeille."
+    no_search_results: "Il n'y a aucun résultat pour cette recherche."
+    select_all: 'Sélectionnez tout les éléments de cette page'
     discussion_id: 'ID'
     discussion_title: 'Titre de la discussion'
     author: 'Auteur'

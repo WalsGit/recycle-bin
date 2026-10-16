@@ -97,6 +97,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     }
 
     const columns = this.columns().toArray();
+    const isEmpty = this.pageData.length === 0;
 
     return (
       <div className="ExtensionPage-settings">
@@ -141,6 +142,14 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
                 </div>
               );
             })
+          )}
+
+          {isEmpty && (
+            <div className="RecycleBinPage-grid-empty" role="row">
+              {app.translator.trans(
+                this.isSearching() ? 'walsgit-recycle-bin.admin.no_search_results' : `walsgit-recycle-bin.admin.empty_${this.getModelName()}s_list`
+              )}
+            </div>
           )}
 
           {this.isLoadingPage && m(LoadingIndicator, { size: 'large' })}
@@ -280,7 +289,16 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     items.add(
       'select',
       {
-        name: '',
+        name: (
+          <input
+            type="checkbox"
+            className="RecycleBinPage-Checkbox"
+            checked={this.isAllSelected()}
+            disabled={!this.pageData?.length}
+            aria-label={extractText(app.translator.trans('walsgit-recycle-bin.admin.select_all'))}
+            onchange={() => this.toggleSelectAll()}
+          />
+        ),
         content: (item: ModelType) => (
           <input
             type="checkbox"
@@ -399,6 +417,20 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     );
 
     return items;
+  }
+
+  protected isAllSelected(): boolean {
+    return !!this.pageData?.length && this.pageData.every((item) => this.selectedIds.has(item.id()!));
+  }
+
+  protected toggleSelectAll(): void {
+    if (this.isAllSelected()) {
+      this.selectedIds.clear();
+    } else {
+      this.pageData?.forEach((item) => this.selectedIds.add(item.id()!));
+    }
+
+    m.redraw();
   }
 
   protected toggleSelection(e: Event, itemId: string): void {
