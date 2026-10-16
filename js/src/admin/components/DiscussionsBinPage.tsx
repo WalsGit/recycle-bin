@@ -22,7 +22,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
       });
   }
 
-  protected getApiUrl(): string {
+  protected getApiResourceType(): string {
     return 'discussions';
   }
 

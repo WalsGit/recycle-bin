@@ -49,7 +49,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
   }
 
   protected abstract refreshStatistics(): void;
-  protected abstract getApiUrl(): string;
+  protected abstract getApiResourceType(): string;
   protected abstract getTitleTranslationKey(): string;
   protected abstract getModelName(): BinItemType;
   protected abstract getSearchPlaceholderKey(): string;
@@ -470,7 +470,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     }
 
     try {
-      const results: any = await app.store.find(this.getApiUrl(), {
+      const results: any = await app.store.find(this.getApiResourceType(), {
         filter,
         page: {
           limit,

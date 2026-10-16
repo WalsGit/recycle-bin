@@ -23,7 +23,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
       });
   }
 
-  protected getApiUrl(): string {
+  protected getApiResourceType(): string {
     return 'posts';
   }
 
