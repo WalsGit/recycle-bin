@@ -11,6 +11,7 @@ import Stream from 'flarum/common/utils/Stream';
 import Model from 'flarum/common/Model';
 import ItemActionModal, { BinAction, BinItemType } from './ItemActionModal';
 import MassActionModal from './MassActionModal';
+import Icon from 'flarum/common/components/Icon';
 
 export default abstract class AbstractBinPage<ModelType extends Model = any> extends Page {
   protected query: string = '';
@@ -201,7 +202,35 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
 
   abstract headerItems(): ItemList<Mithril.Children>;
   abstract columns(): ItemList<any>;
-  abstract massActions(): ItemList<Mithril.Children>;
+
+  massActions(): ItemList<Mithril.Children> {
+    const items = new ItemList<Mithril.Children>();
+    const hasSelection = this.selectedIds.size > 0;
+
+    // Translation keys for posts contain a `post_` infix (e.g. `bulk_post_actions`)
+    const infix = this.getModelName() === 'post' ? 'post_' : '';
+    const prefix = 'walsgit-recycle-bin.admin';
+
+    items.add('actionsLabel', <span>{app.translator.trans(`${prefix}.bulk_${infix}actions`)}</span>, 100);
+
+    items.add(
+      'restore',
+      <button className="Button" disabled={!hasSelection} onclick={() => this.openMassModal('restore')}>
+        <Icon name="fas fa-trash-restore" /> {app.translator.trans(`${prefix}.bulk_${infix}restore_label`)}
+      </button>,
+      90
+    );
+
+    items.add(
+      'delete',
+      <button className="Button" disabled={!hasSelection} onclick={() => this.openMassModal('delete')}>
+        <Icon name="fas fa-times" /> {app.translator.trans(`${prefix}.bulk_${infix}delete_label`)}
+      </button>,
+      80
+    );
+
+    return items;
+  }
 
   protected toggleSelection(e: Event, itemId: string): void {
     const checkbox = e.target as HTMLInputElement;

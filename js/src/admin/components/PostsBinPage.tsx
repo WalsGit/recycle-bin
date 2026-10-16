@@ -206,29 +206,4 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
 
     return items;
   }
-
-  massActions(): ItemList<Mithril.Children> {
-    const items = new ItemList<Mithril.Children>();
-    const hasSelection = this.selectedIds.size > 0;
-
-    items.add('actionsLabel', <span>{app.translator.trans('walsgit-recycle-bin.admin.bulk_post_actions')}</span>, 100);
-
-    items.add(
-      'restore',
-      <button className="Button" disabled={!hasSelection} onclick={() => this.openMassModal('restore')}>
-        <Icon name="fas fa-trash-restore" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_restore_label')}
-      </button>,
-      90
-    );
-
-    items.add(
-      'delete',
-      <button className="Button" disabled={!hasSelection} onclick={() => this.openMassModal('delete')}>
-        <Icon name="fas fa-times" /> {app.translator.trans('walsgit-recycle-bin.admin.bulk_post_delete_label')}
-      </button>,
-      80
-    );
-
-    return items;
-  }
 }
