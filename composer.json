@@ -45,9 +45,9 @@
         "flarum-cli": {
             "modules": {
                 "admin": true,
-                "forum": true,
+                "forum": false,
                 "js": true,
-                "jsCommon": true,
+                "jsCommon": false,
                 "css": true,
                 "locale": true,
                 "gitConf": true,
@@ -61,7 +61,6 @@
             }
         }
     },
-    "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload-dev": {
         "psr-4": {
