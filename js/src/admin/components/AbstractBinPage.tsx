@@ -26,7 +26,15 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
   protected isLoadingPage: boolean = false;
   protected readonly selectedIds: Set<string> = new Set();
 
+  protected isSearching(): boolean {
+    return this.query.trim() !== '';
+  }
+
   protected getTotalPageCount(): number {
+    if (this.isSearching()) {
+      return this.pageNumber + (this.moreData ? 2 : 1);
+    }
+
     const count = this.itemsCount();
     if (count === -1 || Number.isNaN(count)) return 0;
 
@@ -147,40 +155,43 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
             className: 'Button Button--icon RecycleBinPage-backBtn',
           })}
           <span className="RecycleBinPage-pageNumber">
-            {app.translator.trans('walsgit-recycle-bin.admin.pagination.page_counter', {
-              current: (
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={this.loadingPageNumber + 1}
-                  aria-label={extractText(app.translator.trans('walsgit-recycle-bin.admin.pagination.go_to_page_textbox_a11y_label'))}
-                  autoComplete="off"
-                  className="FormControl RecycleBinPage-pageNumberInput"
-                  onchange={(e: InputEvent) => {
-                    const target = e.target as HTMLInputElement;
-                    let pageNumber = Number.parseInt(target.value);
+            {app.translator.trans(
+              this.isSearching() ? 'walsgit-recycle-bin.admin.pagination.page_counter_search' : 'walsgit-recycle-bin.admin.pagination.page_counter',
+              {
+                current: (
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={this.loadingPageNumber + 1}
+                    aria-label={extractText(app.translator.trans('walsgit-recycle-bin.admin.pagination.go_to_page_textbox_a11y_label'))}
+                    autoComplete="off"
+                    className="FormControl RecycleBinPage-pageNumberInput"
+                    onchange={(e: InputEvent) => {
+                      const target = e.target as HTMLInputElement;
+                      let pageNumber = Number.parseInt(target.value);
 
-                    if (Number.isNaN(pageNumber)) {
-                      target.value = (this.pageNumber + 1).toString();
-                      return;
-                    }
+                      if (Number.isNaN(pageNumber)) {
+                        target.value = (this.pageNumber + 1).toString();
+                        return;
+                      }
 
-                    if (pageNumber < 1) {
-                      pageNumber = 1;
-                    } else if (pageNumber > this.getTotalPageCount()) {
-                      pageNumber = this.getTotalPageCount();
-                    }
+                      if (pageNumber < 1) {
+                        pageNumber = 1;
+                      } else if (pageNumber > this.getTotalPageCount()) {
+                        pageNumber = this.getTotalPageCount();
+                      }
 
-                    target.value = pageNumber.toString();
+                      target.value = pageNumber.toString();
 
-                    this.goToPage(pageNumber);
-                  }}
-                />
-              ),
-              currentNum: this.pageNumber + 1,
-              total: this.getTotalPageCount(),
-            })}
+                      this.goToPage(pageNumber);
+                    }}
+                  />
+                ),
+                currentNum: this.pageNumber + 1,
+                total: this.getTotalPageCount(),
+              }
+            )}
           </span>
           {m(Button, {
             disabled: !this.moreData,
@@ -191,7 +202,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
             className: 'Button Button--icon RecycleBinPage-nextBtn',
           })}
           {m(Button, {
-            disabled: !this.moreData,
+            disabled: !this.moreData || this.isSearching(),
             title: app.translator.trans('walsgit-recycle-bin.admin.pagination.last_page_button'),
             ariaLabel: app.translator.trans('walsgit-recycle-bin.admin.pagination.last_page_button'),
             onclick: this.goToPage.bind(this, this.getTotalPageCount()),
@@ -292,7 +303,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
       action,
       onSuccess: () => {
         this.selectedIds.delete(item.id()!);
-        this.refreshAfterChange();
+        void this.refreshAfterChange();
       },
     });
   }
@@ -304,13 +315,19 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
       action,
       onSuccess: () => {
         this.selectedIds.clear();
-        this.refreshAfterChange();
+        void this.refreshAfterChange();
       },
     });
   }
 
-  protected refreshAfterChange(): void {
-    void this.loadPage(this.pageNumber);
+  protected async refreshAfterChange(): Promise<void> {
+    await this.loadPage(this.pageNumber);
+
+    // The last item of the page was processed: go back one page instead of showing an empty one
+    if (this.pageData?.length === 0 && this.pageNumber > 0) {
+      await this.loadPage(this.pageNumber - 1);
+    }
+
     this.refreshStatistics();
   }
 

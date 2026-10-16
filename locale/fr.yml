@@ -80,6 +80,7 @@ walsgit-recycle-bin:
       go_to_page_textbox_a11y_label: 'Allez directement à la page numéro'
       next_button: 'Aller à la page suivante'
       last_page_button: 'Aller à la dernière page'
+      page_counter_search: 'Page {current}'
     grid:
       invalid_column_content: "Contenu invalide !"
     post:
