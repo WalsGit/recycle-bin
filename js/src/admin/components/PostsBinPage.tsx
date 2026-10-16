@@ -9,20 +9,6 @@ import { BinItemType } from './ItemActionModal';
 export default class PostsBinPage extends AbstractBinPage<Post> {
   protected readonly itemsCount: Stream<number> = Stream(0);
 
-  protected refreshStatistics(): void {
-    app
-      .request<{ hidden_posts_count: number }>({
-        method: 'GET',
-        url: `${app.forum.attribute('apiUrl')}/recycle-bin/post-statistics`,
-      })
-      .then((result) => {
-        this.itemsCount(result.hidden_posts_count);
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
-  }
-
   protected getApiResourceType(): string {
     return 'posts';
   }

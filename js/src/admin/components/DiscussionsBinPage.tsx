@@ -8,20 +8,6 @@ import { BinItemType } from './ItemActionModal';
 export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
   protected readonly itemsCount: Stream<number> = Stream(0);
 
-  protected refreshStatistics(): void {
-    app
-      .request<{ hidden_discussions_count: number }>({
-        method: 'GET',
-        url: `${app.forum.attribute('apiUrl')}/recycle-bin/discussion-statistics`,
-      })
-      .then((result) => {
-        this.itemsCount(result.hidden_discussions_count);
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
-  }
-
   protected getApiResourceType(): string {
     return 'discussions';
   }

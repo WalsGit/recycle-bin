@@ -48,7 +48,22 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     return Math.ceil(count / this.numPerPage);
   }
 
-  protected abstract refreshStatistics(): void;
+  protected refreshStatistics(): void {
+    app
+      .request<Record<string, number>>({
+        method: 'GET',
+        url: `${app.forum.attribute('apiUrl')}/recycle-bin/statistics`,
+      })
+      .then((result) => {
+        // Response keys are `hidden_discussions_count` & `hidden_posts_count`
+        this.itemsCount(result[`hidden_${this.getModelName()}s_count`]);
+        m.redraw();
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+  }
+
   protected abstract getApiResourceType(): string;
   protected abstract getTitleTranslationKey(): string;
   protected abstract getModelName(): BinItemType;
