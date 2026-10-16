@@ -41,7 +41,7 @@ walsgit-recycle-bin:
       confirmation: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> ce post (irréversible) :'
       delete_button: 'Supprimer définitivement ce post'
       success: 'Le post a bien été définitivement supprimé'
-    delete_tooltip: 'Supprimer définitivement la discussion #{discussionId}'
+    delete_discussion_tooltip: 'Supprimer définitivement la discussion #{discussionId}'
     delete_post_tooltip: 'Supprimer définitivement le post #{postId}'
     bulk_actions: 'Actions pour les discussions sélectionnées : '
     bulk_post_actions: 'Actions pour les posts sélectionnés : '

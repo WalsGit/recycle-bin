@@ -41,7 +41,7 @@ walsgit-recycle-bin:
       confirmation: 'Are you sure you want to <u>forever delete</u> this post (irreversible):'
       delete_button: 'Forever delete this post'
       success: 'Successfully deleted the post'
-    delete_tooltip: 'Delete discussion #{discussionId}'
+    delete_discussion_tooltip: 'Delete discussion #{discussionId}'
     delete_post_tooltip: 'Delete post #{postId}'
     bulk_actions: 'Actions for selected discussions : '
     bulk_post_actions: 'Actions for selected posts : '

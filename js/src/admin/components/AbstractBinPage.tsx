@@ -12,6 +12,12 @@ import Model from 'flarum/common/Model';
 import ItemActionModal, { BinAction, BinItemType } from './ItemActionModal';
 import MassActionModal from './MassActionModal';
 import Icon from 'flarum/common/components/Icon';
+import humanTime from 'flarum/common/helpers/humanTime';
+
+export type ColumnData<ModelType = any> = {
+  name: Mithril.Children;
+  content: (item: ModelType) => Mithril.Children;
+};
 
 export default abstract class AbstractBinPage<ModelType extends Model = any> extends Page {
   protected query: string = '';
@@ -254,7 +260,91 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     return items;
   }
 
-  abstract columns(): ItemList<any>;
+  /**
+   * Build an item list of common columns to show in each BinPage
+   *
+   * subclasses should call super.columns() to add their own columns.
+   */
+  columns(): ItemList<ColumnData<ModelType>> {
+    const items = new ItemList<ColumnData<ModelType>>();
+    const type = this.getModelName();
+
+    const tooltip = (action: BinAction, item: ModelType): string =>
+      extractText(app.translator.trans(`walsgit-recycle-bin.admin.${action}_${type}_tooltip`, { [`${type}Id`]: item.id() }));
+
+    items.add(
+      'select',
+      {
+        name: '',
+        content: (item: ModelType) => (
+          <input
+            type="checkbox"
+            className="RecycleBinPage-Checkbox"
+            checked={this.selectedIds.has(item.id()!)}
+            onchange={(e: Event) => this.toggleSelection(e, item.id()!)}
+          />
+        ),
+      },
+      100
+    );
+
+    const dateColumn = (nameKey: string, className: string, getDate: (item: any) => Date | null | undefined): ColumnData<ModelType> => ({
+      name: app.translator.trans(nameKey),
+      content: (item: ModelType) => {
+        const date = getDate(item);
+
+        return (
+          <span className={className} title={date ? String(date) : undefined}>
+            {date ? humanTime(date) : app.translator.trans('walsgit-recycle-bin.admin.unknown_date')}
+          </span>
+        );
+      },
+    });
+
+    items.add(
+      'createdAt',
+      dateColumn('walsgit-recycle-bin.admin.created_at', 'DiscussionList-creationDate', (item) => item.createdAt()),
+      75
+    );
+
+    items.add(
+      'hiddenAt',
+      dateColumn('walsgit-recycle-bin.admin.hidden_at', 'DiscussionList-hiddenDate', (item) => item.hiddenAt()),
+      70
+    );
+
+    items.add(
+      'actions',
+      {
+        name: app.translator.trans('walsgit-recycle-bin.admin.actions'),
+        content: (item: ModelType) => [
+          m(
+            Button,
+            {
+              className: 'Button DiscussionList-editModalBtn',
+              title: tooltip('restore', item),
+              ariaLabel: tooltip('restore', item),
+              onclick: () => this.openItemModal(item, 'restore'),
+            },
+            <Icon name="fas fa-trash-restore" />
+          ),
+          m(
+            Button,
+            {
+              className: 'Button DiscussionList-editModalBtn',
+              title: tooltip('delete', item),
+              ariaLabel: tooltip('delete', item),
+              onclick: () => this.openItemModal(item, 'delete'),
+            },
+            <Icon name="fas fa-times" />
+          ),
+        ],
+      },
+      -90
+    );
+
+    return items;
+  }
 
   massActions(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
