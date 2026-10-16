@@ -24,6 +24,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
   protected pageData: ModelType[] | undefined = undefined;
   protected moreData: boolean = false;
   protected isLoadingPage: boolean = false;
+  private latestRequestId: number = 0;
   protected readonly selectedIds: Set<string> = new Set();
 
   protected isSearching(): boolean {
@@ -332,6 +333,8 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
   }
 
   async loadPage(pageNumber: number): Promise<void> {
+    const requestId = ++this.latestRequestId;
+
     this.isLoadingPage = true;
     this.loadingPageNumber = pageNumber;
     m.redraw();
@@ -363,16 +366,22 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
         },
       });
 
+      if (requestId !== this.latestRequestId) return;
+
       this.pageData = results as ModelType[];
       this.moreData = !!results.payload?.links?.next;
       this.pageNumber = pageNumber;
       this.setPageNumberInUrl(pageNumber);
     } catch (error) {
+      if (requestId !== this.latestRequestId) return;
+
       console.error(error);
       this.pageData = [];
     } finally {
-      this.isLoadingPage = false;
-      m.redraw();
+      if (requestId === this.latestRequestId) {
+        this.isLoadingPage = false;
+        m.redraw();
+      }
     }
   }
 
