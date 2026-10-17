@@ -1,6 +1,24 @@
 
 # Changelog
 
+## [2.1.0] - 2026-10-17
+### Fixed
+- Navigation & filtering issues
+- Making sure only admin can search/filter hidden content
+- Making sure only hidden items are processed
+- Making sure only hidden comment type post are fetched
+- Better page data refresh
+
+### Added
+- Toggle to select all items of a page
+- Button to delete all items of a bin
+- Show a message when Bin or search results are empty
+
+### Changed
+- Set min required Flarum core version to 2.0.0
+- Mass actions are now limited to 100 per request and executed in chunks of 50
+- A lot of code refactoring and cleanup.
+
 ## [2.0.7] - 2026-10-09
 ### Fixed
 - Redundant admin page registrations
