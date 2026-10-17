@@ -418,7 +418,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
 
     items.add(
       'deleteAll',
-      <button className="Button" disabled={this.itemsCount() === 0} onclick={() => this.openMassModal('delete', true)}>
+      <button className="Button" disabled={this.itemsCount() === 0 || this.isSearching()} onclick={() => this.openMassModal('delete', true)}>
         <Icon name="fas fa-trash" /> {app.translator.trans(`${prefix}.bulk_${infix}delete_all_label`)}
       </button>,
       70
