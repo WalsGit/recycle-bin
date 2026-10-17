@@ -476,7 +476,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
         this.selectedIds.clear();
 
         if (all) {
-          // The bin is empty: go back to the first page
+          this.query = '';
           void this.loadPage(0);
           this.refreshStatistics();
         } else {
