@@ -43,9 +43,9 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     }
 
     const count = this.itemsCount();
-    if (count === -1 || Number.isNaN(count)) return 0;
+    if (count === -1 || Number.isNaN(count)) return 1;
 
-    return Math.ceil(count / this.numPerPage);
+    return Math.max(1, Math.ceil(count / this.numPerPage));
   }
 
   protected refreshStatistics(): void {
