@@ -36,16 +36,6 @@
         margin-bottom: 16px;
     }
 
-    &-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        *+* {
-            margin-left: 8px;
-        }
-    }
-
     &-grid {
         width: 100%;
         position: relative;
@@ -108,9 +98,16 @@
                 }
             }
         }
+
+        &-empty {
+            grid-column: 1 / span var(--columns);
+            padding: 16px;
+            text-align: center;
+            color: var(--muted-color);
+        }
     }
 
-    &-totalDiscussions {
+    &-total {
         margin-top: 10px;
     }
 
@@ -168,7 +165,7 @@
 
 }
 
-.RestorePostModal, .DeletePostModal {
+.ItemActionModal {
     pre code {
         background-color: var(--code-bg);
         display: block;

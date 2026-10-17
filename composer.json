@@ -13,7 +13,7 @@
     "type": "flarum-extension",
     "license": "MIT",
     "require": {
-        "flarum/core": "^2.0.0-beta"
+        "flarum/core": "^2.0.0"
     },
     "authors": [
         {
@@ -45,9 +45,9 @@
         "flarum-cli": {
             "modules": {
                 "admin": true,
-                "forum": true,
+                "forum": false,
                 "js": true,
-                "jsCommon": true,
+                "jsCommon": false,
                 "css": true,
                 "locale": true,
                 "gitConf": true,
@@ -61,7 +61,6 @@
             }
         }
     },
-    "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload-dev": {
         "psr-4": {
@@ -84,6 +83,6 @@
         "test:setup": "Sets up a database for use with integration tests. Execute this only once."
     },
     "require-dev": {
-        "flarum/testing": "^2.0.0-beta"
+        "flarum/testing": "^2.0.0"
     }
 }

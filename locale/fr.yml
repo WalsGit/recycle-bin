@@ -8,18 +8,19 @@ walsgit-recycle-bin:
     search_post_help_text: 'Recherche des mots dans les posts cachés'
     total_hidden_discussions: 'Nombre total de discussions cachées'
     total_hidden_posts: 'Nombre total de posts cachés'
-    empty_list: 'Aucune discussion dans la corbeille.'
-    hidden_discussions: 'Discussions cachées'
+    empty_discussions_list: "Il n'y a aucune discussion dans la corbeille."
+    empty_posts_list: "Il n'y a aucun post dans la corbeille."
+    no_search_results: "Il n'y a aucun résultat pour cette recherche."
+    select_all: 'Sélectionnez tout les éléments de cette page'
     discussion_id: 'ID'
     discussion_title: 'Titre de la discussion'
-    discussion_link_tooltip: 'Voir la discussion'
     author: 'Auteur'
     unknown_user: 'Utilisateur inconnu'
     created_at: 'Créée le'
     hidden_at: 'Cachée le'
     unknown_date: 'Date inconnue'
     actions: 'Actions'
-    restore_tooltip: 'Rétablir la discussion #{discussionId}'
+    restore_discussion_tooltip: 'Rétablir la discussion #{discussionId}'
     restore_post_tooltip: 'Rétablir le post #{postId}'
     restore_discussion:
       title: 'Rétablir la discussion'
@@ -41,7 +42,7 @@ walsgit-recycle-bin:
       confirmation: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> ce post (irréversible) :'
       delete_button: 'Supprimer définitivement ce post'
       success: 'Le post a bien été définitivement supprimé'
-    delete_tooltip: 'Supprimer définitivement la discussion #{discussionId}'
+    delete_discussion_tooltip: 'Supprimer définitivement la discussion #{discussionId}'
     delete_post_tooltip: 'Supprimer définitivement le post #{postId}'
     bulk_actions: 'Actions pour les discussions sélectionnées : '
     bulk_post_actions: 'Actions pour les posts sélectionnés : '
@@ -73,6 +74,20 @@ walsgit-recycle-bin:
       success: 'Les posts sélectionnés ont bien été définitivement supprimés'
     bulk_delete_label: 'Supprimer les discussions sélectionnées'
     bulk_post_delete_label: 'Supprimer les posts sélectionnés'
+    bulk_delete_all_label: 'Supprimer toutes les discussions'
+    bulk_post_delete_all_label: 'Supprimer tous les posts'
+    mass_delete_all_modal:
+      title: 'Supprimer définitivement toutes les discussions cachées'
+      text_start: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> TOUTES CES '
+      text_end: ' discussions dans la corbeille (irréversible) ?'
+      submit_button: 'Supprimer définitivement toutes les discussions'
+      success: 'Toutes les discussions ont bien été définitivement supprimées'
+    mass_delete_all_post_modal:
+      title: 'Supprimer définitivement tous les posts cachés'
+      text_start: 'Êtes-vous sûr de vouloir <u>supprimer définitivement</u> TOUS CES '
+      text_end: ' posts dans la corbeille (irréversible) ?'
+      submit_button: 'Supprimer définitivement tous les posts'
+      success: 'Tous les posts ont bien été définitivement supprimés'
     pagination:
       first_page_button: 'Aller à la première page'
       back_button: 'Retourner à la page précédente'
@@ -80,12 +95,10 @@ walsgit-recycle-bin:
       go_to_page_textbox_a11y_label: 'Allez directement à la page numéro'
       next_button: 'Aller à la page suivante'
       last_page_button: 'Aller à la dernière page'
-    mass_help_text: "Merci d'attendre le rafraîchissement de la page après la confirmation du rétablissement ou de la suppression de plusieurs discussions à la fois"
+      page_counter_search: 'Page {current}'
     grid:
       invalid_column_content: "Contenu invalide !"
     post:
       id: "ID"
       title: "Texte du post"
       open_post: "Ouvrir le post"
-
-  forum:

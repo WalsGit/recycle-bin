@@ -14,11 +14,18 @@ class ContentPostFilter implements FilterInterface
 
     public function filter(SearchState $state, array|string $value, bool $negate): void
     {
+        if (! $state->getActor()->isAdmin()) {
+            return;
+        }
+        
         if (is_array($value)) {
             return;
         }
         
         $operator = $negate ? 'not like' : 'like';
-        $state->getQuery()->where('posts.content', $operator, "%$value%");
+
+        $escapedValue = addcslashes($value, '%_\\');
+        
+        $state->getQuery()->where('posts.content', $operator, "%{$escapedValue}%");
     }
 }

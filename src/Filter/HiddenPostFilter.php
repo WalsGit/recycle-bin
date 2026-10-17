@@ -14,10 +14,16 @@ class HiddenPostFilter implements FilterInterface
 
     public function filter(SearchState $state, array|string $value, bool $negate): void
     {
+        if (! $state->getActor()->isAdmin()) {
+            return;
+        }
+
         if ($negate) {
-            $state->getQuery()->whereNull('posts.hidden_at'); 
+            $state->getQuery()->whereNull('posts.hidden_at');
         } else {
-            $state->getQuery()->whereNotNull('posts.hidden_at');
-            }
+            $state->getQuery()
+                ->whereNotNull('posts.hidden_at')
+                ->where('posts.type', 'comment');
+        }
     }
 }
