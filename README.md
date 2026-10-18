@@ -7,7 +7,7 @@ A [Flarum](https://flarum.org) extension to manage deleted (hidden) discussions 
 [![Screenshot](https://i.postimg.cc/y69G3pfp/2024-10-09-16-09-34-flarum-test-baeb96af962a.png)](https://postimg.cc/qgJw9wH2)
 
 ## Versions
-Starting with the version `2.0.0` of this extension, it will only be compatible with `Flarum v2.*`. Latest version was developed and tested on Flarum version `2.0.1`.
+Starting with the version `2.0.0` of this extension, it will only be compatible with `Flarum v2.*`. Latest version was developed and tested on Flarum version `2.0.2`.
 `Flarum v1.8.*` will no longer be supported. Last version of the extension compatible with `Flarum v1.8.*` is `walsgit/recycle-bin:"0.2.3"`.
 
 ### Features
