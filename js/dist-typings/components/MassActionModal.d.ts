@@ -9,10 +9,12 @@ interface MassActionModalAttrs extends IFormModalAttrs {
     onSuccess?: () => void;
 }
 export default class MassActionModal extends FormModal<MassActionModalAttrs> {
+    private processedCount;
     private get translationPrefix();
     className(): string;
     title(): string | any[];
     content(): JSX.Element;
     onsubmit(e: Event): void;
+    private processMassAction;
 }
 export {};
