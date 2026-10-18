@@ -88,6 +88,7 @@ walsgit-recycle-bin:
       text_end: ' posts in the recycle bin (irreversible)?'
       submit_button: 'Forever delete all posts'
       success: 'Successfully deleted all posts'
+    mass_progress: 'Processed {processed} of {total}…'
     pagination:
       first_page_button: 'Go to first page'
       back_button: 'Back to previous page'

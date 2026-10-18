@@ -13,6 +13,8 @@ interface MassActionModalAttrs extends IFormModalAttrs {
 }
 
 export default class MassActionModal extends FormModal<MassActionModalAttrs> {
+  private processedCount: number = 0;
+
   private get translationPrefix(): string {
     const { action, type, all } = this.attrs;
     const suffix = type === 'post' ? '_post' : '';
@@ -36,6 +38,14 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
           <strong>{this.attrs.all ? this.attrs.totalCount : this.attrs.selectedIds.size}</strong>{' '}
           {app.translator.trans(`${this.translationPrefix}.text_end`)}
         </p>
+        {this.attrs.all && this.loading && (
+          <p className="MassActionModal-progress">
+            {app.translator.trans('walsgit-recycle-bin.admin.mass_progress', {
+              processed: this.processedCount,
+              total: this.attrs.totalCount,
+            })}
+          </p>
+        )}
         <div className="Form-group">
           {m(
             Button,
@@ -59,6 +69,7 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
 
   private async processMassAction(): Promise<void> {
     this.loading = true;
+    this.processedCount = 0;
 
     const { type, action, selectedIds, all } = this.attrs;
     let processedAny = false;
@@ -79,6 +90,9 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
         });
 
         if (result.processed_count > 0) processedAny = true;
+
+        this.processedCount += result.processed_count;
+        m.redraw();
 
         // Stop when nothing was processed, to avoid an infinite loop
         hasMore = result.has_more && result.processed_count > 0;
