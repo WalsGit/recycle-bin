@@ -54,28 +54,48 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
   onsubmit(e: Event) {
     e.preventDefault();
 
+    void this.processMassAction();
+  }
+
+  private async processMassAction(): Promise<void> {
     this.loading = true;
 
     const { type, action, selectedIds, all } = this.attrs;
+    let processedAny = false;
 
-    app
-      .request({
-        method: 'POST',
-        url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-${type}s`,
-        body: {
-          action,
-          ...(all ? { all: true } : { ids: Array.from(selectedIds) }),
-        },
-      })
-      .then(() => {
-        this.hide();
+    try {
+      let hasMore = false;
+
+      do {
+        // Batches must run one after the other: processed items leave the bin, so the next batch depends on the previous one
+        // eslint-disable-next-line no-await-in-loop
+        const result = await app.request<{ processed_count: number; has_more: boolean }>({
+          method: 'POST',
+          url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-${type}s`,
+          body: {
+            action,
+            ...(all ? { all: true } : { ids: Array.from(selectedIds) }),
+          },
+        });
+
+        if (result.processed_count > 0) processedAny = true;
+
+        // Stop when nothing was processed, to avoid an infinite loop
+        hasMore = result.has_more && result.processed_count > 0;
+      } while (hasMore);
+
+      this.hide();
+      this.attrs.onSuccess?.();
+      m.redraw();
+      app.alerts.show({ type: 'success' }, app.translator.trans(`${this.translationPrefix}.success`));
+    } catch (error: any) {
+      this.loaded();
+      this.onerror(error);
+
+      // Some batches may already have been processed: refresh the list
+      if (processedAny) {
         this.attrs.onSuccess?.();
-        m.redraw();
-        app.alerts.show({ type: 'success' }, app.translator.trans(`${this.translationPrefix}.success`));
-      })
-      .catch((error: any) => {
-        this.loaded();
-        this.onerror(error);
-      });
+      }
+    }
   }
 }

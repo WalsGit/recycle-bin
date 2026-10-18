@@ -12,6 +12,7 @@ class ProcessMassActionHandler
 {
     private const MAX_IDS_PER_REQUEST   = 100;
     private const CHUNK_SIZE            = 50;
+    private const MAX_ITEMS_PER_ALL_REQUEST = 500;
 
     /**
      * Map of supported resource types to their Eloquent model classes.
@@ -28,29 +29,32 @@ class ProcessMassActionHandler
     ) {
     }
 
-    /**
-     * Handle the mass action command
-     *
-     * @throws \Flarum\User\Exception\PermissionDeniedException
-     * @throws ValidationException
-     */
-    public function handle(ProcessMassAction $command): int
-    {
-        $this->validateCommand($command);
+        /**
+         * Handle the mass action command
+         *
+         * @return array{processed: int, has_more: bool}
+         *
+         * @throws \Flarum\User\Exception\PermissionDeniedException
+         * @throws ValidationException
+         */
+        public function handle(ProcessMassAction $command): array
+        {
+            $this->validateCommand($command);
 
-        $modelClass = $this->modelMap[$command->type];
-        if ($command->all) {
-            return $this->processAll($modelClass, $command->action);
+            $modelClass = $this->modelMap[$command->type];
+
+            if ($command->all) {
+                return $this->processAll($modelClass, $command->action);
+            }
+
+            $count = 0;
+
+            foreach (array_chunk($command->ids, self::CHUNK_SIZE) as $chunk) {
+                $count += $this->processChunk($chunk, $modelClass, $command->action);
+            }
+
+            return ['processed' => $count, 'has_more' => false];
         }
-        $count = 0;
-
-        foreach (array_chunk($command->ids, self::CHUNK_SIZE) as $chunk) {
-            $count += $this->processChunk($chunk, $modelClass, $command->action);
-
-        }
-
-        return $count;
-    }
 
     /**
      * Validate actor permissions and payload
@@ -82,31 +86,41 @@ class ProcessMassActionHandler
 
     }
 
-    /**
-     * Process every hidden item of the bin
-     *
-     * @param class-string<Model> $modelClass
-     */
-    private function processAll(string $modelClass, string $action): int
-    {
-        $count = 0;
-        $query = $modelClass::query()->whereNotNull('hidden_at');
+        /**
+         * Process a limited batch of hidden items of the bin
+         *
+         * Processed items leave the bin (restored or deleted), so calling this
+         * repeatedly until `has_more` is false empties the bin.
+         *
+         * @param class-string<Model> $modelClass
+         *
+         * @return array{processed: int, has_more: bool}
+         */
+        private function processAll(string $modelClass, string $action): array
+        {
+            $query = $modelClass::query()->whereNotNull('hidden_at')->orderBy('id');
 
-        if ($modelClass === Post::class) {
-            $query->where('type', 'comment');
+            if ($modelClass === Post::class) {
+                $query->where('type', 'comment');
+            }
+
+            // Fetch one extra item to know if there is more to process
+            $items = $query->limit(self::MAX_ITEMS_PER_ALL_REQUEST + 1)->get();
+            $hasMore = $items->count() > self::MAX_ITEMS_PER_ALL_REQUEST;
+            $count = 0;
+
+            foreach ($items->take(self::MAX_ITEMS_PER_ALL_REQUEST)->chunk(self::CHUNK_SIZE) as $chunk) {
+                $count += $this->db->transaction(function () use ($chunk, $action) {
+                    foreach ($chunk as $item) {
+                        $this->processItem($item, $action);
+                    }
+
+                    return $chunk->count();
+                });
+            }
+
+            return ['processed' => $count, 'has_more' => $hasMore];
         }
-
-        $query->chunkById(self::CHUNK_SIZE, function ($items) use (&$count, $action) {
-            $this->db->transaction(function () use ($items, &$count, $action) {
-                foreach ($items as $item) {
-                    $this->processItem($item, $action);
-                    $count++;
-                }
-            });
-        });
-
-        return $count;
-    }
 
     /**
      * Process a chunk of items inside a DB transaction

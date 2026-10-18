@@ -34,7 +34,7 @@ class MassActionController implements RequestHandlerInterface
 
         $all = filter_var($data['all'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-        $count = $this->bus->dispatch(
+        $result = $this->bus->dispatch(
             new ProcessMassAction($actor, $type, $action, $ids, $all)
         );
 
@@ -42,7 +42,8 @@ class MassActionController implements RequestHandlerInterface
             'success'         => true,
             'type'            => $type,
             'action'          => $action,
-            'processed_count' => $count,
+            'processed_count' => $result['processed'],
+            'has_more'        => $result['has_more'],
         ]);
     }
 }
