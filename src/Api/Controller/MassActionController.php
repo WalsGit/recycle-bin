@@ -20,6 +20,7 @@ class MassActionController implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $actor = RequestUtil::getActor($request);
+        $actor->assertAdmin();
         $data = (array) $request->getParsedBody();
 
         $routeParams = (array) $request->getAttribute('routeParameters', []);
