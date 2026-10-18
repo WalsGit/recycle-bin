@@ -30,18 +30,20 @@ class MassActionTest extends TestCase
     /**
      * Deleting a model fires its events, which remove related posts and notifications.
      * This per-item cleanup is intended, and bounded by MAX_ITEMS_PER_ALL_REQUEST.
-     * Both quote styles are listed so the test works on SQLite and MySQL/MariaDB.
+     * Quote styles and table prefix vary between drivers and CI jobs, so they are built dynamically.
      */
     protected function allowedRepeatedQueries(): array
     {
-        return [
-            'delete from "notifications"',
-            'delete from "discussions"',
-            'delete from "posts"',
-            'delete from `notifications`',
-            'delete from `discussions`',
-            'delete from `posts`',
-        ];
+        $prefix = $this->database()->getTablePrefix();
+        $allowed = [];
+
+        foreach (['notifications', 'discussions', 'posts'] as $table) {
+            foreach (['"', '`'] as $quote) {
+                $allowed[] = "delete from {$quote}{$prefix}{$table}{$quote}";
+            }
+        }
+
+        return $allowed;
     }
 
     /**
