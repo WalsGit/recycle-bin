@@ -1,6 +1,15 @@
 
 # Changelog
 
+## [2.1.1] - 2026-10-18
+### Fixed
+- Missing admin assertion in MassActionController
+
+### Added
+- Added a 500 items limit per request when deleting all items in bin
+- Added a processing counter to delete all action modal
+- Added some integration tests for mass actions
+
 ## [2.1.0] - 2026-10-17
 ### Fixed
 - Navigation & filtering issues
