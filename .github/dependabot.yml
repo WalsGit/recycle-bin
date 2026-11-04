@@ -1,37 +1,33 @@
 version: 2
 updates:
-  # --- BRANCH MAIN (Flarum v2) ---
-  
-  # Backend : PHP / Composer
+  # Backend: PHP / Composer
   - package-ecosystem: "composer"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
     target-branch: "main"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "chore"
+    groups:
+      php-dependencies:
+        patterns:
+          - "*"
 
-  # Frontend : JavaScript / Npm & Yarn
-  - package-ecosystem: "npm" 
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    target-branch: "main"
-    open-pull-requests-limit: 5
-
-  # --- BRANCH FLARUM1 (Flarum v1) ---
-
-  # Backend : PHP / Composer
-  - package-ecosystem: "composer"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    target-branch: "flarum1"
-    open-pull-requests-limit: 5
-
-  # Frontend : JavaScript / Npm & Yarn
+  # Frontend: JavaScript / Yarn (package.json lives in js/)
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/js"
     schedule:
       interval: "weekly"
-    target-branch: "flarum1"
-    open-pull-requests-limit: 5
+      day: "monday"
+    target-branch: "main"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "chore"
+    groups:
+      js-dependencies:
+        patterns:
+          - "*"
