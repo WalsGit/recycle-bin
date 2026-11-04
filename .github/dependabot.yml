@@ -27,6 +27,15 @@ updates:
     labels:
       - "dependencies"
       - "chore"
+    # Build tooling is aligned with Flarum core (prettier 2, webpack-cli 4,
+    # flarum-tsconfig for TypeScript 5): skip major bumps that break the build.
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "prettier"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "webpack-cli"
+        update-types: ["version-update:semver-major"]
     groups:
       js-dependencies:
         patterns:
