@@ -7,6 +7,7 @@ use Carbon\Exceptions\InvalidFormatException;
 use Flarum\Discussion\Discussion;
 use Flarum\Foundation\DispatchEventsTrait;
 use Flarum\Foundation\ValidationException;
+use Flarum\Post\CommentPost;
 use Flarum\Post\Post;
 use Flarum\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -181,15 +182,18 @@ class ProcessMassActionHandler
     }
 
     /**
-     * Query of the items that belong to the bin: hidden discussions, or hidden comment posts
+     * Query of the items that belong to the bin: hidden discussions, or hidden comment posts,
+     * optionally only those hidden at or before the given moment
      *
      * @param class-string<Model> $modelClass
      */
-    private function binQuery(string $modelClass, Carbon $hiddenBefore): Builder
+    private function binQuery(string $modelClass, ?Carbon $hiddenBefore = null): Builder
     {
-        $query = $modelClass::query()
-            ->whereNotNull('hidden_at')
-            ->where('hidden_at', '<=', $hiddenBefore->format('Y-m-d H:i:s'));
+        $query = $modelClass::query()->whereNotNull('hidden_at');
+
+        if ($hiddenBefore !== null) {
+            $query->where('hidden_at', '<=', $hiddenBefore->format('Y-m-d H:i:s'));
+        }
 
         if ($modelClass === Post::class) {
             $query->where('type', 'comment');
@@ -210,9 +214,8 @@ class ProcessMassActionHandler
             /**
              * @var \Illuminate\Database\Eloquent\Collection<int,Model> $items
              */
-            $items = $modelClass::query()
+            $items = $this->binQuery($modelClass)
                 ->whereIn('id', $chunk)
-                ->whereNotNull('hidden_at')
                 ->get();
             $processed = 0;
 
@@ -234,6 +237,11 @@ class ProcessMassActionHandler
      */
     private function processItem(Model $item, string $action, User $actor): void
     {
+        // The bin only contains discussions and comment posts, the models that can be restored
+        if (! $item instanceof Discussion && ! $item instanceof CommentPost) {
+            throw new \LogicException('Unsupported bin item: ' . $item::class);
+        }
+
         if ($action === 'restore') {
             $item->restore();
             $item->save();

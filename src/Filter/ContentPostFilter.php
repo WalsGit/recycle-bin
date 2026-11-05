@@ -2,11 +2,14 @@
 
 namespace Walsgit\RecycleBin\Filter;
 
+use Flarum\Search\Database\DatabaseSearchState;
 use Flarum\Search\Filter\FilterInterface;
 use Flarum\Search\SearchState;
 
 /**
  * Admin-only `filter[recycleBinContent]` on the post search: the content contains the given text.
+ *
+ * @implements FilterInterface<DatabaseSearchState>
  */
 class ContentPostFilter implements FilterInterface
 {
