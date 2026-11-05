@@ -2,6 +2,10 @@ walsgit-recycle-bin:
   admin:
     discussions_bin: 'Corbeille des discussions'
     posts_bin: 'Corbeille des posts'
+    settings_tab: 'Réglages'
+    settings_title: 'Réglages de la corbeille'
+    deletion_log_label: 'Journaliser les suppressions définitives'
+    deletion_log_help: 'Écrit une ligne à chaque suppression définitive depuis la corbeille : qui, quoi et quand. Les actions de masse produisent une seule ligne de résumé. Les fichiers sont dans storage/logs/recycle-bin/ (un fichier par jour d''activité, seuls les 15 fichiers les plus récents sont conservés).'
     search_placeholder: 'Rechercher une discussion'
     search_post_placeholder: "Rechercher un post"
     search_help_text: 'Recherche des mots dans les titres ainsi que dans le corps des messages des discussions'

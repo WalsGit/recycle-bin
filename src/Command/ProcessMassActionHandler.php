@@ -13,6 +13,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Walsgit\RecycleBin\Log\DeletionLogger;
 
 class ProcessMassActionHandler
 {
@@ -34,7 +35,8 @@ class ProcessMassActionHandler
 
     public function __construct(
         protected ConnectionInterface $db,
-        protected Dispatcher $events
+        protected Dispatcher $events,
+        protected DeletionLogger $deletionLog
     ) {
     }
 
@@ -51,10 +53,35 @@ class ProcessMassActionHandler
         $this->validateCommand($command);
 
         $modelClass = $this->modelMap[$command->type];
+        $hiddenBefore = $command->all ? $this->parseHiddenBefore($command->hiddenBefore) : null;
 
-        if ($command->all) {
-            $hiddenBefore = $this->parseHiddenBefore($command->hiddenBefore);
+        // The deleted items are logged as one summary line instead of one line each
+        $result = $this->deletionLog->withoutItemLogs(
+            fn () => $this->process($command, $modelClass, $hiddenBefore)
+        );
 
+        if ($command->action === 'delete' && $result['processed'] > 0) {
+            $this->deletionLog->logMassAction($command->actor, [
+                'type' => $command->type,
+                'mode' => $command->all ? 'all' : 'selection',
+                'processed' => $result['processed'],
+                'has_more' => $result['has_more'],
+                'hidden_before' => $hiddenBefore?->toIso8601String(),
+                'requested_ids' => $command->all ? null : $command->ids,
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param class-string<Model> $modelClass
+     *
+     * @return array{processed: int, has_more: bool, remaining: int}
+     */
+    private function process(ProcessMassAction $command, string $modelClass, ?Carbon $hiddenBefore): array
+    {
+        if ($hiddenBefore !== null) {
             return $this->processAll($modelClass, $command->action, $command->actor, $hiddenBefore);
         }
 

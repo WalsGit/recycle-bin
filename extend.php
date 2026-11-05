@@ -17,12 +17,22 @@ use Walsgit\RecycleBin\Api\Controller\MassActionController;
 use Walsgit\RecycleBin\Filter\ContentPostFilter;
 use Walsgit\RecycleBin\Filter\HiddenDiscussionFilter;
 use Walsgit\RecycleBin\Filter\HiddenPostFilter;
+use Walsgit\RecycleBin\Listener\LogDeletion;
+use Walsgit\RecycleBin\Log\DeletionLogger;
+use Walsgit\RecycleBin\Provider\RecycleBinServiceProvider;
 
 return [
     (new Extend\Frontend('admin'))
         ->js(__DIR__.'/js/dist/admin.js')
         ->css(__DIR__.'/less/admin.less'),
     new Extend\Locales(__DIR__.'/locale'),
+    (new Extend\ServiceProvider())
+        ->register(RecycleBinServiceProvider::class),
+    (new Extend\Settings())
+        ->default(DeletionLogger::SETTING, false),
+    (new Extend\Event())
+        ->listen(\Flarum\Discussion\Event\Deleted::class, LogDeletion::class)
+        ->listen(\Flarum\Post\Event\Deleted::class, LogDeletion::class),
     (new Extend\Routes('api'))
         ->get('/recycle-bin/statistics', 'recycle-bin.statistics', StatisticsController::class)
         ->post('/recycle-bin/mass-{type}', 'recycle-bin.mass-action', MassActionController::class),
