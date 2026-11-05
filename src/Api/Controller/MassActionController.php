@@ -44,6 +44,7 @@ class MassActionController implements RequestHandlerInterface
             'action'          => $action,
             'processed_count' => $result['processed'],
             'has_more'        => $result['has_more'],
+            'remaining_count' => $result['remaining'],
         ]);
     }
 }
