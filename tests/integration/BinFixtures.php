@@ -10,9 +10,9 @@ use Carbon\Carbon;
 trait BinFixtures
 {
     /**
-     * Deleting a model fires its events, which remove related posts and notifications.
-     * This per-item cleanup is intended, and bounded by MAX_ITEMS_PER_ALL_REQUEST.
-     * Restoring saves each item, hence the repeated updates.
+     * Deleting or restoring a model fires its events: related posts and notifications
+     * are removed, and core listeners refresh the discussion and user counters of each
+     * item. This per-item work is intended, and bounded by MAX_ITEMS_PER_ALL_REQUEST.
      * Quote styles and table prefix vary between drivers and CI jobs, so they are built dynamically.
      */
     protected function allowedRepeatedQueries(): array
@@ -20,10 +20,12 @@ trait BinFixtures
         $prefix = $this->database()->getTablePrefix();
         $allowed = [];
 
-        foreach (['notifications', 'discussions', 'posts'] as $table) {
-            foreach (['"', '`'] as $quote) {
+        foreach (['"', '`'] as $quote) {
+            foreach (['notifications', 'discussions', 'posts', 'users'] as $table) {
                 $allowed[] = "delete from {$quote}{$prefix}{$table}{$quote}";
                 $allowed[] = "update {$quote}{$prefix}{$table}{$quote}";
+                $allowed[] = "select * from {$quote}{$prefix}{$table}{$quote}";
+                $allowed[] = "select count(*) as {$quote}aggregate{$quote} from {$quote}{$prefix}{$table}{$quote}";
             }
         }
 
@@ -33,7 +35,7 @@ trait BinFixtures
     /**
      * Build the data of a discussion for the test database (hidden by default)
      */
-    protected function discussionData(int $id, bool $hidden = true): array
+    protected function discussionData(int $id, bool $hidden = true, int $userId = 1): array
     {
         $now = Carbon::now()->toDateTimeString();
 
@@ -43,8 +45,9 @@ trait BinFixtures
             'slug' => "discussion-$id",
             'created_at' => $now,
             'last_posted_at' => $now,
-            'user_id' => 1,
+            'user_id' => $userId,
             'comment_count' => 1,
+            'last_post_number' => 1,
             'hidden_at' => $hidden ? $now : null,
         ];
     }
@@ -52,7 +55,7 @@ trait BinFixtures
     /**
      * Build the data of a post for the test database (hidden comment by default)
      */
-    protected function postData(int $id, int $discussionId = 1, bool $hidden = true, string $type = 'comment', string $content = '<t>Content</t>'): array
+    protected function postData(int $id, int $discussionId = 1, bool $hidden = true, string $type = 'comment', string $content = '<t>Content</t>', int $userId = 1): array
     {
         $now = Carbon::now()->toDateTimeString();
 
@@ -60,7 +63,7 @@ trait BinFixtures
             'id' => $id,
             'discussion_id' => $discussionId,
             'number' => $id,
-            'user_id' => 1,
+            'user_id' => $userId,
             'created_at' => $now,
             'type' => $type,
             'content' => $content,

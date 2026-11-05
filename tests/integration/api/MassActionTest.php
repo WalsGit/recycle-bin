@@ -288,14 +288,14 @@ class MassActionTest extends TestCase
     #[Test]
     public function process_all_is_limited_per_request(): void
     {
-        // Discussion 1 already exists from setUp(): 500 more = 501, one above the limit
+        // Discussion 1 already exists from setUp(): 200 more = 201, one above the limit
         $this->prepareDatabase([
-            'discussions' => array_map(fn (int $id) => $this->discussionData($id), range(2, 501)),
+            'discussions' => array_map(fn (int $id) => $this->discussionData($id), range(2, 201)),
         ]);
 
         $firstBody = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true]));
 
-        $this->assertEquals(500, $firstBody['processed_count']);
+        $this->assertEquals(200, $firstBody['processed_count']);
         $this->assertTrue($firstBody['has_more']);
         $this->assertEquals(1, $this->database()->table('discussions')->count());
 
