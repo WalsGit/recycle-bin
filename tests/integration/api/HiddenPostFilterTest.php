@@ -124,7 +124,8 @@ class HiddenPostFilterTest extends TestCase
         $this->assertEquals([6], $this->searchPostIds(['recycleBinHidden' => 'true', 'recycleBinContent' => 'snake_case'], 1));
         $this->assertEquals([8], $this->searchPostIds(['recycleBinHidden' => 'true', 'recycleBinContent' => 'bang!'], 1));
         // A bare wildcard must not match everything
-        $this->assertEquals([], $this->searchPostIds(['recycleBinHidden' => 'true', 'recycleBinContent' => '%%'], 1));
+        $this->assertEquals([5], $this->searchPostIds(['recycleBinHidden' => 'true', 'recycleBinContent' => '%'], 1));
+        $this->assertEquals([6], $this->searchPostIds(['recycleBinHidden' => 'true', 'recycleBinContent' => '_'], 1));
     }
 
     #[Test]
