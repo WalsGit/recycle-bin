@@ -2,6 +2,7 @@
 
 namespace Walsgit\RecycleBin\Tests\integration\api;
 
+use Carbon\Carbon;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -44,6 +45,22 @@ class MassActionTest extends TestCase
         }
 
         return $this->send($this->request('POST', "/api/recycle-bin/mass-$type", $options));
+    }
+
+    /**
+     * The moment "all" mode is limited to: a bit after the fixtures were hidden, as the page would send it
+     */
+    private function snapshot(): string
+    {
+        return Carbon::now()->addMinute()->toIso8601String();
+    }
+
+    /**
+     * Build the data of a discussion hidden after the snapshot (for example by another admin)
+     */
+    private function discussionHiddenAfterSnapshot(int $id): array
+    {
+        return ['hidden_at' => Carbon::now()->addMinutes(10)->toDateTimeString()] + $this->discussionData($id);
     }
 
     /**
@@ -111,7 +128,7 @@ class MassActionTest extends TestCase
             'discussions' => [$this->discussionData(2), $this->discussionData(3)],
         ]);
 
-        $response = $this->massAction('discussions', ['action' => 'restore', 'all' => true]);
+        $response = $this->massAction('discussions', ['action' => 'restore', 'all' => true, 'hidden_before' => $this->snapshot()]);
 
         $body = $this->body($response);
         $this->assertEquals(3, $body['processed_count']);
@@ -162,7 +179,7 @@ class MassActionTest extends TestCase
             'posts' => [$this->postData(1, 2), $this->postData(2, 2), $this->postData(3, 2, false)],
         ]);
 
-        $response = $this->massAction('posts', ['action' => 'delete', 'all' => true]);
+        $response = $this->massAction('posts', ['action' => 'delete', 'all' => true, 'hidden_before' => $this->snapshot()]);
 
         $body = $this->body($response);
         $this->assertEquals(2, $body['processed_count']);
@@ -200,7 +217,7 @@ class MassActionTest extends TestCase
             ],
         ]);
 
-        $body = $this->body($this->massAction('posts', ['action' => 'delete', 'all' => true]));
+        $body = $this->body($this->massAction('posts', ['action' => 'delete', 'all' => true, 'hidden_before' => $this->snapshot()]));
 
         $this->assertEquals(1, $body['processed_count']);
         $this->assertFalse($this->postExists(1));
@@ -294,7 +311,7 @@ class MassActionTest extends TestCase
             'discussions' => array_map(fn (int $id) => $this->discussionData($id), range(2, 201)),
         ]);
 
-        $firstBody = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true]));
+        $firstBody = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true, 'hidden_before' => $this->snapshot()]));
 
         $this->assertEquals(200, $firstBody['processed_count']);
         $this->assertTrue($firstBody['has_more']);
@@ -302,7 +319,7 @@ class MassActionTest extends TestCase
         $this->assertEquals(1, $this->database()->table('discussions')->count());
 
         // Second call processes the remaining item
-        $secondBody = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true]));
+        $secondBody = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true, 'hidden_before' => $this->snapshot()]));
 
         $this->assertEquals(1, $secondBody['processed_count']);
         $this->assertFalse($secondBody['has_more']);
@@ -315,9 +332,92 @@ class MassActionTest extends TestCase
     {
         $this->database()->table('discussions')->delete();
 
-        $body = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true]));
+        $body = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true, 'hidden_before' => $this->snapshot()]));
 
         $this->assertEquals(0, $body['processed_count']);
         $this->assertFalse($body['has_more']);
+    }
+
+    #[Test]
+    public function process_all_requires_the_hidden_before_marker(): void
+    {
+        $response = $this->massAction('discussions', ['action' => 'delete', 'all' => true]);
+
+        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertTrue($this->discussionExists(1));
+    }
+
+    #[Test]
+    public function process_all_rejects_an_invalid_hidden_before_marker(): void
+    {
+        $response = $this->massAction('discussions', ['action' => 'delete', 'all' => true, 'hidden_before' => 'not a date']);
+
+        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertTrue($this->discussionExists(1));
+    }
+
+    #[Test]
+    public function process_all_ignores_items_hidden_after_the_marker(): void
+    {
+        $this->prepareDatabase([
+            'discussions' => [$this->discussionHiddenAfterSnapshot(2)],
+        ]);
+
+        $body = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true, 'hidden_before' => $this->snapshot()]));
+
+        $this->assertEquals(1, $body['processed_count']);
+        $this->assertFalse($body['has_more']);
+        $this->assertEquals(0, $body['remaining_count']);
+        $this->assertFalse($this->discussionExists(1));
+        $this->assertTrue($this->discussionExists(2), 'Item hidden after the marker must be left in the bin');
+    }
+
+    #[Test]
+    public function process_all_ignores_posts_hidden_after_the_marker(): void
+    {
+        $this->prepareDatabase([
+            'discussions' => [$this->discussionData(2, false)],
+            'posts' => [
+                $this->postData(1, 2),
+                ['hidden_at' => Carbon::now()->addMinutes(10)->toDateTimeString()] + $this->postData(2, 2),
+            ],
+        ]);
+
+        $body = $this->body($this->massAction('posts', ['action' => 'delete', 'all' => true, 'hidden_before' => $this->snapshot()]));
+
+        $this->assertEquals(1, $body['processed_count']);
+        $this->assertFalse($this->postExists(1));
+        $this->assertTrue($this->postExists(2));
+    }
+
+    #[Test]
+    public function remaining_count_only_counts_items_hidden_before_the_marker(): void
+    {
+        // Discussion 1 plus 200 more = 201 listed items, and one hidden after the marker
+        $this->prepareDatabase([
+            'discussions' => array_map(fn (int $id) => $this->discussionData($id), range(2, 201)),
+        ]);
+        $this->prepareDatabase([
+            'discussions' => [$this->discussionHiddenAfterSnapshot(202)],
+        ]);
+
+        $body = $this->body($this->massAction('discussions', ['action' => 'delete', 'all' => true, 'hidden_before' => $this->snapshot()]));
+
+        $this->assertEquals(200, $body['processed_count']);
+        $this->assertTrue($body['has_more']);
+        $this->assertEquals(1, $body['remaining_count']);
+    }
+
+    #[Test]
+    public function the_marker_does_not_apply_to_selected_ids(): void
+    {
+        $this->prepareDatabase([
+            'discussions' => [$this->discussionHiddenAfterSnapshot(2)],
+        ]);
+
+        $body = $this->body($this->massAction('discussions', ['action' => 'delete', 'ids' => [2]]));
+
+        $this->assertEquals(1, $body['processed_count']);
+        $this->assertFalse($this->discussionExists(2));
     }
 }

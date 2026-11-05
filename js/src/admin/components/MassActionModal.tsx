@@ -9,6 +9,8 @@ interface MassActionModalAttrs extends IFormModalAttrs {
   action: BinAction;
   all?: boolean;
   totalCount?: number;
+  /** Server time of the counts shown, required by "all" mode (see AbstractBinPage) */
+  hiddenBefore?: string;
   onSuccess?: () => void;
 }
 
@@ -78,7 +80,7 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
     this.processedCount = 0;
     this.refreshedTotal = undefined;
 
-    const { type, action, selectedIds, all } = this.attrs;
+    const { type, action, selectedIds, all, hiddenBefore } = this.attrs;
     let processedAny = false;
 
     try {
@@ -92,7 +94,7 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
           url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-${type}s`,
           body: {
             action,
-            ...(all ? { all: true } : { ids: Array.from(selectedIds) }),
+            ...(all ? { all: true, hidden_before: hiddenBefore } : { ids: Array.from(selectedIds) }),
           },
         });
 
