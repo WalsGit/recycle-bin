@@ -48,15 +48,22 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     return Math.max(1, Math.ceil(count / this.numPerPage));
   }
 
+  /**
+   * Server time of the last statistics: "delete all" is limited to the items hidden before it,
+   * so that items hidden after the counts were displayed are not processed without being shown.
+   */
+  protected statisticsGeneratedAt?: string;
+
   protected refreshStatistics(): void {
     app
-      .request<Record<string, number>>({
+      .request<Record<string, any>>({
         method: 'GET',
         url: `${app.forum.attribute('apiUrl')}/recycle-bin/statistics`,
       })
       .then((result) => {
         // Response keys are `hidden_discussions_count` & `hidden_posts_count`
         this.itemsCount(result[`hidden_${this.getModelName()}s_count`]);
+        this.statisticsGeneratedAt = result.generated_at;
         m.redraw();
       })
       .catch((error: any) => {
@@ -472,6 +479,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
       action,
       all,
       totalCount: this.itemsCount(),
+      hiddenBefore: this.statisticsGeneratedAt,
       onSuccess: () => {
         this.selectedIds.clear();
 

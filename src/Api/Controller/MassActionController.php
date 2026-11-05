@@ -33,9 +33,10 @@ class MassActionController implements RequestHandlerInterface
         )));
 
         $all = filter_var($data['all'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $hiddenBefore = isset($data['hidden_before']) && is_string($data['hidden_before']) ? $data['hidden_before'] : null;
 
         $result = $this->bus->dispatch(
-            new ProcessMassAction($actor, $type, $action, $ids, $all)
+            new ProcessMassAction($actor, $type, $action, $ids, $all, $hiddenBefore)
         );
 
         return new JsonResponse([

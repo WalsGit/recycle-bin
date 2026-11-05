@@ -49,6 +49,9 @@ class StatisticsTest extends TestCase
         $body = json_decode((string) $response->getBody(), true);
         $this->assertEquals(2, $body['hidden_discussions_count']);
         $this->assertEquals(2, $body['hidden_posts_count']);
+
+        // Server time of the counts, within a few seconds of now
+        $this->assertLessThan(10, abs(strtotime($body['generated_at']) - time()));
     }
 
     #[Test]

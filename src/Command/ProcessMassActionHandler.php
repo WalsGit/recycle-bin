@@ -2,6 +2,8 @@
 
 namespace Walsgit\RecycleBin\Command;
 
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Flarum\Discussion\Discussion;
 use Flarum\Foundation\DispatchEventsTrait;
 use Flarum\Foundation\ValidationException;
@@ -51,7 +53,9 @@ class ProcessMassActionHandler
         $modelClass = $this->modelMap[$command->type];
 
         if ($command->all) {
-            return $this->processAll($modelClass, $command->action, $command->actor);
+            $hiddenBefore = $this->parseHiddenBefore($command->hiddenBefore);
+
+            return $this->processAll($modelClass, $command->action, $command->actor, $hiddenBefore);
         }
 
         $count = 0;
@@ -93,6 +97,28 @@ class ProcessMassActionHandler
     }
 
     /**
+     * "All" mode only processes the items the actor could see in the bin: those hidden
+     * at or before the moment the list was loaded. Without it, items hidden since then
+     * (for example by another admin) would be processed without ever being shown.
+     * `hidden_at` has a precision of one second, so an item hidden within the same second
+     * as the marker is still processed.
+     *
+     * @throws ValidationException
+     */
+    private function parseHiddenBefore(?string $value): Carbon
+    {
+        if ($value === null || trim($value) === '') {
+            throw new ValidationException(['hidden_before' => 'The hidden_before date is required with "all". Reload the page and try again.']);
+        }
+
+        try {
+            return Carbon::parse($value)->utc();
+        } catch (InvalidFormatException) {
+            throw new ValidationException(['hidden_before' => 'Invalid hidden_before date.']);
+        }
+    }
+
+    /**
      * Process a limited batch of hidden items of the bin
      *
      * Processed items leave the bin (restored or deleted), so calling this
@@ -102,9 +128,9 @@ class ProcessMassActionHandler
      *
      * @return array{processed: int, has_more: bool, remaining: int}
      */
-    private function processAll(string $modelClass, string $action, User $actor): array
+    private function processAll(string $modelClass, string $action, User $actor, Carbon $hiddenBefore): array
     {
-        $query = $this->binQuery($modelClass)->orderBy('id');
+        $query = $this->binQuery($modelClass, $hiddenBefore)->orderBy('id');
 
         // Fetch one extra item to know if there is more to process
         $items = $query->limit(self::MAX_ITEMS_PER_ALL_REQUEST + 1)->get();
@@ -122,7 +148,7 @@ class ProcessMassActionHandler
         }
 
         // Lets the client keep its progress total accurate without another request
-        $remaining = $hasMore ? $this->binQuery($modelClass)->count() : 0;
+        $remaining = $hasMore ? $this->binQuery($modelClass, $hiddenBefore)->count() : 0;
 
         return ['processed' => $count, 'has_more' => $hasMore, 'remaining' => $remaining];
     }
@@ -132,9 +158,11 @@ class ProcessMassActionHandler
      *
      * @param class-string<Model> $modelClass
      */
-    private function binQuery(string $modelClass): Builder
+    private function binQuery(string $modelClass, Carbon $hiddenBefore): Builder
     {
-        $query = $modelClass::query()->whereNotNull('hidden_at');
+        $query = $modelClass::query()
+            ->whereNotNull('hidden_at')
+            ->where('hidden_at', '<=', $hiddenBefore->format('Y-m-d H:i:s'));
 
         if ($modelClass === Post::class) {
             $query->where('type', 'comment');
