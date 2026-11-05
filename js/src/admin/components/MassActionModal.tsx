@@ -14,6 +14,12 @@ interface MassActionModalAttrs extends IFormModalAttrs {
 
 export default class MassActionModal extends FormModal<MassActionModalAttrs> {
   private processedCount: number = 0;
+  // Total refreshed while processing, the count given when opening the modal can become outdated
+  private refreshedTotal?: number;
+
+  private get total(): number | undefined {
+    return this.refreshedTotal ?? this.attrs.totalCount;
+  }
 
   private get translationPrefix(): string {
     const { action, type, all } = this.attrs;
@@ -42,7 +48,7 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
           <p className="MassActionModal-progress">
             {app.translator.trans('walsgit-recycle-bin.admin.mass_progress', {
               processed: this.processedCount,
-              total: this.attrs.totalCount,
+              total: this.total,
             })}
           </p>
         )}
@@ -70,6 +76,7 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
   private async processMassAction(): Promise<void> {
     this.loading = true;
     this.processedCount = 0;
+    this.refreshedTotal = undefined;
 
     const { type, action, selectedIds, all } = this.attrs;
     let processedAny = false;
@@ -80,7 +87,7 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
       do {
         // Batches must run one after the other: processed items leave the bin, so the next batch depends on the previous one
         // eslint-disable-next-line no-await-in-loop
-        const result = await app.request<{ processed_count: number; has_more: boolean }>({
+        const result = await app.request<{ processed_count: number; has_more: boolean; remaining_count: number }>({
           method: 'POST',
           url: `${app.forum.attribute('apiUrl')}/recycle-bin/mass-${type}s`,
           body: {
@@ -92,6 +99,10 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
         if (result.processed_count > 0) processedAny = true;
 
         this.processedCount += result.processed_count;
+
+        // The bin can change while processing: base the total on what is left rather than on the count at opening
+        if (result.has_more) this.refreshedTotal = this.processedCount + result.remaining_count;
+
         m.redraw();
 
         // Stop when nothing was processed, to avoid an infinite loop
@@ -101,15 +112,26 @@ export default class MassActionModal extends FormModal<MassActionModalAttrs> {
       this.hide();
       this.attrs.onSuccess?.();
       m.redraw();
-      app.alerts.show({ type: 'success' }, app.translator.trans(`${this.translationPrefix}.success`));
+
+      if (this.processedCount === 0) {
+        // Items were already restored or deleted (for example from another tab)
+        app.alerts.show({ type: 'warning' }, app.translator.trans('walsgit-recycle-bin.admin.mass_nothing_to_process'));
+      } else {
+        app.alerts.show({ type: 'success' }, app.translator.trans(`${this.translationPrefix}.success`));
+      }
     } catch (error: any) {
       this.loaded();
       this.onerror(error);
 
-      // Some batches may already have been processed: refresh the list
       if (processedAny) {
-        this.attrs.onSuccess?.();
+        app.alerts.show(
+          { type: 'warning' },
+          app.translator.trans('walsgit-recycle-bin.admin.mass_partial_failure', { processed: this.processedCount })
+        );
       }
+
+      // The server may have processed part of the items before failing: always refresh the list
+      this.attrs.onSuccess?.();
     }
   }
 }

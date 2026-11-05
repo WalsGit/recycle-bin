@@ -9,6 +9,7 @@ use Flarum\Post\Post;
 use Flarum\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class ProcessMassActionHandler
@@ -38,7 +39,7 @@ class ProcessMassActionHandler
     /**
      * Handle the mass action command
      *
-     * @return array{processed: int, has_more: bool}
+     * @return array{processed: int, has_more: bool, remaining: int}
      *
      * @throws \Flarum\User\Exception\PermissionDeniedException
      * @throws ValidationException
@@ -59,7 +60,7 @@ class ProcessMassActionHandler
             $count += $this->processChunk($chunk, $modelClass, $command->action, $command->actor);
         }
 
-        return ['processed' => $count, 'has_more' => false];
+        return ['processed' => $count, 'has_more' => false, 'remaining' => 0];
     }
 
     /**
@@ -99,15 +100,11 @@ class ProcessMassActionHandler
      *
      * @param class-string<Model> $modelClass
      *
-     * @return array{processed: int, has_more: bool}
+     * @return array{processed: int, has_more: bool, remaining: int}
      */
     private function processAll(string $modelClass, string $action, User $actor): array
     {
-        $query = $modelClass::query()->whereNotNull('hidden_at')->orderBy('id');
-
-        if ($modelClass === Post::class) {
-            $query->where('type', 'comment');
-        }
+        $query = $this->binQuery($modelClass)->orderBy('id');
 
         // Fetch one extra item to know if there is more to process
         $items = $query->limit(self::MAX_ITEMS_PER_ALL_REQUEST + 1)->get();
@@ -124,7 +121,26 @@ class ProcessMassActionHandler
             });
         }
 
-        return ['processed' => $count, 'has_more' => $hasMore];
+        // Lets the client keep its progress total accurate without another request
+        $remaining = $hasMore ? $this->binQuery($modelClass)->count() : 0;
+
+        return ['processed' => $count, 'has_more' => $hasMore, 'remaining' => $remaining];
+    }
+
+    /**
+     * Query of the items that belong to the bin: hidden discussions, or hidden comment posts
+     *
+     * @param class-string<Model> $modelClass
+     */
+    private function binQuery(string $modelClass): Builder
+    {
+        $query = $modelClass::query()->whereNotNull('hidden_at');
+
+        if ($modelClass === Post::class) {
+            $query->where('type', 'comment');
+        }
+
+        return $query;
     }
 
     /**

@@ -89,6 +89,8 @@ walsgit-recycle-bin:
       submit_button: 'Supprimer définitivement tous les posts'
       success: 'Tous les posts ont bien été définitivement supprimés'
     mass_progress: '{processed} sur {total} traités…'
+    mass_nothing_to_process: 'Rien à traiter : ces éléments ont déjà été restaurés ou supprimés.'
+    mass_partial_failure: '{processed, plural, one {# élément a été traité} other {# éléments ont été traités}} avant l''erreur. La liste a été actualisée.'
     pagination:
       first_page_button: 'Aller à la première page'
       back_button: 'Retourner à la page précédente'

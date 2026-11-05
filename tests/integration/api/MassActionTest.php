@@ -85,6 +85,7 @@ class MassActionTest extends TestCase
         $body = $this->body($response);
         $this->assertEquals(1, $body['processed_count']);
         $this->assertFalse($body['has_more']);
+        $this->assertEquals(0, $body['remaining_count']);
         $this->assertFalse($this->discussionExists(1));
     }
 
@@ -297,6 +298,7 @@ class MassActionTest extends TestCase
 
         $this->assertEquals(200, $firstBody['processed_count']);
         $this->assertTrue($firstBody['has_more']);
+        $this->assertEquals(1, $firstBody['remaining_count']);
         $this->assertEquals(1, $this->database()->table('discussions')->count());
 
         // Second call processes the remaining item
@@ -304,6 +306,7 @@ class MassActionTest extends TestCase
 
         $this->assertEquals(1, $secondBody['processed_count']);
         $this->assertFalse($secondBody['has_more']);
+        $this->assertEquals(0, $secondBody['remaining_count']);
         $this->assertEquals(0, $this->database()->table('discussions')->count());
     }
 

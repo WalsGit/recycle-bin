@@ -89,6 +89,8 @@ walsgit-recycle-bin:
       submit_button: 'Forever delete all posts'
       success: 'Successfully deleted all posts'
     mass_progress: 'Processed {processed} of {total}…'
+    mass_nothing_to_process: 'Nothing to process: these items were already restored or deleted.'
+    mass_partial_failure: '{processed, plural, one {# item was} other {# items were}} processed before the error occurred. The list has been refreshed.'
     pagination:
       first_page_button: 'Go to first page'
       back_button: 'Back to previous page'
