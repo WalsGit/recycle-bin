@@ -3,16 +3,21 @@
 namespace Walsgit\RecycleBin\Command;
 
 use Flarum\Discussion\Discussion;
+use Flarum\Foundation\DispatchEventsTrait;
 use Flarum\Foundation\ValidationException;
 use Flarum\Post\Post;
+use Flarum\User\User;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class ProcessMassActionHandler
 {
+    use DispatchEventsTrait;
+
     private const MAX_IDS_PER_REQUEST = 100;
     private const CHUNK_SIZE = 50;
-    private const MAX_ITEMS_PER_ALL_REQUEST = 500;
+    private const MAX_ITEMS_PER_ALL_REQUEST = 200;
 
     /**
      * Map of supported resource types to their Eloquent model classes.
@@ -25,7 +30,8 @@ class ProcessMassActionHandler
     ];
 
     public function __construct(
-        protected ConnectionInterface $db
+        protected ConnectionInterface $db,
+        protected Dispatcher $events
     ) {
     }
 
@@ -44,13 +50,13 @@ class ProcessMassActionHandler
         $modelClass = $this->modelMap[$command->type];
 
         if ($command->all) {
-            return $this->processAll($modelClass, $command->action);
+            return $this->processAll($modelClass, $command->action, $command->actor);
         }
 
         $count = 0;
 
         foreach (array_chunk($command->ids, self::CHUNK_SIZE) as $chunk) {
-            $count += $this->processChunk($chunk, $modelClass, $command->action);
+            $count += $this->processChunk($chunk, $modelClass, $command->action, $command->actor);
         }
 
         return ['processed' => $count, 'has_more' => false];
@@ -95,7 +101,7 @@ class ProcessMassActionHandler
      *
      * @return array{processed: int, has_more: bool}
      */
-    private function processAll(string $modelClass, string $action): array
+    private function processAll(string $modelClass, string $action, User $actor): array
     {
         $query = $modelClass::query()->whereNotNull('hidden_at')->orderBy('id');
 
@@ -109,9 +115,9 @@ class ProcessMassActionHandler
         $count = 0;
 
         foreach ($items->take(self::MAX_ITEMS_PER_ALL_REQUEST)->chunk(self::CHUNK_SIZE) as $chunk) {
-            $count += $this->db->transaction(function () use ($chunk, $action) {
+            $count += $this->db->transaction(function () use ($chunk, $action, $actor) {
                 foreach ($chunk as $item) {
-                    $this->processItem($item, $action);
+                    $this->processItem($item, $action, $actor);
                 }
 
                 return $chunk->count();
@@ -127,9 +133,9 @@ class ProcessMassActionHandler
      * @param array<int> $chunk
      * @param class-string<Model> $modelClass
      */
-    private function processChunk(array $chunk, string $modelClass, string $action): int
+    private function processChunk(array $chunk, string $modelClass, string $action, User $actor): int
     {
-        return $this->db->transaction(function () use ($chunk, $modelClass, $action) {
+        return $this->db->transaction(function () use ($chunk, $modelClass, $action, $actor) {
             /**
              * @var \Illuminate\Database\Eloquent\Collection<int,Model> $items
              */
@@ -140,7 +146,7 @@ class ProcessMassActionHandler
             $processed = 0;
 
             foreach ($items as $item) {
-                $this->processItem($item, $action);
+                $this->processItem($item, $action, $actor);
                 $processed++;
             }
 
@@ -149,17 +155,21 @@ class ProcessMassActionHandler
     }
 
     /**
-     * Process a single Item
+     * Process a single item, then dispatch the domain events raised by the model
+     *
+     * Direct model calls only raise events, they do not dispatch them. Dispatching
+     * is what keeps the discussion and user counters up to date, deletes a
+     * discussion left without posts, and notifies the listeners of other extensions.
      */
-    private function processItem(Model $item, string $action): void
+    private function processItem(Model $item, string $action, User $actor): void
     {
         if ($action === 'restore') {
             $item->restore();
             $item->save();
-
-            return;
+        } else {
+            $item->delete();
         }
 
-        $item->delete();
+        $this->dispatchEventsFor($item, $actor);
     }
 }
