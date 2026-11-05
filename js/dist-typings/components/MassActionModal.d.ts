@@ -6,6 +6,8 @@ interface MassActionModalAttrs extends IFormModalAttrs {
     action: BinAction;
     all?: boolean;
     totalCount?: number;
+    /** Server time of the counts shown, required by "all" mode (see AbstractBinPage) */
+    hiddenBefore?: string;
     onSuccess?: () => void;
 }
 export default class MassActionModal extends FormModal<MassActionModalAttrs> {

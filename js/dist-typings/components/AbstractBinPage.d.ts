@@ -22,6 +22,11 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     protected readonly selectedIds: Set<string>;
     protected isSearching(): boolean;
     protected getTotalPageCount(): number;
+    /**
+     * Server time of the last statistics: "delete all" is limited to the items hidden before it,
+     * so that items hidden after the counts were displayed are not processed without being shown.
+     */
+    protected statisticsGeneratedAt?: string;
     protected refreshStatistics(): void;
     protected abstract getApiResourceType(): string;
     protected abstract getTitleTranslationKey(): string;
