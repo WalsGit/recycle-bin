@@ -3,15 +3,15 @@
 namespace Walsgit\RecycleBin\Command;
 
 use Flarum\Discussion\Discussion;
+use Flarum\Foundation\ValidationException;
 use Flarum\Post\Post;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Model;
-use Flarum\Foundation\ValidationException;
 
 class ProcessMassActionHandler
 {
-    private const MAX_IDS_PER_REQUEST   = 100;
-    private const CHUNK_SIZE            = 50;
+    private const MAX_IDS_PER_REQUEST = 100;
+    private const CHUNK_SIZE = 50;
     private const MAX_ITEMS_PER_ALL_REQUEST = 500;
 
     /**
@@ -19,7 +19,7 @@ class ProcessMassActionHandler
      *
      * @var array<string, class-string<Model>>
      */
-    private array $modelMap =  [
+    private array $modelMap = [
         'discussions'   => Discussion::class,
         'posts'         => Post::class,
     ];
@@ -29,32 +29,32 @@ class ProcessMassActionHandler
     ) {
     }
 
-        /**
-         * Handle the mass action command
-         *
-         * @return array{processed: int, has_more: bool}
-         *
-         * @throws \Flarum\User\Exception\PermissionDeniedException
-         * @throws ValidationException
-         */
-        public function handle(ProcessMassAction $command): array
-        {
-            $this->validateCommand($command);
+    /**
+     * Handle the mass action command
+     *
+     * @return array{processed: int, has_more: bool}
+     *
+     * @throws \Flarum\User\Exception\PermissionDeniedException
+     * @throws ValidationException
+     */
+    public function handle(ProcessMassAction $command): array
+    {
+        $this->validateCommand($command);
 
-            $modelClass = $this->modelMap[$command->type];
+        $modelClass = $this->modelMap[$command->type];
 
-            if ($command->all) {
-                return $this->processAll($modelClass, $command->action);
-            }
-
-            $count = 0;
-
-            foreach (array_chunk($command->ids, self::CHUNK_SIZE) as $chunk) {
-                $count += $this->processChunk($chunk, $modelClass, $command->action);
-            }
-
-            return ['processed' => $count, 'has_more' => false];
+        if ($command->all) {
+            return $this->processAll($modelClass, $command->action);
         }
+
+        $count = 0;
+
+        foreach (array_chunk($command->ids, self::CHUNK_SIZE) as $chunk) {
+            $count += $this->processChunk($chunk, $modelClass, $command->action);
+        }
+
+        return ['processed' => $count, 'has_more' => false];
+    }
 
     /**
      * Validate actor permissions and payload
@@ -78,49 +78,48 @@ class ProcessMassActionHandler
             if (empty($command->ids)) {
                 throw new ValidationException(['ids' => 'No items selected.']);
             }
-    
+
             if (count($command->ids) > self::MAX_IDS_PER_REQUEST) {
                 throw new ValidationException(['ids' => 'Too many items selected (maximum ' . self::MAX_IDS_PER_REQUEST . ').']);
             }
         }
-
     }
 
-        /**
-         * Process a limited batch of hidden items of the bin
-         *
-         * Processed items leave the bin (restored or deleted), so calling this
-         * repeatedly until `has_more` is false empties the bin.
-         *
-         * @param class-string<Model> $modelClass
-         *
-         * @return array{processed: int, has_more: bool}
-         */
-        private function processAll(string $modelClass, string $action): array
-        {
-            $query = $modelClass::query()->whereNotNull('hidden_at')->orderBy('id');
+    /**
+     * Process a limited batch of hidden items of the bin
+     *
+     * Processed items leave the bin (restored or deleted), so calling this
+     * repeatedly until `has_more` is false empties the bin.
+     *
+     * @param class-string<Model> $modelClass
+     *
+     * @return array{processed: int, has_more: bool}
+     */
+    private function processAll(string $modelClass, string $action): array
+    {
+        $query = $modelClass::query()->whereNotNull('hidden_at')->orderBy('id');
 
-            if ($modelClass === Post::class) {
-                $query->where('type', 'comment');
-            }
-
-            // Fetch one extra item to know if there is more to process
-            $items = $query->limit(self::MAX_ITEMS_PER_ALL_REQUEST + 1)->get();
-            $hasMore = $items->count() > self::MAX_ITEMS_PER_ALL_REQUEST;
-            $count = 0;
-
-            foreach ($items->take(self::MAX_ITEMS_PER_ALL_REQUEST)->chunk(self::CHUNK_SIZE) as $chunk) {
-                $count += $this->db->transaction(function () use ($chunk, $action) {
-                    foreach ($chunk as $item) {
-                        $this->processItem($item, $action);
-                    }
-
-                    return $chunk->count();
-                });
-            }
-
-            return ['processed' => $count, 'has_more' => $hasMore];
+        if ($modelClass === Post::class) {
+            $query->where('type', 'comment');
         }
+
+        // Fetch one extra item to know if there is more to process
+        $items = $query->limit(self::MAX_ITEMS_PER_ALL_REQUEST + 1)->get();
+        $hasMore = $items->count() > self::MAX_ITEMS_PER_ALL_REQUEST;
+        $count = 0;
+
+        foreach ($items->take(self::MAX_ITEMS_PER_ALL_REQUEST)->chunk(self::CHUNK_SIZE) as $chunk) {
+            $count += $this->db->transaction(function () use ($chunk, $action) {
+                foreach ($chunk as $item) {
+                    $this->processItem($item, $action);
+                }
+
+                return $chunk->count();
+            });
+        }
+
+        return ['processed' => $count, 'has_more' => $hasMore];
+    }
 
     /**
      * Process a chunk of items inside a DB transaction
@@ -160,7 +159,7 @@ class ProcessMassActionHandler
 
             return;
         }
-        
+
         $item->delete();
     }
 }

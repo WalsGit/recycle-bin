@@ -22,6 +22,8 @@ class StatisticsController implements RequestHandlerInterface
     {
         RequestUtil::getActor($request)->assertAdmin();
 
+        // `query()` is deliberately not scoped by visibility: hidden items are
+        // invisible to most actors, and only admins reach this point.
         return new JsonResponse([
             'hidden_discussions_count' => $this->discussions->query()->whereNotNull('hidden_at')->count(),
             'hidden_posts_count'       => $this->posts->query()->whereNotNull('hidden_at')->where('type', 'comment')->count(),
