@@ -1,0 +1,13 @@
+includes:
+    - vendor/flarum/phpstan/extension.neon
+
+parameters:
+    # Strictness of the analysis, from 0 (basic) to 10 (strictest)
+    level: 5
+
+    paths:
+        - src
+        - extend.php
+
+    excludePaths:
+        - *.blade.php

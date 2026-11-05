@@ -2,6 +2,7 @@
 
 namespace Walsgit\RecycleBin\Filter;
 
+use Flarum\Search\Database\DatabaseSearchState;
 use Flarum\Search\Filter\FilterInterface;
 use Flarum\Search\SearchState;
 
@@ -10,6 +11,8 @@ use Flarum\Search\SearchState;
  *
  * Unlike the core `is:hidden` gambit, it does not include the visible discussions
  * without comments: only discussions with `hidden_at` set belong to the bin.
+ *
+ * @implements FilterInterface<DatabaseSearchState>
  */
 class HiddenDiscussionFilter implements FilterInterface
 {

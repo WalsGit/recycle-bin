@@ -2,6 +2,7 @@
 
 namespace Walsgit\RecycleBin\Filter;
 
+use Flarum\Search\Database\DatabaseSearchState;
 use Flarum\Search\Filter\FilterInterface;
 use Flarum\Search\SearchState;
 
@@ -9,6 +10,8 @@ use Flarum\Search\SearchState;
  * Admin-only `filter[recycleBinHidden]` on the post search.
  *
  * `true` keeps the hidden comments (the content of the bin), `false` the visible ones.
+ *
+ * @implements FilterInterface<DatabaseSearchState>
  */
 class HiddenPostFilter implements FilterInterface
 {

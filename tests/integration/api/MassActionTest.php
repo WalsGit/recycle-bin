@@ -225,6 +225,28 @@ class MassActionTest extends TestCase
     }
 
     #[Test]
+    public function non_comment_posts_are_ignored_when_selected(): void
+    {
+        $this->prepareDatabase([
+            'discussions' => [$this->discussionData(2, false)],
+            'posts' => [
+                $this->postData(1, 2),
+                $this->postData(2, 2, true, 'discussionRenamed', ''),
+            ],
+        ]);
+
+        foreach (['restore', 'delete'] as $action) {
+            $response = $this->massAction('posts', ['action' => $action, 'ids' => [2]]);
+
+            $this->assertEquals(200, $response->getStatusCode(), $action);
+            $this->assertEquals(0, $this->body($response)['processed_count'], "Only comment posts belong to the bin ($action)");
+        }
+
+        $this->assertTrue($this->postExists(2));
+        $this->assertTrue($this->isHiddenPost(2));
+    }
+
+    #[Test]
     public function invalid_type_is_rejected(): void
     {
         $response = $this->massAction('users', ['action' => 'delete', 'ids' => [1]]);
