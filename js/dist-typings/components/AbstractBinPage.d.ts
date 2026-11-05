@@ -18,6 +18,8 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     protected pageData: ModelType[] | undefined;
     protected moreData: boolean;
     protected isLoadingPage: boolean;
+    /** Page number of the last failed load, or null when the last load succeeded */
+    protected failedPageNumber: number | null;
     private latestRequestId;
     protected readonly selectedIds: Set<string>;
     protected isSearching(): boolean;
@@ -36,6 +38,10 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     protected abstract getTotalLabelKey(): string;
     oninit(vnode: Mithril.Vnode<IPageAttrs, this>): void;
     view(vnode: Mithril.Vnode<IPageAttrs, this>): Mithril.Children;
+    /**
+     * Visible error state of a failed page load, with a button to try again
+     */
+    protected errorAlert(): Mithril.Children;
     headerItems(): ItemList<Mithril.Children>;
     /**
      * Build an item list of common columns to show in each BinPage
