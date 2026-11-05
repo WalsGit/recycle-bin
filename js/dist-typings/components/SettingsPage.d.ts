@@ -3,4 +3,5 @@ export default class SettingsPage extends ExtensionPage {
     content(): JSX.Element;
     menuButtons(bin: string): any[];
     pageContent(bin: string): JSX.Element;
+    settingsContent(): JSX.Element;
 }
