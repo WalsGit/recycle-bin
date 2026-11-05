@@ -507,19 +507,13 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     const limit = this.numPerPage;
     const offset = pageNumber * limit;
 
-    let filter: any = {
-      q: this.query || undefined,
-    };
+    // Filter keys are registered by this extension (see extend.php); they only work for admins.
+    const filter: Record<string, string | undefined> = { recycleBinHidden: 'true' };
 
-    if (this.getModelName() === 'discussion') {
-      const is = app.translator.trans('core.lib.gambits.group_keys.is');
-      const hidden = app.translator.trans('core.lib.gambits.discussions.hidden.key');
-      filter = { q: `${is}:${hidden} ${this.query}`.trim() };
-    } else if (this.getModelName() === 'post') {
-      filter = {
-        hidden: 'true',
-        content: this.query.trim() || undefined,
-      };
+    if (this.getModelName() === 'post') {
+      filter.recycleBinContent = this.query.trim() || undefined;
+    } else {
+      filter.q = this.query.trim() || undefined;
     }
 
     try {
