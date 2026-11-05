@@ -10,6 +10,8 @@ interface MassActionModalAttrs extends IFormModalAttrs {
 }
 export default class MassActionModal extends FormModal<MassActionModalAttrs> {
     private processedCount;
+    private refreshedTotal?;
+    private get total();
     private get translationPrefix();
     className(): string;
     title(): string | any[];
