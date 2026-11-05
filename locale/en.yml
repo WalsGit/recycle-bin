@@ -2,6 +2,10 @@ walsgit-recycle-bin:
   admin:
     discussions_bin: 'Discussions Bin'
     posts_bin: 'Posts Bin'
+    settings_tab: 'Settings'
+    settings_title: 'Recycle Bin Settings'
+    deletion_log_label: 'Log permanent deletions'
+    deletion_log_help: 'Write a line each time items are permanently deleted from the recycle bin: who, what and when. Mass actions produce one summary line. Files are stored in storage/logs/recycle-bin/ (one file per day of activity, and only the 15 most recent files are kept).'
     search_placeholder: "Search for a discussion"
     search_post_placeholder: "Search for a post"
     search_help_text: 'Searches for words in titles as well as in the messages of the discussions'

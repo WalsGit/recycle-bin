@@ -1,6 +1,7 @@
 import app from 'flarum/admin/app';
 import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import Button from 'flarum/common/components/Button';
+import Form from 'flarum/common/components/Form';
 import DiscussionsBinPage from './DiscussionsBinPage';
 import PostsBinPage from './PostsBinPage';
 
@@ -52,6 +53,20 @@ export default class SettingsPage extends ExtensionPage {
         },
         app.translator.trans('walsgit-recycle-bin.admin.posts_bin')
       ),
+      Button.component(
+        {
+          className: `Button ${bin === 'settings-tab' ? 'item-selected' : ''}`,
+          onclick: () =>
+            m.route.set(
+              app.route('extension', {
+                id: 'walsgit-recycle-bin',
+                bin: 'settings-tab',
+              })
+            ),
+          icon: 'fas fa-cog',
+        },
+        app.translator.trans('walsgit-recycle-bin.admin.settings_tab')
+      ),
     ];
   }
 
@@ -59,7 +74,27 @@ export default class SettingsPage extends ExtensionPage {
     if (bin === 'posts-bin') {
       return <PostsBinPage />;
     }
+    if (bin === 'settings-tab') {
+      return this.settingsContent();
+    }
     // Default Discussions bin
     return <DiscussionsBinPage />;
+  }
+
+  settingsContent() {
+    return (
+      <div className="ExtensionPage-settings">
+        <h2>{app.translator.trans('walsgit-recycle-bin.admin.settings_title')}</h2>
+        <Form>
+          {this.buildSettingComponent({
+            type: 'boolean',
+            setting: 'walsgit-recycle-bin.deletion_log',
+            label: app.translator.trans('walsgit-recycle-bin.admin.deletion_log_label'),
+            help: app.translator.trans('walsgit-recycle-bin.admin.deletion_log_help'),
+          })}
+          <div className="Form-group Form-controls">{this.submitButton()}</div>
+        </Form>
+      </div>
+    );
   }
 }
