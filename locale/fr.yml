@@ -16,6 +16,11 @@ walsgit-recycle-bin:
     empty_posts_list: "Il n'y a aucun post dans la corbeille."
     no_search_results: "Il n'y a aucun résultat pour cette recherche."
     select_all: 'Sélectionnez tout les éléments de cette page'
+    select_discussion: 'Sélectionner la discussion #{discussionId}'
+    select_post: 'Sélectionner le post #{postId}'
+    unknown_discussion: 'Discussion inconnue'
+    load_error: "La liste n'a pas pu être chargée."
+    load_error_retry: 'Réessayer'
     discussion_id: 'ID'
     discussion_title: 'Titre de la discussion'
     author: 'Auteur'

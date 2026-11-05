@@ -50,7 +50,7 @@ export default class DiscussionsBinPage extends AbstractBinPage<Discussion> {
       {
         name: app.translator.trans('walsgit-recycle-bin.admin.discussion_title'),
         content: (discussion: Discussion) => (
-          <a href={`${baseUrl}/d/${discussion.id()}`} target="_blank">
+          <a href={`${baseUrl}/d/${discussion.id()}`} target="_blank" rel="noopener noreferrer">
             {discussion.title()}
           </a>
         ),

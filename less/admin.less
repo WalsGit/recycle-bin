@@ -75,6 +75,11 @@
             overflow-x: auto;
         }
 
+        // Rows exist for assistive technologies only: their cells are laid out by the grid
+        &-row {
+            display: contents;
+        }
+
         &-header {
             font-weight: bold;
             border-bottom: 1px solid var(--muted-more-color);
