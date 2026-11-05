@@ -57,7 +57,7 @@ export default class PostsBinPage extends AbstractBinPage<Post> {
           return (
             <span>
               {truncate(post.content() || '', 100)}{' '}
-              <a href={postUrl} target="_blank">
+              <a href={postUrl} target="_blank" rel="noopener noreferrer">
                 {app.translator.trans('walsgit-recycle-bin.admin.post.open_post')}
               </a>
             </span>

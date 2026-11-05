@@ -2,6 +2,7 @@ import Page, { IPageAttrs } from 'flarum/common/components/Page';
 import Mithril from 'mithril';
 import app from 'flarum/admin/app';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
+import Alert from 'flarum/common/components/Alert';
 import Button from 'flarum/common/components/Button';
 import ItemList from 'flarum/common/utils/ItemList';
 import classList from 'flarum/common/utils/classList';
@@ -30,6 +31,8 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
   protected pageData: ModelType[] | undefined = undefined;
   protected moreData: boolean = false;
   protected isLoadingPage: boolean = false;
+  /** Page number of the last failed load, or null when the last load succeeded */
+  protected failedPageNumber: number | null = null;
   private latestRequestId: number = 0;
   protected readonly selectedIds: Set<string> = new Set();
 
@@ -91,6 +94,15 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
   }
 
   view(vnode: Mithril.Vnode<IPageAttrs, this>): Mithril.Children {
+    if (this.pageData === undefined && this.failedPageNumber !== null) {
+      return (
+        <div className="ExtensionPage-settings">
+          <h2>{app.translator.trans(this.getTitleTranslationKey())}</h2>
+          {this.errorAlert()}
+        </div>
+      );
+    }
+
     if (this.pageData === undefined) {
       return (
         <div className="ExtensionPage-settings">
@@ -109,6 +121,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     return (
       <div className="ExtensionPage-settings">
         <h2>{app.translator.trans(this.getTitleTranslationKey())}</h2>
+        {this.failedPageNumber !== null && this.errorAlert()}
         <div className="RecycleBinPage-header">{this.headerItems().toArray()}</div>
         <section
           className={classList(['RecycleBinPage-grid', this.isLoadingPage ? 'RecycleBinPage-grid--loadingPage' : 'RecycleBinPage-grid--loaded'])}
@@ -119,43 +132,47 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
           aria-live="polite"
           aria-busy={this.isLoadingPage ? 'true' : 'false'}
         >
-          {columns.map((column, colIndex) => (
-            <div
-              key={`header-${column.itemName || colIndex}`}
-              className="RecycleBinPage-grid-header"
-              role="columnheader"
-              aria-colindex={colIndex + 1}
-              aria-rowindex={1}
-            >
-              {column.name}
+          <div className="RecycleBinPage-grid-row" role="row" aria-rowindex={1}>
+            {columns.map((column, colIndex) => (
+              <div
+                key={`header-${column.itemName || colIndex}`}
+                className="RecycleBinPage-grid-header"
+                role="columnheader"
+                aria-colindex={colIndex + 1}
+              >
+                {column.name}
+              </div>
+            ))}
+          </div>
+
+          {this.pageData.map((item: any, rowIndex) => (
+            <div key={item.id()} className="RecycleBinPage-grid-row" role="row" aria-rowindex={rowIndex + 2}>
+              {columns.map((col, colIndex) => {
+                const columnContent = col.content?.(item);
+
+                return (
+                  <div
+                    key={`${item.id()}-${col.itemName || colIndex}`}
+                    className={classList(['RecycleBinPage-grid-rowItem', rowIndex % 2 > 0 && 'RecycleBinPage-grid-rowItem--shaded'])}
+                    {...{ [`data-${this.getModelName()}-id`]: item.id() }}
+                    data-column-name={col.itemName}
+                    aria-colindex={colIndex + 1}
+                    role="cell"
+                  >
+                    {columnContent || app.translator.trans('walsgit-recycle-bin.admin.grid.invalid_column_content')}
+                  </div>
+                );
+              })}
             </div>
           ))}
 
-          {this.pageData.map((item: any, rowIndex) =>
-            columns.map((col, colIndex) => {
-              const columnContent = col.content?.(item);
-
-              return (
-                <div
-                  key={`${item.id()}-${col.itemName || colIndex}`}
-                  className={classList(['RecycleBinPage-grid-rowItem', rowIndex % 2 > 0 && 'RecycleBinPage-grid-rowItem--shaded'])}
-                  {...{ [`data-${this.getModelName()}-id`]: item.id() }}
-                  data-column-name={col.itemName}
-                  aria-colindex={colIndex + 1}
-                  aria-rowindex={rowIndex + 2}
-                  role="cell"
-                >
-                  {columnContent || app.translator.trans('walsgit-recycle-bin.admin.grid.invalid_column_content')}
-                </div>
-              );
-            })
-          )}
-
           {isEmpty && (
-            <div className="RecycleBinPage-grid-empty" role="row">
-              {app.translator.trans(
-                this.isSearching() ? 'walsgit-recycle-bin.admin.no_search_results' : `walsgit-recycle-bin.admin.empty_${this.getModelName()}s_list`
-              )}
+            <div className="RecycleBinPage-grid-row" role="row" aria-rowindex={2}>
+              <div className="RecycleBinPage-grid-empty" role="cell" aria-colspan={columns.length}>
+                {app.translator.trans(
+                  this.isSearching() ? 'walsgit-recycle-bin.admin.no_search_results' : `walsgit-recycle-bin.admin.empty_${this.getModelName()}s_list`
+                )}
+              </div>
             </div>
           )}
 
@@ -241,6 +258,36 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
     );
   }
 
+  /**
+   * Visible error state of a failed page load, with a button to try again
+   */
+  protected errorAlert(): Mithril.Children {
+    return (
+      <div role="alert">
+        {m(
+          Alert,
+          {
+            type: 'error',
+            dismissible: false,
+            controls: [
+              m(
+                Button,
+                {
+                  className: 'Button Button--link',
+                  icon: 'fas fa-redo',
+                  disabled: this.isLoadingPage,
+                  onclick: () => void this.loadPage(this.failedPageNumber ?? this.pageNumber),
+                },
+                app.translator.trans('walsgit-recycle-bin.admin.load_error_retry')
+              ),
+            ],
+          },
+          app.translator.trans('walsgit-recycle-bin.admin.load_error')
+        )}
+      </div>
+    );
+  }
+
   headerItems(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
 
@@ -311,6 +358,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
             type="checkbox"
             className="RecycleBinPage-Checkbox"
             checked={this.selectedIds.has(item.id()!)}
+            aria-label={extractText(app.translator.trans(`walsgit-recycle-bin.admin.select_${type}`, { [`${type}Id`]: item.id() }))}
             onchange={(e: Event) => this.toggleSelection(e, item.id()!)}
           />
         ),
@@ -330,7 +378,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
           }
 
           return (
-            <a href={`${baseUrl}/u/${user.slug()}`} target="_blank">
+            <a href={`${baseUrl}/u/${user.slug()}`} target="_blank" rel="noopener noreferrer">
               {user.displayName()}
             </a>
           );
@@ -510,6 +558,7 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
 
     this.isLoadingPage = true;
     this.loadingPageNumber = pageNumber;
+    this.failedPageNumber = null;
     m.redraw();
 
     const limit = this.numPerPage;
@@ -545,7 +594,11 @@ export default abstract class AbstractBinPage<ModelType extends Model = any> ext
       if (requestId !== this.latestRequestId) return;
 
       console.error(error);
-      this.pageData = [];
+
+      // Keep the page that is displayed (if any) and show the error with a retry button,
+      // instead of an empty list that would look like an empty bin
+      this.failedPageNumber = pageNumber;
+      this.loadingPageNumber = this.pageNumber;
     } finally {
       if (requestId === this.latestRequestId) {
         this.isLoadingPage = false;

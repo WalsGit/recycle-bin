@@ -28,7 +28,8 @@ export default class ItemActionModal extends FormModal<ItemActionModalAttrs> {
   content() {
     const { item, type, action } = this.attrs;
     const isPost = type === 'post';
-    const discussionTitle = isPost ? item.discussion()?.title() : item.title();
+    const discussionTitle =
+      (isPost ? item.discussion()?.title() : item.title()) || app.translator.trans('walsgit-recycle-bin.admin.unknown_discussion');
 
     return (
       <div className="Modal-body">
