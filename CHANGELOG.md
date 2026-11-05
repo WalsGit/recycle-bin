@@ -1,6 +1,25 @@
 
 # Changelog
 
+> Versions released after 2.2.0 are documented in the [GitHub Releases](https://github.com/WalsGit/recycle-bin/releases).
+
+## [2.2.0] - 2026-11-05
+### Added
+- Optional log of permanent deletions (disabled by default): who deleted what and when, one line per single deletion and one summary line per mass deletion, in `storage/logs/recycle-bin/`. It is enabled from the new "Settings" tab of the extension.
+- A visible error message with a "Try again" button when a list cannot be loaded, instead of an empty list.
+- Accessibility improvements of the bin grid (table structure, labels of the row checkboxes).
+- Integration tests for mass actions, statistics and the search filters, and a PHPStan static analysis in the CI.
+
+### Changed
+- Mass restore and delete now go through the Flarum core events: discussion and user counters stay accurate, discussions left without posts are cleaned up, and other extensions are notified.
+- "Delete all" only processes the items that were hidden when the list was loaded, and at most 200 items per request (was 500).
+- Better feedback of mass actions: progress counter, message when there is nothing to process, and report of partial failures.
+- Search filters are prefixed (`recycleBinHidden`, `recycleBinContent`) and no longer depend on the forum language (the discussion filter only worked in English), and the `%` and `_` characters are matched literally in the keyword search.
+- The README documents the permissions, the limits and the deletion log.
+
+### Fixed
+- Selecting a hidden item that is not a comment post by its id no longer fails with an error.
+
 ## [2.1.1] - 2026-10-18
 ### Fixed
 - Missing admin assertion in MassActionController
